@@ -1,23 +1,29 @@
-# test
-This is where she makes a mod.
+<div align="center">
+   <img src="/logo.png" alt="Logo" width="240" height="240" align="center">
+</div>
+   <h1 align="center">In-Game Progress Bar Color Changer<sub>(such a long mod name >.<)</sub></h1>
 
-<img src="logo.png" width="150" alt="the mod's logo" />
-
-*Update logo.png to change your mod's icon (please)*
-
-## Getting started
-We recommend heading over to [the getting started section on our docs](https://docs.geode-sdk.org/getting-started/) for useful info on what to do next.
+## Why?
+Originally inspired by [Naxrin's ProgressBarColor mod](https://github.com/Naxrin/Progress-Bar-Color). I originally intended to write a simple one to just "wash out" the progress bar color to... you guessed it, but decided it would be better to customize it as well!
 
 ## Build instructions
-For more info, see [our docs](https://docs.geode-sdk.org/getting-started/create-mod#build)
+For more info, see [the Geode docs](https://docs.geode-sdk.org/getting-started/create-mod#build)!
 ```sh
+# Clone the repository first!
+git clone https://github.com/AnhNguyenlost13/progress-bar-thingy.git
+
 # Assuming you have the Geode CLI set up already
 geode build
 ```
 
+## Preview
+<img src="/resources/misc/prefs.png">
+<h4><sup>please don't question the developer name, have a great day!</sup></h4>
+<!--
 # Resources
 * [Geode SDK Documentation](https://docs.geode-sdk.org/)
 * [Geode SDK Source Code](https://github.com/geode-sdk/geode/)
 * [Geode CLI](https://github.com/geode-sdk/cli)
 * [Bindings](https://github.com/geode-sdk/bindings/)
 * [Dev Tools](https://github.com/geode-sdk/DevTools)
+-->
