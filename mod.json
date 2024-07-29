@@ -1,0 +1,30 @@
+{
+	"geode": "3.3.0",
+	"gd": {
+		"win": "2.206",
+		"android": "2.206",
+		"mac": "2.206",
+		"ios": "2.206"
+	},
+	"id": "catgirldev.test",
+	"name": "test",
+	"version": "v0.1.0",
+	"developer": "catgirldev",
+	"description": "my first mod?",
+	"settings": {
+		"mode": {
+				"name": "Working Mode (see info)",
+				"description": "lazy",
+				"type": "int",
+				"default": 0,
+			"min": 0,
+			"max": 3
+		},
+		"color": {
+			"name": "Custom Color",
+			"description": "Set the custom progress bar color here. Working mode must be set to 3.",
+			"type": "color",
+			"default": "FFFFFF"
+		}
+	}
+}
