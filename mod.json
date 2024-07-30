@@ -8,13 +8,13 @@
 	},
 	"id": "catgirldev.ingame-progress-bar-color",
 	"name": "Custom In-Game Progress Bar Color",
-	"version": "v1.1.0",
+	"version": "v1.1.1",
 	"developer": "catgirldev",
 	"description": "Lets you change your progress bar color in-game.",
 	"settings": {
 		"mode": {
 				"name": "Working Mode (see info)",
-				"description": "What the numbers mean:\n\n0: Vanilla Behavior (uses your color primary color)\n1: Secondary Color\n2: Player Glow Color\n3: Custom (set below!)",
+				"description": "<cj>What the numbers mean:</c>\n\n<cg>0: Vanilla Behavior</c> (uses your <cl>primary color</c>)\n<cy>1: Secondary Color</c>\n<co>2: Player Glow Color</c>\n<cp>3: Custom (set below!)</c",
 				"type": "int",
 				"default": 0,
 			"min": 0,
@@ -22,7 +22,7 @@
 		},
 		"color": {
 			"name": "Custom Color",
-			"description": "Set the custom progress bar color here. Working mode must be set to 3.",
+			"description": "Set the <cg>custom progress bar</c> color here. <cy>Working mode</c> must be set to <co>3</c>.",
 			"type": "color",
 			"default": "FFFFFF"
 		}
