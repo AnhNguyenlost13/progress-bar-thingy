@@ -49,7 +49,7 @@ class $modify(PlayLayer) {
 		PlayLayer::startGame();
 		if ((!m_level->isPlatformer()) && m_progressFill){
 			ccColor3B nya = paint();
-			auto progress_bar = static_cast<CCSprite* >(this->getChildByID("progress-bar")->getChildren()->objectAtIndex(0)); // TODO: use the member instead
+			auto progress_bar = static_cast<CCSprite* >(m_progressFill); // fuuuuck
 			progress_bar->setColor(nya);
 		}
 	}

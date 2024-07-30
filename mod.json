@@ -1,5 +1,5 @@
 {
-	"geode": "3.3.0",
+	"geode": "3.4.0",
 	"gd": {
 		"win": "2.206",
 		"android": "2.206",
@@ -8,9 +8,9 @@
 	},
 	"id": "catgirldev.ingame-progress-bar-color",
 	"name": "Custom In-Game Progress Bar Color",
-	"version": "v1.0.0",
+	"version": "v1.1.0",
 	"developer": "catgirldev",
-	"description": "my first mod?",
+	"description": "Lets you change your progress bar color in-game.",
 	"settings": {
 		"mode": {
 				"name": "Working Mode (see info)",
