@@ -62,3 +62,6 @@ build-*/
 # CLion
 .idea/
 /cmake-build-*/
+
+# abyss
+*.cpp.old
