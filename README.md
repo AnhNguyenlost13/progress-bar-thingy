@@ -18,7 +18,7 @@ geode build
 
 ## Preview
 <img src="/resources/misc/prefs.png">
-<img src="/resources/misc/preview.png">
+<img src="/resources/misc/with.png">
 
 ## Attributions
 * some code taken from Naxrin's ProgressBarColor mod (i'm terribly sorry!)
