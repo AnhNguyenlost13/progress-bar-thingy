@@ -5,29 +5,16 @@
 #include "ccTypes.h"
 #include <Geode/Geode.hpp>
 #include <Geode/binding/GameManager.hpp>
-#include <sys/_types/_int64_t.h>
+/*
+#include <sys/_types/_int64_t.h> // fuck you
+*/
 
 /**
  * Brings cocos2d and all Geode namespaces to the current scope.
  */
 using namespace geode::prelude;
 
-/**
- * `$modify` lets you extend and modify GD's classes.
- * To hook a function in Geode, simply $modify the class
- * and write a new function definition with the signature of
- * the function you want to hook.
- *
- * Here we use the overloaded `$modify` macro to set our own class name,
- * so that we can use it for button callbacks.
- *
- * Notice the header being included, you *must* include the header for
- * the class you are modifying, or you will get a compile error.
- *
- * Another way you could do this is like this:
- *
- * struct MyMenuLayer : Modify<MyMenuLayer, MenuLayer> {};
- */
+
 #include <Geode/modify/PlayLayer.hpp>
 
 ccColor3B paint(){
@@ -58,15 +45,12 @@ ccColor3B paint(){
 }
 
 class $modify(PlayLayer) {
-	bool init(GJGameLevel* level, bool a, bool b) {
-		if (!PlayLayer::init(level, a, b)) {
-			return false;
+	void startGame() {
+		PlayLayer::startGame();
+		if ((!m_level->isPlatformer()) && m_progressFill){
+			ccColor3B nya = paint();
+			auto progress_bar = static_cast<CCSprite* >(this->getChildByID("progress-bar")->getChildren()->objectAtIndex(0)); // TODO: use the member instead
+			progress_bar->setColor(nya);
 		}
-		if (!PlayLayer::get()->m_level->isPlatformer()){
-			ccColor3B cb = paint();
-			auto progress_bar = static_cast<CCSprite* >(this->getChildByID("progress-bar")->getChildren()->objectAtIndex(0));
-			progress_bar->setColor(cb);
-		}
-		return true;
 	}
 };

@@ -1,5 +1,5 @@
 <div align="center">
-   <img src="/logo.png" alt="Logo" width="240" height="240" align="center">
+   <img src="/logo.png" alt="Logo" width="144" height="144" align="center">
 </div>
    <h1 align="center">In-Game Progress Bar Color Changer<sub>(such a long mod name >.<)</sub></h1>
 
@@ -18,6 +18,11 @@ geode build
 
 ## Preview
 <img src="/resources/misc/prefs.png">
+<img src="/resources/misc/preview.png">
+
+## Attributions
+* some code taken from Naxrin's ProgressBarColor mod (i'm terribly sorry!)
+
 <h4><sup>please don't question the developer name, have a great day!</sup></h4>
 <!--
 # Resources

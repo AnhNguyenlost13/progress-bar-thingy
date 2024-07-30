@@ -6,15 +6,15 @@
 		"mac": "2.206",
 		"ios": "2.206"
 	},
-	"id": "catgirldev.test",
-	"name": "test",
-	"version": "v0.1.0",
+	"id": "catgirldev.ingame-progress-bar-color",
+	"name": "Custom In-Game Progress Bar Color",
+	"version": "v1.0.0",
 	"developer": "catgirldev",
 	"description": "my first mod?",
 	"settings": {
 		"mode": {
 				"name": "Working Mode (see info)",
-				"description": "lazy",
+				"description": "What the numbers mean:\n\n0: Vanilla Behavior (uses your color primary color)\n1: Secondary Color\n2: Player Glow Color\n3: Custom (set below!)",
 				"type": "int",
 				"default": 0,
 			"min": 0,
@@ -26,5 +26,15 @@
 			"type": "color",
 			"default": "FFFFFF"
 		}
+	},
+	"resources": {
+		"sprites": [
+			"./resources/misc/with*.png"
+		]
+	},
+	"repository": "https://github.com/AnhNguyenlost13/progress-bar-thingy",
+	"issues":{
+		"info": "Please report any problem you have to this mod's GitHub repository by making an issue!",
+		"url": "https://github.com/AnhNguyenlost13/progress-bar-thingy/issues"
 	}
 }

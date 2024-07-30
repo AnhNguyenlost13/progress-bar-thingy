@@ -1,2 +1,3 @@
 # 1.0.0
-- Edit this file to change your mod's changelog.
+- fixed that stupid crash when entering online levels
+- mod release!!1
