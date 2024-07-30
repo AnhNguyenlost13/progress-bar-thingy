@@ -1,7 +1,7 @@
 <div align="center">
    <img src="/logo.png" alt="Logo" width="144" height="144" align="center">
 </div>
-   <h1 align="center">In-Game Progress Bar Color Changer<sub>(such a long mod name >.<)</sub></h1>
+   <h1 align="center">In-Game Progress Bar Color Changer</h1>
 
 ## Why?
 Originally inspired by [Naxrin's ProgressBarColor mod](https://github.com/Naxrin/Progress-Bar-Color). I originally intended to write a simple one to just "wash out" the progress bar color to... you guessed it, but decided it would be better to customize it as well!
