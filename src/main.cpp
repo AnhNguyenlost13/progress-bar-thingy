@@ -5,9 +5,6 @@
 #include "ccTypes.h"
 #include <Geode/Geode.hpp>
 #include <Geode/binding/GameManager.hpp>
-/*
-#include <sys/_types/_int64_t.h> // fuck you
-*/
 
 /**
  * Brings cocos2d and all Geode namespaces to the current scope.
@@ -19,7 +16,6 @@ using namespace geode::prelude;
 
 ccColor3B paint(){
 	ccColor3B uwu;
-
 	/**
 	* Options:
 	* - Default (vanilla behavior): P1 color
@@ -49,8 +45,8 @@ class $modify(PlayLayer) {
 		PlayLayer::startGame();
 		if ((!m_level->isPlatformer()) && m_progressFill){
 			ccColor3B nya = paint();
-			auto progress_bar = static_cast<CCSprite* >(m_progressFill); // fuuuuck
-			progress_bar->setColor(nya);
+			// auto progress_bar = static_cast<CCSprite* >(m_progressFill); // fuuuuck // fuuuuuuck
+			m_progressFill->setColor(nya);
 		}
 	}
 };
