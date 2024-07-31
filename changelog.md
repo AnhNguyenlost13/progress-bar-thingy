@@ -11,3 +11,6 @@ Text changes (very small)
 
 # 1.2.1
 - one-line change
+
+# 1.2.2
+- major code cleanup (thanks eric)
