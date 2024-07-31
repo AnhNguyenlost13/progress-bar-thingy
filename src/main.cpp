@@ -14,13 +14,13 @@ ccColor3B paint() {
     */
     switch(Mod::get()->getSettingValue<int64_t>("mode")){
         case 1: 
-            return gm->colorForIdx(gameManager->getPlayerColor2());
+            return gm->colorForIdx(gm->getPlayerColor2());
         case 2:
-            return gm->colorForIdx(gameManager->getPlayerGlowColor());
+            return gm->colorForIdx(gm->getPlayerGlowColor());
         case 3:
             return Mod::get()->getSettingValue<ccColor3B>("color");
         default:
-            return gm->colorForIdx(gameManager->getPlayerColor());
+            return gm->colorForIdx(gm->getPlayerColor());
     }
 }
 
