@@ -14,7 +14,7 @@
 	"settings": {
 		"mode": {
 				"name": "Working Mode (see info)",
-				"description": "<cj>What the numbers mean:</c>\n\n<cg>0: Vanilla Behavior</c> (uses your <cl>primary color</c>)\n<cy>1: Secondary Color</c>\n<co>2: Player Glow Color</c>\n<cp>3: Custom (set below!)</c",
+				"description": "<cj>What the numbers mean:</c>\n\n<cg>0: Vanilla Behavior</c> (uses your <cl>primary color</c>)\n<cy>1: Secondary Color</c>\n<co>2: Player Glow Color</c>\n<cp>3: Custom (set below!)</c>",
 				"type": "int",
 				"default": 0,
 			"min": 0,
