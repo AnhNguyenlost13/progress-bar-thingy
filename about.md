@@ -9,3 +9,7 @@
 Without the mod:
 
 ![nope!](catgirldev.ingame-progress-bar-color/without.png)
+
+## Special Thanks
+- prevter for minimizing the code even more
+- Alphalaneous for the mod icon!
