@@ -25,7 +25,7 @@ jobs:
       - name: Update changelog and bump version
         id: update_changelog
         run: |
-          CHANGELOG=$(git log -1 --pretty=%B | sed '1d;$d')
+          CHANGELOG=$(git log -1 --pretty=%B | sed '1d;$d') >> $GITHUB_ENV
           VERSION="## <cy>$SOURCE_BRANCH</c>"
           echo -e "$VERSION\n$CHANGELOG\n" >> changelog.md
           echo version: $VERSION
@@ -113,27 +113,14 @@ jobs:
         with:
           tag_name: ${{ env.SOURCE_BRANCH }}
           release_name: "Release ${{ env.SOURCE_BRANCH }}"
-          body: ${{ steps.update-changelog.outputs.CHANGELOG }}
+          body: $CHANGELOG
           draft: false
           prerelease: false
+          generate_release_notes: true
+          make_latest: true
+          files: $MOD_FILE
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload .geode file to release
-        run: |
-          GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-          RELEASE_ID="${{ steps.create_release.outputs.id }}"
-          MOD_FILE=$(find . -name '*.geode' -print -quit)
-          if [ -f "$MOD_FILE" ]; then
-            echo "Uploading $MOD_FILE to release..."
-            curl -s -X POST "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename "$MOD_FILE")" \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Content-Type: application/octet-stream" \
-              --data-binary @"$MOD_FILE"
-          else
-            echo "wtf where's the geode file lol"
-            exit 1
-          fi
       - name: Delete mod file
         uses: geekyeggo/delete-artifact@v5
         with:
