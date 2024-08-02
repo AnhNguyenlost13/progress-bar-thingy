@@ -28,7 +28,7 @@ jobs:
         run: |
           CHANGELOG=$(git log -1 --pretty=format:'%s')
           VERSION="## <cy>$SOURCE_BRANCH</c>"
-          echo -e "\n$VERSION\n$CHANGELOG\n" >> changelog.md
+          echo -e "$VERSION\n$CHANGELOG\n" >> changelog.md
           echo version: $VERSION
           echo changelog: $CHANGELOG
 
