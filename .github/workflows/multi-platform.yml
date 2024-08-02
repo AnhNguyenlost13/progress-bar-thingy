@@ -34,7 +34,6 @@ jobs:
           echo -e "$FORMATTED_VERSION\n$CHANGELOG\n" >> changelog.md
           echo version: $VERSION_INPUT
           echo changelog:
-          echo ""
           echo $CHANGELOG
           jq --arg new_version "${VERSION_INPUT#v}" '.version = $new_version' mod.json > tmp.json && mv tmp.json mod.json
           
@@ -98,11 +97,6 @@ jobs:
         with:
          name: Build Output
          path: ${{ steps.build.outputs.build-output }}
-
-      - name: Useless
-        run: |
-          cd "Build Output/"
-          
       - name: Check for mod existence (failsafe)
         run: |
           MOD_FILE=$(find . -name '*.geode' -print -quit) >> $GITHUB_ENV
