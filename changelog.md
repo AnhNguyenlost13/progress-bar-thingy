@@ -14,15 +14,3 @@ Text changes (very small)
 
 ## <cy>1.2.2</c>
 - major code cleanup (thanks eric)
-
-## <cy>main</c>
-[build] lol
-
-
-## <cy>main</c>
-[build] what?
-
-
-## <cy>main</c>
-[build]
-
