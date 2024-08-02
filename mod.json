@@ -1,44 +1,44 @@
 {
-	"geode": "3.4.0",
-	"gd": {
-		"win": "2.206",
-		"android": "2.206",
-		"mac": "2.206",
-		"ios": "2.206"
-	},
-	"id": "catgirldev.ingame-progress-bar-color",
-	"name": "Custom In-Game Progress Bar Color",
-	"version": "v1.2.4",
-	"developer": "catgirldev",
-	"description": "Lets you change your progress bar color in-game.",
-	"settings": {
-		"mode": {
-				"name": "Working Mode (see info)",
-				"description": "<cj>What the numbers mean:</c>\n\n<cg>0: Vanilla Behavior</c> (uses your <cl>primary color</c>)\n<cy>1: Secondary Color</c>\n<co>2: Player Glow Color</c>\n<cp>3: Custom (set below!)</c>",
-				"type": "int",
-				"default": 0,
-			"min": 0,
-			"max": 3
-		},
-		"color": {
-			"name": "Custom Color",
-			"description": "Set the <cg>custom progress bar</c> color here. <cy>Working mode</c> must be set to <co>3</c>.",
-			"type": "color",
-			"default": "FFFFFF"
-		}
-	},
-	"resources": {
-		"sprites": [
-			"./resources/misc/with*.png"
-		]
-	},
-	"repository": "https://github.com/AnhNguyenlost13/progress-bar-thingy",
-	"links": {
-		"source": "https://github.com/AnhNguyenlost13/progress-bar-thingy",
-		"community": "https://discord.gg/uFj8SSUhRa"
-	},
-	"issues":{
-		"info": "Please report any problem you have to this mod's GitHub repository by making an issue!",
-		"url": "https://github.com/AnhNguyenlost13/progress-bar-thingy/issues"
-	}
+  "geode": "3.4.0",
+  "gd": {
+    "win": "2.206",
+    "android": "2.206",
+    "mac": "2.206",
+    "ios": "2.206"
+  },
+  "id": "catgirldev.ingame-progress-bar-color",
+  "name": "Custom In-Game Progress Bar Color",
+  "version": "main",
+  "developer": "catgirldev",
+  "description": "Lets you change your progress bar color in-game.",
+  "settings": {
+    "mode": {
+      "name": "Working Mode (see info)",
+      "description": "<cj>What the numbers mean:</c>\n\n<cg>0: Vanilla Behavior</c> (uses your <cl>primary color</c>)\n<cy>1: Secondary Color</c>\n<co>2: Player Glow Color</c>\n<cp>3: Custom (set below!)</c>",
+      "type": "int",
+      "default": 0,
+      "min": 0,
+      "max": 3
+    },
+    "color": {
+      "name": "Custom Color",
+      "description": "Set the <cg>custom progress bar</c> color here. <cy>Working mode</c> must be set to <co>3</c>.",
+      "type": "color",
+      "default": "FFFFFF"
+    }
+  },
+  "resources": {
+    "sprites": [
+      "./resources/misc/with*.png"
+    ]
+  },
+  "repository": "https://github.com/AnhNguyenlost13/progress-bar-thingy",
+  "links": {
+    "source": "https://github.com/AnhNguyenlost13/progress-bar-thingy",
+    "community": "https://discord.gg/uFj8SSUhRa"
+  },
+  "issues": {
+    "info": "Please report any problem you have to this mod's GitHub repository by making an issue!",
+    "url": "https://github.com/AnhNguyenlost13/progress-bar-thingy/issues"
+  }
 }
