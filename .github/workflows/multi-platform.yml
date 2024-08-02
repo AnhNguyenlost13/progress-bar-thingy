@@ -111,8 +111,8 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.SOURCE_BRANCH }}
-          release_name: "Release ${{ env.SOURCE_BRANCH }}"
+          tag_name: $SOURCE_BRANCH
+          name: "Release ${{ env.SOURCE_BRANCH }}"
           body: $CHANGELOG
           draft: false
           prerelease: false
