@@ -71,6 +71,8 @@ jobs:
     runs-on: ${{ matrix.config.os }}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
         with:
@@ -78,7 +80,6 @@ jobs:
           bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
-          sdk: latest
         
   package:
     name: Package builds
