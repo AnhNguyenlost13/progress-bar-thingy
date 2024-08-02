@@ -97,7 +97,7 @@ jobs:
       - uses: actions/download-artifact@v4
       - name: Unpack build (real)
         run: |
-          unzip *.zip
+          unzip -o "$(find . -maxdepth 1 -name '*.zip' -print -quit)" -d .
           
   release:
     name: Release mod
