@@ -1,4 +1,4 @@
-name: Build Geode Mod (dude)
+name: Build and Publish Geode Mod
 
 on:
   push:
@@ -23,8 +23,8 @@ jobs:
         run: |
         
           echo "VERSION_INPUT=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
-          echo "value=${{ env.VERSION_INPUT }}" >> $GITHUB_OUTPUT
-          echo version returned "${{ env.VERSION_INPUT }}".
+          echo "value=$VERSION_INPUT" >> $GITHUB_OUTPUT
+          echo version returned "$VERSION_INPUT".
           
       - name: Update changelog and bump version
         id: update_changelog
@@ -99,18 +99,16 @@ jobs:
          name: Build Output
          path: ${{ steps.build.outputs.build-output }}
 
-      - uses: actions/download-artifact@v4
-      - name: Unpack build (real)
+      - name: Useless
         run: |
-          cd "Build Output"
+          cd "Build Output/"
+          
       - name: Check for mod existence (failsafe)
         run: |
           MOD_FILE=$(find . -name '*.geode' -print -quit) >> $GITHUB_ENV
-          echo mod file: $MOD_FILE
-          echo ${{ env.MOD_FILE }}
-          echo mod ver: ${{ needs.magic-touches.outputs.mod_version }}
+          echo mod file path: $MOD_FILE
           if [ -f "$MOD_FILE" ]; then
-             echo success
+             echo success, mod ver ${{ needs.magic-touches.outputs.mod_version }}
           else
              echo "no mod file :("
              exit 1
