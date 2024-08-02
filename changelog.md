@@ -15,15 +15,3 @@ Text changes (very small)
 ## <cy>v1.2.2</c>
 - major code cleanup (thanks eric)
 
-## <cy>v1.2.5</c>
-
-downscaled mod icon, thanks Alphalaneous
-
-## <cy>v1.2.5</c>
-
-jskdfsdf
-
-## <cy>v1.2.5</c>
-
-stop with the fucking v
-
