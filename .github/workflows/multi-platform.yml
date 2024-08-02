@@ -25,7 +25,7 @@ jobs:
       - name: Update changelog and bump version
         id: update_changelog
         run: |
-          CHANGELOG=$(git log -1 --pretty=%B | sed '1d')
+          COMMIT_BODY=$(git log -1 --pretty=%B | sed '1d;$d')
           VERSION="## <cy>$SOURCE_BRANCH</c>"
           echo -e "$VERSION\n$CHANGELOG\n" >> changelog.md
           echo version: $VERSION
@@ -97,14 +97,14 @@ jobs:
       - uses: actions/download-artifact@v4
       - name: Unpack build (real)
         run: |
-          unzip "./Build Output.zip"
+          unzip *.zip
           
   release:
     name: Release mod
     needs: ['package']
     runs-on: ubuntu-latest
     steps:
-      - name: Check for existence
+      - name: Check for mod existence (failsafe)
         run: |
           MOD_FILE=$(find . -name '*.geode' -print -quit)
           if [ -f "$MOD_FILE" ]; then
