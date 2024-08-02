@@ -16,3 +16,7 @@ Text changes (very small)
 - major code cleanup (thanks eric)
 
 
+## <cy>v1.2.5</c>
+
+- downscaled mod icon (Alphalaneous)
+
