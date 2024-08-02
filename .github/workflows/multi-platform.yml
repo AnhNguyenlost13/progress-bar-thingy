@@ -9,18 +9,17 @@ on:
 
 jobs:
   magic-touches:
-    if: contains(github.event.head_commit.message, '[build]') == true
+    if: startsWith(github.event.head_commit.message, 'Build v')
     name: Apply magic touches
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get branch name
+      - name: Get version
         id: get_branch_name
         run: |
-          echo "SOURCE_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-          echo branch name: ${GITHUB_REF#refs/heads/}
+          echo "SOURCE_BRANCH=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
         
         
       - name: Update changelog and bump version
