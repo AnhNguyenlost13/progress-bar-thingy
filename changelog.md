@@ -23,3 +23,7 @@ downscaled mod icon, thanks Alphalaneous
 
 jskdfsdf
 
+## <cy>v1.2.5</c>
+
+stop with the fucking v
+
