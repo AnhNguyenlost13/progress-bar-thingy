@@ -8,6 +8,7 @@ on:
 
 jobs:
   magic-touches:
+    if: contains(github.event.head_commit.message, '[build]') == true
     name: Apply magic touches
     runs-on: ubuntu-latest
     steps:
@@ -45,8 +46,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
   build:
-    # if: contains(github.event.head_commit.message, '[build skip]') == false
-    # doubt i need that lol
     needs: ['commit']
     strategy:
       fail-fast: false
