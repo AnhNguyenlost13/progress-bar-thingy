@@ -89,19 +89,28 @@ jobs:
       - uses: geode-sdk/build-geode-mod/combine@main
         id: build
 
-    # - uses: actions/upload-artifact@v4
-    #   with:
-    #     name: Build Output
-    #     path: ${{ steps.build.outputs.build-output }}
-      - name: Unpack build (real)
-        run: |
-          unzip "${{ steps.build.outputs.build-output }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Build Output
+          path: ${{ steps.build.outputs.build-output }}
+    # - name: Unpack build (real)
+    #   run: |
+    #     unzip "${{ steps.build.outputs.build-output }}"
           
   release:
     name: Release mod
     needs: ['package']
     runs-on: ubuntu-latest
     steps:
+      - name: Check for existence
+        run: |
+          MOD_FILE=$(find . -name '*.geode' -print -quit)
+          if [ -f "$MOD_FILE" ]; then
+             echo success
+          else
+             echo :(
+             exit 1
+          fi
       - name: Create GitHub release
         id: create_release
         uses: softprops/action-gh-release@v2
