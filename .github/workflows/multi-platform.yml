@@ -20,13 +20,13 @@ jobs:
         id: get_branch_name
         run: |
           echo "SOURCE_BRANCH=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
-          echo "::set-output name=version::$SOURCE_BRANCH"
+          echo "version=$SOURCE_BRANCH" >> $GITHUB_OUTPUT
         
       - name: Set changelog
         id: set_changelog
         run: |
           CHANGELOG=$(git log -1 --pretty=%B | sed '1d;$d') >> $GITHUB_ENV
-          echo "::set-output name=changelog::$CHANGELOG"
+          echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
           
       - name: Update changelog and bump version
         id: update_changelog
