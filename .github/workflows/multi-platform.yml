@@ -22,7 +22,7 @@ jobs:
         id: get_version_input
         run: |
         
-          echo "VERSION_INPUT=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
+          echo "VERSION_INPUT=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
           echo "value=$VERSION_INPUT" >> $GITHUB_OUTPUT
           echo version returned "$VERSION_INPUT".
           
