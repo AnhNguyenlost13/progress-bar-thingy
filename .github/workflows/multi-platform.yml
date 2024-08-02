@@ -127,7 +127,7 @@ jobs:
           generate_release_notes: true
           make_latest: true
           files: |
-            ${{ MOD_FILE }}
+            ${{ env.MOD_FILE }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Delete mod file
