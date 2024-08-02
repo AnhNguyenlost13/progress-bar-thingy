@@ -119,15 +119,15 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ env.MOD_VER }}
-          name: "Release v${{ env.MOD_VER }}"
+          tag_name: v${{ github.workflow }}
+          name: "Release v${{ github.workflow }}"
           body: "This is an automated release."
           draft: false
           prerelease: false
           generate_release_notes: true
           make_latest: true
           files: |
-            ${{ env.MOD_FILE }}
+            ${MOD_FILE}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Delete mod file
