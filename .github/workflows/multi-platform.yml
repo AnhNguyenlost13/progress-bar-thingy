@@ -65,7 +65,7 @@ jobs:
           os: ubuntu-latest
           target: Android64
 
-    name: ${{ matrix.config.name }}
+    name: Build (${{ matrix.config.name }})
     runs-on: ${{ matrix.config.os }}
 
     steps:
