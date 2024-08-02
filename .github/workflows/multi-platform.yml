@@ -23,7 +23,8 @@ jobs:
         run: |
         
           echo "VERSION_INPUT=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
-          echo "value=$VERSION_INPUT" >> $GITHUB_OUTPUT
+          echo "value=${{ env.VERSION_INPUT }}" >> $GITHUB_OUTPUT
+          echo version returned "${{ env.VERSION_INPUT }}".
           
       - name: Update changelog and bump version
         id: update_changelog
@@ -32,8 +33,9 @@ jobs:
           FORMATTED_VERSION="## <cy>$VERSION_INPUT</c>"
           echo -e "$FORMATTED_VERSION\n$CHANGELOG\n" >> changelog.md
           echo version: $VERSION_INPUT
-          echo changelog: $CHANGELOG
-
+          echo changelog:
+          echo ""
+          echo $CHANGELOG
           jq --arg new_version "${VERSION_INPUT#v}" '.version = $new_version' mod.json > tmp.json && mv tmp.json mod.json
           
       - name: Stage and commit changes
@@ -52,7 +54,7 @@ jobs:
   build:
     needs: ['magic-touches']
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         config:
         - name: Windows
