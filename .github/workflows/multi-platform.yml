@@ -40,19 +40,27 @@ jobs:
         id: get_branch_name
         run: echo "SOURCE_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
         
-      - name: Automatic changelog update
+      - name: Update changelog and bump version
         id: update_changelog
         run: |
-          # Get the commit message using the last commit details
-          CHANGELOG=$(git log -1 --pretty=format:'%s')
-          VERSION="## <cy>$SOURCE_BRANCH</c>"
-          echo -e "\n$VERSION\n$CHANGELOG\n" >> changelog.md
-          
-      - name: Bump mod version
-        run: |
-          # Use the branch name from the environment variable directly (e.g., 'v1.2.4')
-          NEW_VERSION="$SOURCE_BRANCH"  # This would be 'v1.2.4' if on that branch
-          jq --arg new_version "$NEW_VERSION" '.version = $new_version' mod.json > tmp.json && mv tmp.json mod.json
+          if [[ "$matrix.config.os" == "windows-latest" ]]; then
+            cmd
+            SET "CHANGELOG=$(git log -1 --pretty=format:%s)" && set "VERSION_FORMATTED=## <cy>$SOURCE_BRANCH</c>"
+            echo. >> changelog.md
+            echo %VERSION_FORMATTED% >> changelog.md
+            echo %CHANGELOG% >> changelog.md
+            echo. >> changelog.md
+          else
+            CHANGELOG=$(git log -1 --pretty=format:'%s')
+            VERSION="## <cy>$SOURCE_BRANCH</c>"
+            echo -e "\n$VERSION\n$CHANGELOG\n" >> changelog.md
+          fi
+
+          if [[ "$matrix.config.os" == "windows-latest" ]]; then
+            powershell -Command "(Get-Content mod.json) -replace '\"version\": \"[^\"]*\"', '\"version\": \"$SOURCE_BRANCH\"' | Set-Content mod.json"
+          else
+            jq --arg new_version "$SOURCE_BRANCH" '.version = $new_version' mod.json > tmp.json && mv tmp.json mod.json
+          fi
           
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
@@ -62,7 +70,6 @@ jobs:
           combine: true
           target: ${{ matrix.config.target }}
         
-
   package:
     name: Package builds
     runs-on: ubuntu-latest
