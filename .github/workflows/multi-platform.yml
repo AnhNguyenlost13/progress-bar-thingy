@@ -124,7 +124,7 @@ jobs:
         with:
           tag_name: ${{ needs.magic-touches.outputs.version }}
           name: "Release ${{ needs.magic-touches.outputs.version }}"
-          body: ${{ needs.magic-touches.outputs.changelog }}
+          body: ${{ needs.magic-touches.outputs.changelog }} ${{ env.MOD_FILE }}
           draft: false
           prerelease: false
           generate_release_notes: true
