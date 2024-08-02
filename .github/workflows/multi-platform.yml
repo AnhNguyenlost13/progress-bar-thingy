@@ -17,7 +17,10 @@ jobs:
 
       - name: Get branch name
         id: get_branch_name
-        run: echo "SOURCE_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        run: |
+          echo "SOURCE_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          echo branch name: ${GITHUB_REF#refs/heads/}
+        
         
       - name: Update changelog and bump version
         id: update_changelog
@@ -25,8 +28,11 @@ jobs:
           CHANGELOG=$(git log -1 --pretty=format:'%s')
           VERSION="## <cy>$SOURCE_BRANCH</c>"
           echo -e "\n$VERSION\n$CHANGELOG\n" >> changelog.md
+          echo version: $VERSION
+          echo changelog: $CHANGELOG
 
           jq --arg new_version "$SOURCE_BRANCH" '.version = $new_version' mod.json > tmp.json && mv tmp.json mod.json
+          
   commit:
     name: Commit changes
     runs-on: ubuntu-latest
@@ -34,14 +40,14 @@ jobs:
     steps:
       - name: Stage and commit changes
         run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
           git add mod.json changelog.md  # Include any other modified files here
           git commit -m "Update version and changelog for release ${{ env.SOURCE_BRANCH }}" || echo "No changes to commit!?"
           
       - name: Push changes to repository
         run: |
-          git push origin main  # Adjust the branch name if necessary
+          git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
@@ -101,11 +107,11 @@ jobs:
     steps:
       - name: Create GitHub release
         id: create_release
-        uses: softprops/action-gh-release@v2  # Use version 2 of the release action
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.SOURCE_BRANCH }}  # Use the branch name as the tag
-          release_name: "Release ${{ env.SOURCE_BRANCH }}"  # Release name
-          body: ${{ steps.update-changelog.outputs.CHANGELOG }}  # Changelog or release description
+          tag_name: ${{ env.SOURCE_BRANCH }}
+          release_name: "Release ${{ env.SOURCE_BRANCH }}"
+          body: ${{ steps.update-changelog.outputs.CHANGELOG }}
           draft: false
           prerelease: false
         env:
