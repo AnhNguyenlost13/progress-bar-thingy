@@ -14,3 +14,10 @@ Text changes (very small)
 
 ## <cy>v1.2.2</c>
 - major code cleanup (thanks eric)
+## <cy>v1.2.5</c>
+
+- added a
+- added b
+
+Signed-off-by: Nya Meow <nyameowmeow@icloud.com>
+
