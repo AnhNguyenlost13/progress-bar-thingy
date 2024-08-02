@@ -25,7 +25,7 @@ jobs:
       - name: Update changelog and bump version
         id: update_changelog
         run: |
-          COMMIT_BODY=$(git log -1 --pretty=%B | sed '1d')
+          CHANGELOG=$(git log -1 --pretty=%B | sed '1d;$d')
           VERSION="## <cy>$SOURCE_BRANCH</c>"
           echo -e "$VERSION\n$CHANGELOG\n" >> changelog.md
           echo version: $VERSION
@@ -104,7 +104,7 @@ jobs:
           if [ -f "$MOD_FILE" ]; then
              echo success
           else
-             echo :(
+             echo "no mod file :("
              exit 1
           fi
       - name: Create GitHub release
@@ -132,6 +132,7 @@ jobs:
               --data-binary @"$MOD_FILE"
           else
             echo "wtf where's the geode file lol"
+            exit 1
           fi
       - name: Delete mod file
         uses: geekyeggo/delete-artifact@v5
