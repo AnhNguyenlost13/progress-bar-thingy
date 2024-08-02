@@ -14,11 +14,3 @@ Text changes (very small)
 
 ## <cy>1.2.2</c>
 - major code cleanup (thanks eric)
-
-## <cy>Build v1.2.5</c>
-Build v1.2.5
-
-## <cy>v1.2.5</c>
-
-Signed-off-by: AnhNguyenlost13 <94160753+AnhNguyenlost13@users.noreply.github.com>
-
