@@ -15,6 +15,3 @@ Text changes (very small)
 ## <cy>v1.2.2</c>
 - major code cleanup (thanks eric)
 
-## <cy>v1.2.5</c>
-
-
