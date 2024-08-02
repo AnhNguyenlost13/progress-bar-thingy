@@ -119,8 +119,8 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ MOD_VER }}
-          name: "Release v${{ MOD_VER }}"
+          tag_name: v${{ env.MOD_VER }}
+          name: "Release v${{ env.MOD_VER }}"
           body: "This is an automated release."
           draft: false
           prerelease: false
