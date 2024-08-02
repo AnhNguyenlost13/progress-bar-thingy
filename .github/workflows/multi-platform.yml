@@ -116,14 +116,14 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.SOURCE_BRANCH }}
-          name: "Release ${{ env.SOURCE_BRANCH }}"
-          body: ${{ env.CHANGELOG }}
+          tag_name: $SOURCE_BRANCH
+          name: "Release $SOURCE_BRANCH"
+          body: $CHANGELOG
           draft: false
           prerelease: false
           generate_release_notes: true
           make_latest: true
-          files: ${{ env.MOD_FILE }}
+          files: $MOD_FILE
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Delete mod file
