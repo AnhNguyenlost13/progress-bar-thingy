@@ -1,14 +1,15 @@
-name: Build Geode Mod
+name: Build Geode Mod (Plus)
 
 on:
-  workflow_dispatch:
-  push:
+  pull_request:
     branches:
-      - "**"
+      - main 
+      # don't fucking run it if i'm doing a casual commit
 
-jobs:
+jobs:    
   build:
-    if: contains(github.event.head_commit.message, '[build skip]') == false
+    # if: contains(github.event.head_commit.message, '[build skip]') == false
+    # doubt i need that lol
     strategy:
       fail-fast: false
       matrix:
@@ -31,8 +32,28 @@ jobs:
     runs-on: ${{ matrix.config.os }}
 
     steps:
-      - uses: actions/checkout@v4
+    
+      - name: Checkout
+        uses: actions/checkout@v4
 
+      - name: Get branch name
+        id: get_branch_name
+        run: echo "SOURCE_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        
+      - name: Automatic changelog update
+        id: update_changelog
+        run: |
+          # Get the commit message using the last commit details
+          CHANGELOG=$(git log -1 --pretty=format:'%s')
+          VERSION="## <cy>$SOURCE_BRANCH</c>"
+          echo -e "\n$VERSION\n$CHANGELOG\n" >> changelog.md
+          
+      - name: Bump mod version
+        run: |
+          # Use the branch name from the environment variable directly (e.g., 'v1.2.4')
+          NEW_VERSION="$SOURCE_BRANCH"  # This would be 'v1.2.4' if on that branch
+          jq --arg new_version "$NEW_VERSION" '.version = $new_version' mod.json > tmp.json && mv tmp.json mod.json
+          
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
         with:
@@ -40,6 +61,7 @@ jobs:
           bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
+        
 
   package:
     name: Package builds
@@ -50,7 +72,43 @@ jobs:
       - uses: geode-sdk/build-geode-mod/combine@main
         id: build
 
-      - uses: actions/upload-artifact@v4
+    # - uses: actions/upload-artifact@v4
+    #   with:
+    #     name: Build Output
+    #     path: ${{ steps.build.outputs.build-output }}
+      - name: Unpack build (real)
+        run: |
+          unzip "${{ steps.build.outputs.build-output }}"
+          
+  release:
+    name: Release mod
+    needs: ['package']
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub release
+        id: create_release
+        uses: softprops/action-gh-release@v2  # Use version 2 of the release action
         with:
-          name: Build Output
-          path: ${{ steps.build.outputs.build-output }}
+          tag_name: ${{ env.SOURCE_BRANCH }}  # Use the branch name as the tag
+          release_name: "Release ${{ env.SOURCE_BRANCH }}"  # Release name
+          body: ${{ steps.update-changelog.outputs.CHANGELOG }}  # Changelog or release description
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload .geode file to release
+        run: |
+          GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          RELEASE_ID="${{ steps.create_release.outputs.id }}"
+          MOD_FILE=$(find . -name '*.geode' -print -quit)
+          if [ -f "$MOD_FILE" ]; then
+            echo "Uploading $MOD_FILE to release..."
+            curl -s -X POST "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename "$MOD_FILE")" \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary @"$MOD_FILE"
+          else
+            echo "wtf where's the geode file lol"
+          fi
+        
