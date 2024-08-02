@@ -9,7 +9,7 @@ on:
 
 jobs:
   magic-touches:
-    if: startsWith(github.event.head_commit.message, 'Build v')
+    if: startsWith(github.event.head_commit.message, 'v')
     name: Apply magic touches
     runs-on: ubuntu-latest
     steps:
@@ -25,7 +25,7 @@ jobs:
       - name: Update changelog and bump version
         id: update_changelog
         run: |
-          CHANGELOG=$(git log -1 --pretty=format:'%s')
+          CHANGELOG=$(git log -1 --pretty=%B | sed '1d')
           VERSION="## <cy>$SOURCE_BRANCH</c>"
           echo -e "$VERSION\n$CHANGELOG\n" >> changelog.md
           echo version: $VERSION
