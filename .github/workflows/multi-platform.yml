@@ -100,25 +100,30 @@ jobs:
           cd "Build Output"
       - name: Check for mod existence (failsafe)
         run: |
-          MOD_FILE=$(find . -name '*.geode' -print -quit)
+          MOD_FILE=$(find . -name '*.geode' -print -quit) >> $GITHUB_ENV
           if [ -f "$MOD_FILE" ]; then
              echo success
           else
              echo "no mod file :("
              exit 1
           fi
+      - name: Workarounds
+        run: |
+          echo "SOURCE_BRANCH=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
+          
+          
       - name: Create GitHub release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: $SOURCE_BRANCH
+          tag_name: ${{ env.SOURCE_BRANCH }}
           name: "Release ${{ env.SOURCE_BRANCH }}"
-          body: $CHANGELOG
+          body: ${{ env.CHANGELOG }}
           draft: false
           prerelease: false
           generate_release_notes: true
           make_latest: true
-          files: $MOD_FILE
+          files: ${{ env.MOD_FILE }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Delete mod file
