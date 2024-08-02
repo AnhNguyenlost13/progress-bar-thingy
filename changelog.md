@@ -24,3 +24,9 @@ test:
 - test
 - test2
 
+## <cy>v1.2.5</c>
+
+changes:
+- change 1
+- change 2
+
