@@ -112,20 +112,22 @@ jobs:
              echo "no mod file :("
              exit 1
           fi
+          unzip $MOD_FILE
+          MOD_VER=$(jq -r '.version' mod.json) >> $GITHUB_ENV
           
       - name: Create GitHub release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.magic-touches.outputs.mod_version }}
-          name: "Release ${{ needs.magic-touches.outputs.mod_version }}"
+          tag_name: v$MOD_VER
+          name: "Release v$MOD_VER"
           body: "This is an automated release."
           draft: false
           prerelease: false
           generate_release_notes: true
           make_latest: true
           files: |
-            ${{ env.MOD_FILE }}
+            $MOD_FILE
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Delete mod file
