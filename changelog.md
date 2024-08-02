@@ -19,3 +19,6 @@ Text changes (very small)
 
 Downscaled mod icon (it was too sharp), thanks Alphalaneous!
 
+## <cy>v1.2.5</c>
+
+
