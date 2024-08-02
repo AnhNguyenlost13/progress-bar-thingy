@@ -12,8 +12,8 @@ jobs:
     if: startsWith(github.event.head_commit.message, 'v')
     name: Apply magic touches
     runs-on: ubuntu-latest
-    outputs:
-      mod_version: ${{ steps.get_version_input.outputs.value }}
+  # outputs:
+  #   mod_version: ${{ steps.get_version_input.outputs.value }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
