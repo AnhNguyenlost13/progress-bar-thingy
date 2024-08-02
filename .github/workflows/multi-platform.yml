@@ -20,14 +20,19 @@ jobs:
         id: get_branch_name
         run: |
           echo "SOURCE_BRANCH=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
+          echo "::set-output name=version::$SOURCE_BRANCH"
         
-        
+      - name: Set changelog
+        id: set_changelog
+        run: |
+          CHANGELOG=$(git log -1 --pretty=%B | sed '1d;$d') >> $GITHUB_ENV
+          echo "::set-output name=changelog::$CHANGELOG"
+          
       - name: Update changelog and bump version
         id: update_changelog
         run: |
-          CHANGELOG=$(git log -1 --pretty=%B | sed '1d;$d') >> $GITHUB_ENV
-          VERSION="## <cy>$SOURCE_BRANCH</c>"
-          echo -e "$VERSION\n$CHANGELOG\n" >> changelog.md
+          FORMATTED_VERSION="## <cy>$SOURCE_BRANCH</c>"
+          echo -e "$FORMATTED_VERSION\n$CHANGELOG\n" >> changelog.md
           echo version: $VERSION
           echo changelog: $CHANGELOG
 
@@ -83,7 +88,7 @@ jobs:
   package:
     name: Package and release mod
     runs-on: ubuntu-latest
-    needs: ['build']
+    needs: ['build', 'magic-touches']
 
     steps:
       - uses: geode-sdk/build-geode-mod/combine@main
@@ -101,6 +106,7 @@ jobs:
       - name: Check for mod existence (failsafe)
         run: |
           MOD_FILE=$(find . -name '*.geode' -print -quit) >> $GITHUB_ENV
+          echo mod file: $MOD_FILE
           if [ -f "$MOD_FILE" ]; then
              echo success
           else
@@ -116,14 +122,14 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: $SOURCE_BRANCH
-          name: "Release $SOURCE_BRANCH"
-          body: $CHANGELOG
+          tag_name: ${{ needs.magic-touches.outputs.version }}
+          name: "Release ${{ needs.magic-touches.outputs.version }}"
+          body: ${{ needs.magic-touches.outputs.changelog }}
           draft: false
           prerelease: false
           generate_release_notes: true
           make_latest: true
-          files: $MOD_FILE
+          files: ${{ env.MOD_FILE }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Delete mod file
