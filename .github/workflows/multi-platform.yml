@@ -113,13 +113,16 @@ jobs:
              echo "no mod file :("
              exit 1
           fi
+      - name: Process Variables
+        run: |
+          MOD_VER=$(echo ${{ github.event.head_commit.message }} | sed -n '1p') >> $GITHUB_ENV
           
       - name: Create GitHub release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.head_commit.message }}
-          name: "Release ${{ github.event.head_commit.message }}"
+          tag_name: ${{ MOD_VER }}
+          name: "Release ${{ MOD_VER }}"
           body: "This is an automated release."
           draft: false
           prerelease: false
