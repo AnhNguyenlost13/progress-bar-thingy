@@ -29,6 +29,8 @@ jobs:
         id: set_changelog
         run: |
           CHANGELOG=$(git log -1 --pretty=%B | sed '1d;$d') >> $GITHUB_ENV
+          # sanitize new lines jic
+          CHANGELOG=${CHANGELOG//$'\n'/ }
           echo "value=$CHANGELOG" >> $GITHUB_OUTPUT
           
       - name: Update changelog and bump version
