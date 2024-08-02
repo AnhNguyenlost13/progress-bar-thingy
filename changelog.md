@@ -26,3 +26,6 @@ Downscaled mod icon (it was too sharp), thanks Alphalaneous!
 
 hsdjfs
 
+## <cy>v1.2.5</c>
+
+
