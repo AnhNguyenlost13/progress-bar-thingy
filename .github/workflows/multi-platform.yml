@@ -32,7 +32,7 @@ jobs:
           echo version: $VERSION
           echo changelog: $CHANGELOG
 
-          jq --arg new_version "$SOURCE_BRANCH" '.version = $new_version' mod.json > tmp.json && mv tmp.json mod.json
+          jq --arg new_version "${SOURCE_BRANCH#v}" '.version = $new_version' mod.json > tmp.json && mv tmp.json mod.json
           
       - name: Stage and commit changes
         run: |
