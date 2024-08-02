@@ -1,15 +1,53 @@
 name: Build Geode Mod (Plus)
 
 on:
-  pull_request:
+  push:
     branches:
       - main 
       # don't fucking run it if i'm doing a casual commit
 
-jobs:    
+jobs:
+  magic-touches:
+    name: Apply magic touches
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get branch name
+        id: get_branch_name
+        run: echo "SOURCE_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        
+      - name: Update changelog and bump version
+        id: update_changelog
+        run: |
+          CHANGELOG=$(git log -1 --pretty=format:'%s')
+          VERSION="## <cy>$SOURCE_BRANCH</c>"
+          echo -e "\n$VERSION\n$CHANGELOG\n" >> changelog.md
+
+          jq --arg new_version "$SOURCE_BRANCH" '.version = $new_version' mod.json > tmp.json && mv tmp.json mod.json
+  commit:
+    name: Commit changes
+    runs-on: ubuntu-latest
+    needs: ['magic-touches']
+    steps:
+      - name: Stage and commit changes
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add mod.json changelog.md  # Include any other modified files here
+          git commit -m "Update version and changelog for release ${{ env.SOURCE_BRANCH }}" || echo "No changes to commit!?"
+          
+      - name: Push changes to repository
+        run: |
+          git push origin main  # Adjust the branch name if necessary
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
   build:
     # if: contains(github.event.head_commit.message, '[build skip]') == false
     # doubt i need that lol
+    needs: ['commit']
     strategy:
       fail-fast: false
       matrix:
@@ -32,36 +70,6 @@ jobs:
     runs-on: ${{ matrix.config.os }}
 
     steps:
-    
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Get branch name
-        id: get_branch_name
-        run: echo "SOURCE_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-        
-      - name: Update changelog and bump version
-        id: update_changelog
-        run: |
-          if [[ "$matrix.config.os" == "windows-latest" ]]; then
-            cmd
-            SET "CHANGELOG=$(git log -1 --pretty=format:%s)" && set "VERSION_FORMATTED=## <cy>$SOURCE_BRANCH</c>"
-            echo. >> changelog.md
-            echo %VERSION_FORMATTED% >> changelog.md
-            echo %CHANGELOG% >> changelog.md
-            echo. >> changelog.md
-          else
-            CHANGELOG=$(git log -1 --pretty=format:'%s')
-            VERSION="## <cy>$SOURCE_BRANCH</c>"
-            echo -e "\n$VERSION\n$CHANGELOG\n" >> changelog.md
-          fi
-
-          if [[ "$matrix.config.os" == "windows-latest" ]]; then
-            powershell -Command "(Get-Content mod.json) -replace '\"version\": \"[^\"]*\"', '\"version\": \"$SOURCE_BRANCH\"' | Set-Content mod.json"
-          else
-            jq --arg new_version "$SOURCE_BRANCH" '.version = $new_version' mod.json > tmp.json && mv tmp.json mod.json
-          fi
-          
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
         with:
