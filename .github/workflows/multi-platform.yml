@@ -12,6 +12,9 @@ jobs:
     if: startsWith(github.event.head_commit.message, 'v')
     name: Apply magic touches
     runs-on: ubuntu-latest
+    outputs:
+      mod_version: ${{ steps.get_branch_name.outputs.value }}
+      changelog: ${{ steps.set_changelog.outputs.value }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,20 +23,20 @@ jobs:
         id: get_branch_name
         run: |
           echo "SOURCE_BRANCH=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
-          echo "version=$SOURCE_BRANCH" >> $GITHUB_OUTPUT
+          echo "value=$SOURCE_BRANCH" >> $GITHUB_OUTPUT
         
       - name: Set changelog
         id: set_changelog
         run: |
           CHANGELOG=$(git log -1 --pretty=%B | sed '1d;$d') >> $GITHUB_ENV
-          echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "value=$CHANGELOG" >> $GITHUB_OUTPUT
           
       - name: Update changelog and bump version
         id: update_changelog
         run: |
           FORMATTED_VERSION="## <cy>$SOURCE_BRANCH</c>"
           echo -e "$FORMATTED_VERSION\n$CHANGELOG\n" >> changelog.md
-          echo version: $VERSION
+          echo version: $SOURCE_BRANCH
           echo changelog: $CHANGELOG
 
           jq --arg new_version "${SOURCE_BRANCH#v}" '.version = $new_version' mod.json > tmp.json && mv tmp.json mod.json
@@ -122,14 +125,16 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.magic-touches.outputs.version }}
-          name: "Release ${{ needs.magic-touches.outputs.version }}"
-          body: ${{ needs.magic-touches.outputs.changelog }} ${{ env.MOD_FILE }}
+          tag_name: ${{ needs.magic-touch.outputs.mod_version }}
+          name: "Release ${{ needs.magic-touches.outputs.mod_version }}"
+          body: ${{ needs.magic-touches.outputs.changelog }}
           draft: false
           prerelease: false
           generate_release_notes: true
           make_latest: true
-          files: ${{ env.MOD_FILE }}
+          files: |
+            ${{ env.MOD_FILE }}
+            $MOD_FILE
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Delete mod file
