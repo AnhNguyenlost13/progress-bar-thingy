@@ -132,7 +132,7 @@ jobs:
           curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
             -H "Content-Type: application/octet-stream" \
             --data-binary @"$file" \
-            "$upload_url?name=$(basename "$MOD_FILE")"
+            "$upload_url?name=$(basename "$(find . -name '*.geode' -print -quit)")"
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             
