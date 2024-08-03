@@ -18,3 +18,7 @@ Text changes (very small)
 
 - Downscaled mod icon (Alphalaneous)
 
+## <cy>v1.2.5</c>
+
+dsjkfsdf
+
