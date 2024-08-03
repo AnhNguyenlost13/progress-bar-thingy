@@ -120,7 +120,7 @@ jobs:
           echo publishing mod ver: ${MOD_VER}
           REPO=${{ github.repository }}
           RELEASE_NAME="Release ${MOD_VER}"
-          BODY="This is an automated release. For the changelogs, see the `changelog.md` file."
+          BODY="This is an automated release. For the changelogs, see the \`changelog.md\` file."
 
           response=$(curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
