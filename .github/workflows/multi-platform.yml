@@ -116,19 +116,30 @@ jobs:
       - name: Process Variables
         id: vars
         run: |
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           MOD_VER=$(echo "${{ github.event.head_commit.message }}" | sed -n '1p') >> $GITHUB_ENV
           echo publishing mod ver: ${MOD_VER}
           REPO=${{ github.repository }}
           RELEASE_NAME="Release ${MOD_VER}"
           BODY="This is an automated release. For the changelogs, see the \`changelog.md\` file."
-
+          
+          echo Summary:
+          echo - Mod version: $MOD_VER
+          echo - Target repository: $REPO
+          echo - Release name: $RELEASE_NAME
+          echo - Release body: $BODY
+          
           response=$(curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             -d "{\"tag_name\": \"$MOD_VER\", \"name\": \"$RELEASE_NAME\", \"body\": \"$BODY\", \"draft\": false, \"prerelease\": false}" \
              https://api.github.com/repos/$REPO/releases)
 
+          echo Response: $response
+
           upload_url=$(echo $response | jq -r '.upload_url' | sed -e "s/{?name,label}//")
 
+          echo Upload URL: $upload_url
+          
           for file in "Build Output"/*.geode; do
             curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
               -H "Content-Type: application/octet-stream" \
