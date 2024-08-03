@@ -117,24 +117,25 @@ jobs:
         id: vars
         run: |
           MOD_VER=$(echo "${{ github.event.head_commit.message }}" | sed -n '1p') >> $GITHUB_ENV
-          echo ${MOD_VER}
-        
-      - name: Create GitHub release
-        id: create_release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.event.head_commit.message }}
-          name: "Release ${{ github.event.head_commit.message }}"
-          body: "This is an automated release."
-          draft: false
-          prerelease: false
-          generate_release_notes: true
-          make_latest: true
-          files: |
-            *.geode
-            Build Output/*.geode
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          echo publishing mod ver: ${MOD_VER}
+          REPO=${{ github.repository }}
+          RELEASE_NAME="Release ${MOD_VER}"
+          BODY="This is an automated release. For the changelogs, see the `changelog.md` file."
+
+          response=$(curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d "{\"tag_name\": \"$MOD_VER\", \"name\": \"$RELEASE_NAME\", \"body\": \"$BODY\", \"draft\": false, \"prerelease\": false}" \
+             https://api.github.com/repos/$REPO/releases)
+
+          upload_url=$(echo $response | jq -r '.upload_url' | sed -e "s/{?name,label}//")
+
+          curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @"$file" \
+            "$upload_url?name=$(basename "$MOD_FILE")"
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            
       - name: Delete mod file
         uses: geekyeggo/delete-artifact@v5
         with:
