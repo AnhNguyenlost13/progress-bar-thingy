@@ -129,10 +129,13 @@ jobs:
 
           upload_url=$(echo $response | jq -r '.upload_url' | sed -e "s/{?name,label}//")
 
-          curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Content-Type: application/octet-stream" \
-            --data-binary @"$file" \
-            "$upload_url?name=$(basename "$(find . -name '*.geode' -print -quit)")"
+          for file in "Build Output"/*.geode; do
+            curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary @"$file" \
+              "$upload_url?name=$(basename "$file")"
+          done
+          
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             
