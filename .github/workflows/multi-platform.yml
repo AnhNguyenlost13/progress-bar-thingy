@@ -106,6 +106,10 @@ jobs:
           os: ubuntu-latest
           target: Android64
 
+        - name: iOS (real)
+          os: macos-latest
+          target: iOS
+
     name: Build (${{ matrix.config.name }})
     runs-on: ${{ matrix.config.os }}
 
