@@ -7,7 +7,7 @@
 Originally inspired by [Naxrin's ProgressBarColor mod](https://github.com/Naxrin/Progress-Bar-Color). I originally intended to write a simple one to just "wash out" the progress bar color to... you guessed it, but decided it would be better to customize it as well!
 
 ## Build instructions
-For more info, see [the Geode docs](https://docs.geode-sdk.org/getting-started/create-mod#build)!
+For more info, read  [the Geode docs](https://docs.geode-sdk.org/getting-started/create-mod#build).
 ```sh
 # Clone the repository first!
 git clone https://github.com/AnhNguyenlost13/progress-bar-thingy.git
