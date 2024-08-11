@@ -1,4 +1,7 @@
 
+## <cy>v1.2.7</c> (2024-08-11)
+don't explode
+
 ## <cy>v1.2.6</c> (2024-08-11)
 - added iOS support
 ## <cy>v1.0.0</c>
