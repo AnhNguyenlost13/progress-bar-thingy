@@ -7,32 +7,69 @@ on:
       # To freely commit on other branches without publishing the mod
 
 jobs:
-  magic-touches:
-    # must strictly conform to the "v4.2.0" format, else everything will break
-    if: startsWith(github.event.head_commit.message, 'v')
-    name: Modify mod files
+  initial-checks:
+    name: Initial checks
     runs-on: ubuntu-latest
+    # why lol
+    if: startsWith(github.event.head_commit.message, 'v')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Get version
-        id: get_version_input
-        run: |
         
-          echo "VERSION_INPUT=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
-          echo "value=$VERSION_INPUT" >> $GITHUB_OUTPUT
-          echo version returned "$VERSION_INPUT".
+      - name: Fetch all tags
+        run: git fetch --tags  # why
+        
+      - name: Initial version check
+        run: |
+          echo "VERSION_INPUT=$(echo "${{ github.event.head_commit.message }}" | sed -n '1p')" >> $GITHUB_ENV
+          VERSION_INPUT="$(echo "${{ github.event.head_commit.message }}" | sed -n '1p')"
+          if [[ $(git log -1 --pretty=format:'%s') =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Version $VERSION_INPUT is valid."
+          else
+            echo "Version $VERSION_INPUT doesn't seem to be invalid. Goodbye!"
+            exit 1
+          fi
+
+      - name: Secondary version check
+        run: |
+          if "echo $(git tag | sed ':a;N;$!ba;s/\n/\\n/g')" | grep -q "$VERSION_INPUT"; then
+            echo "The version you're trying to release ($VERSION_INPUT) already have existed! Make sure you know what you're doing!"
+            exit 1
+          else
+            echo "All good! :3"
+          fi
+          
+  magic-touches:
+    needs: [initial-checks]
+    name: Modify mod files
+    runs-on: ubuntu-latest
+    steps:
+          
+      - name: Checkout
+        uses: actions/checkout@v4
           
       - name: Update changelog and bump version
         id: update_changelog
         run: |
-          CHANGELOG=$(git log -1 --pretty=%B | sed '1d;$d') >> $GITHUB_ENV
-          FORMATTED_VERSION="## <cy>$VERSION_INPUT</c>"
-          echo -e "\n$FORMATTED_VERSION$CHANGELOG" >> changelog.md
-          echo version: $VERSION_INPUT
-          echo Changelog:
-          echo $CHANGELOG
+          VERSION_INPUT="$(echo "${{ github.event.head_commit.message }}" | sed -n '1p')"
+          echo "VERSION_INPUT=$(echo "${{ github.event.head_commit.message }}" | sed -n '1p')" >> $GITHUB_ENV
+          RAW_CHANGELOG=$(echo "${{ github.event.head_commit.message }}" | sed ':a;N;$!ba;s/\n/\\n/g')
+          echo "$RAW_CHANGELOG"
+          CHANGELOG=$(echo -e "$RAW_CHANGELOG" | sed '1d;2d')
+          if [ -z "$CHANGELOG" ]; then
+            echo "Changelog not provided. Skipping."
+          else
+            FORMATTED_DATE=$(date -d "${{ github.event.head_commit.timestamp }}" '+%Y-%m-%d') 
+            FORMATTED_VERSION="## <cy>$VERSION_INPUT</c> ($FORMATTED_DATE)"
+            echo -e "\n$FORMATTED_VERSION\n$CHANGELOG" > tmp.md
+            cat ./changelog.md >> tmp.md
+            mv tmp.md changelog.md
+            echo Successfully appended:
+            echo - Version: $VERSION_INPUT
+            echo - Changelog: "|"
+            echo $CHANGELOG
+            echo ---
+          fi
           jq --arg new_version "${VERSION_INPUT#v}" '.version = $new_version' mod.json > tmp.json && mv tmp.json mod.json
           
       - name: Stage and commit changes
@@ -52,7 +89,7 @@ jobs:
   build:
     needs: ['magic-touches']
     strategy:
-      fail-fast: true  # for my use case (I expect my mod to work on all platforms)
+      fail-fast: false # nevermind
       matrix:
         config:
         - name: Windows
@@ -75,6 +112,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Catch up
+        # see https://github.com/actions/checkout/issues/439
+        run: git pull origin main --no-rebase
 
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
@@ -103,40 +146,61 @@ jobs:
       - uses: actions/download-artifact@v4
         name: Download artifact
       
-      - name: Check for mod file
+      - name: Misc. actions
         run: |
-          cd "Build Output/"
           MOD_FILE=$(find . -name '*.geode' -print -quit)
           echo mod file path: $MOD_FILE
-          if [ -f "$MOD_FILE" ]; then
-             echo Mod file found. Proceeding
-          else
-             echo "No mod file! Something went wrong... :("
-             exit 1
+          MOD_JSON=$(find . -iname "mod.json" -print -quit)
+          echo mod.json file path: $MOD_JSON
+          if [ -f "$(find . -name '*.geode' -print -quit)" ]; then
+             echo Mod file found. Proceeding!
           fi
-
       - name: Prepare for release
-        id: vars
         run: |
+          RAW_CHANGELOG=$(echo "${{ github.event.head_commit.message }}" | sed '1d;2d')
+          echo raw changelog:
+          echo $RAW_CHANGELOG
+          echo ----
+          LATEST_CHANGELOG=$(echo "$RAW_CHANGELOG" | perl -pe 's/\n/<br>/g')
+          if -z ["$LATEST_CHANGELOG"]; then
+            echo Hmmm, apparently no changelog has been provided. Using an alternate body for that then!
+            BODY=$(echo "<strong>This is an automated release. For the full changelogs of current and past versions, please refer to the \`changelog.md\` file.</strong><br><br><em>No changelog provided.</em>")
+          else
+            echo latest changelog:
+            echo $LATEST_CHANGELOG
+            echo ----
+            BODY=$(echo "<strong>This is an automated release. For the full changelogs of current and past versions, please refer to the \`changelog.md\` file.</strong><h2>What's New:</h2>$LATEST_CHANGELOG" | sed ':a;N;$!ba;s/\n/<br>/g')
+          fi
+          
           GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           MOD_VER=$(echo "${{ github.event.head_commit.message }}" | sed -n '1p') >> $GITHUB_ENV
           echo publishing mod ver: ${MOD_VER}
           REPO=${{ github.repository }}
           RELEASE_NAME="Release ${MOD_VER}"
-          BODY="This is an automated release. For the changelogs, see the \`changelog.md\` file."
           
+          uwu=$(echo "${BODY//[$'\t\r\n']}")
           echo Summary:
           echo - Mod version: $MOD_VER
           echo - Target repository: $REPO
           echo - Release name: $RELEASE_NAME
-          echo - Release body: $BODY
+          echo - Release body:
+          echo $uwu
+          echo ------
           
           response=$(curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
-            -d "{\"tag_name\": \"$MOD_VER\", \"name\": \"$RELEASE_NAME\", \"body\": \"$BODY\", \"draft\": false, \"prerelease\": false}" \
+            -d "{\"tag_name\": \"$MOD_VER\", \"name\": \"$RELEASE_NAME\", \"body\": \"$uwu\", \"draft\": false, \"prerelease\": false}" \
              https://api.github.com/repos/$REPO/releases)
+          echo == RESPONSE ==
+          echo $response
 
           upload_url=$(echo $response | jq -r '.upload_url' | sed -e "s/{?name,label}//")
+          echo == UPLOAD URL ==
+          echo $upload_url
+
+          assets_url=$(echo $response | jq -r '.assets_url')
+          echo == ASSETS URL ==
+          echo $assets_url
           
           for file in "Build Output"/*.geode; do
             curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
@@ -144,9 +208,17 @@ jobs:
               --data-binary @"$file" \
               "$upload_url?name=$(basename "$file")"
           done
-          
+
+          download_url=$(curl -s -X GET "$assets_url" | jq -r '.[0].browser_download_url')
+          echo ""
+          echo == DOWNLOAD URL ==
+          echo $download_url
+
+          # geode index login --token $PERSONAL_ACCESS_TOKEN
+          # geode index mods update $download_url
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
             
       - name: Delete mod file
         uses: geekyeggo/delete-artifact@v5
