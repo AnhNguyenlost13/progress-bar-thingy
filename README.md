@@ -1,6 +1,6 @@
 <div align="center">
    <img src="/logo.png" alt="Logo" width="144" height="144" align="center"><br>
-   <a href="https://geode-sdk.org/mods/catgirldev.ingame-progress-bar-color"><img alt="Mod Downloads" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.geode-sdk.org%2Fv1%2Fmods%2Fcatgirldev.ingame-progress-bar-color&query=payload.download_count&logo=geode&logoColor=yellow" align="center"></a>
+   <a href="https://geode-sdk.org/mods/catgirldev.ingame-progress-bar-color"><img alt="Mod Downloads" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.geode-sdk.org%2Fv1%2Fmods%2Fcatgirldev.ingame-progress-bar-color&query=payload.download_count&logo=geode&logoColor=yellow&label=" align="center"></a>
 
 </div>
    <h1 align="center">In-Game Progress Bar Color Changer</h1>
