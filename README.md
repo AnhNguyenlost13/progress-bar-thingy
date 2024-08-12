@@ -3,7 +3,8 @@
    <a href="https://geode-sdk.org/mods/catgirldev.ingame-progress-bar-color"><img alt="Mod Downloads" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.geode-sdk.org%2Fv1%2Fmods%2Fcatgirldev.ingame-progress-bar-color&query=payload.download_count&logo=geode&logoColor=yellow&label=" align="center"></a>
 
 </div>
-   <h1 align="center">In-Game Progress Bar Color Changer</h1>
+<h1 align="center">In-Game Progress Bar Color Changer</h1>
+
 ## Why?
 Originally inspired by [Naxrin's ProgressBarColor mod](https://github.com/Naxrin/Progress-Bar-Color). I originally intended to write a simple one to just "wash out" the progress bar color to... you guessed it, but decided it would be better to customize it as well!
 
