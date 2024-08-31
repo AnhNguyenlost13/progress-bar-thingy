@@ -9,23 +9,31 @@
   "tags": ["customization", "enhancement"],
   "id": "catgirldev.ingame-progress-bar-color",
   "name": "Custom In-Game Progress Bar Color",
-  "version": "1.2.621",
+  "version": "1.4.0",
   "developer": "catgirldev",
   "description": "Lets you change your progress bar color in-game.",
   "settings": {
     "mode": {
       "name": "Working Mode (see info)",
-      "description": "<cj>What the numbers mean:</c>\n\n<cg>0: Vanilla Behavior</c> (uses your <cl>primary color</c>)\n<cy>1: Secondary Color</c>\n<co>2: Player Glow Color</c>\n<cp>3: Custom (set below!)</c>",
+      "description": "What the numbers mean:\n\n<cg>0: Vanilla Behavior</c> (uses your primary color)\n<cy>1: Secondary Color</c>\n<co>2: Player Glow Color</c>\n<cp>3: Custom (set below!)</c>\n<cl>4: Chroma</c>\n<cj>5: Pastel</c>\n<cr>The ability to change how fast chroma/pastel color updates will be added in the future.</c>",
       "type": "int",
       "default": 0,
       "min": 0,
-      "max": 3
+      "max": 5
     },
     "color": {
       "name": "Custom Color",
       "description": "Set the <cg>custom progress bar</c> color here. <cy>Working mode</c> must be set to <co>3</c>.",
       "type": "color",
       "default": "FFFFFF"
+    },
+    "speed": {
+      "name": "RGB Speed",
+      "description": "Set <cg>how fast</c> the color alternates. <cy>Working mode</c> must be set to <co>4 or 5</c>.\n<cr>Setting it to 0 won't crash the game.</c>",
+      "type": "float",
+      "default": 1,
+      "min": 0,
+      "max": 1
     }
   },
   "resources": {
