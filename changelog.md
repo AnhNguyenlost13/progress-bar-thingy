@@ -1,7 +1,3 @@
-
-## <cy>v1.4.0</c> (2024-08-31)
-Added RGB and Pastel modes
-
 ## <cy>v1.2.621</c> (2024-08-11)
 girlfriend or catgirl?
 
