@@ -56,7 +56,7 @@ jobs:
           echo "VERSION_INPUT=$(echo "${{ github.event.head_commit.message }}" | sed -n '1p')" >> $GITHUB_ENV
           RAW_CHANGELOG=$(echo "${{ github.event.head_commit.message }}" | sed ':a;N;$!ba;s/\n/\\n/g')
           echo "$RAW_CHANGELOG"
-          CHANGELOG=$(echo -e "$RAW_CHANGELOG" | sed '1d;2d')
+          CHANGELOG=$(echo -e "$RAW_CHANGELOG" | sed '1,2d; /^Signed-off-by:/d')
           if [ -z "$CHANGELOG" ]; then
             echo "Changelog not provided. Skipping."
           else
@@ -180,7 +180,7 @@ jobs:
           fi
       - name: Prepare for release
         run: |
-          RAW_CHANGELOG=$(echo "${{ github.event.head_commit.message }}" | sed '1d;2d')
+          RAW_CHANGELOG=$(echo "${{ github.event.head_commit.message }}" | sed '1,2d; /^Signed-off-by:/d')
           echo raw changelog:
           echo $RAW_CHANGELOG
           echo ----
