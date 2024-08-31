@@ -5,35 +5,7 @@
 class colorutil
 {
 	public:
-
-		static cocos2d::ccColor3B cc3x(int hexValue) {
-			if (hexValue <= 0xf)
-				return geode::prelude::ccColor3B{
-					static_cast<GLubyte>(hexValue * 17),
-					static_cast<GLubyte>(hexValue * 17),
-					static_cast<GLubyte>(hexValue * 17)};
-			if (hexValue <= 0xff)
-				return geode::prelude::ccColor3B{
-					static_cast<GLubyte>(hexValue),
-					static_cast<GLubyte>(hexValue),
-					static_cast<GLubyte>(hexValue)};
-			if (hexValue <= 0xfff)
-				return geode::prelude::ccColor3B{
-					static_cast<GLubyte>((hexValue >> 8 & 0xf) * 17),
-					static_cast<GLubyte>((hexValue >> 4 & 0xf) * 17),
-					static_cast<GLubyte>((hexValue >> 0 & 0xf) * 17)};
-			else
-				return geode::prelude::ccColor3B{
-					static_cast<GLubyte>(hexValue >> 16 & 0xff),
-					static_cast<GLubyte>(hexValue >> 8 & 0xff),
-					static_cast<GLubyte>(hexValue >> 0 & 0xff)};
-		}
-		
-
-		static inline int pastel = 0;
-
 		static inline float va = 0.0f;
-		static inline float totalSessionTime = 0.0f;
 
 		static void update(float dt)
 		{
