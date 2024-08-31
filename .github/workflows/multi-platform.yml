@@ -32,7 +32,8 @@ jobs:
 
       - name: Secondary version check
         run: |
-          if "echo $(git tag | sed ':a;N;$!ba;s/\n/\\n/g')" | grep -q "$VERSION_INPUT"; then
+          # help needed fixing
+          if "'echo $(git tag | sed ':a;N;$!ba;s/\n/\\n/g')'" | grep -q "$VERSION_INPUT"; then
             echo "The version you're trying to release ($VERSION_INPUT) already have existed! Make sure you know what you're doing!"
             exit 1
           else
@@ -117,7 +118,7 @@ jobs:
       
       - name: Catch up
         # see https://github.com/actions/checkout/issues/439
-        run: git pull origin main --no-rebase
+        run: git pull origin ${{ github.ref }} --no-rebase
 
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
@@ -126,14 +127,36 @@ jobs:
           bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
-        
+          
+  build-ios:
+    name: Build for iOS
+    runs-on: macos-latest
+    needs: magic-touches
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Catch up
+        # see https://github.com/actions/checkout/issues/439
+        run: git pull origin ${{ github.ref }} --no-rebase
+
+      - name: Build SPECIFICALLY for iOS which is just ridiculous
+        uses: geode-catgirls/build-geode-mod@main
+        with:
+          bindings: geode-catgirls/bindings
+          target: iOS
+          gh-pat: ${{ secrets.GH_PAT }}
+          # super secret
+          
   package:
     name: Package and release mod
     runs-on: ubuntu-latest
-    needs: ['build']
+    needs: ['build-ios']
 
     steps:
-      - uses: geode-sdk/build-geode-mod/combine@main
+      - uses: geode-catgirls/build-geode-mod/combine@main
         id: build
         name: Combine mods
 
@@ -218,7 +241,7 @@ jobs:
           # geode index mods update $download_url
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          INDEX_TOKEN: ${{ secrets.GEODE_INDEX_TOKEN }}
             
       - name: Delete mod file
         uses: geekyeggo/delete-artifact@v5
