@@ -1,3 +1,8 @@
+
+## <cy>v1.4.2</c> (2024-08-31)
+Added Chroma and Pastel modes (customizable speed!)
+
+Signed-off-by: Anh Nguyen <94160753+AnhNguyenlost13@users.noreply.github.com>
 ## <cy>v1.2.621</c> (2024-08-11)
 girlfriend or catgirl?
 
