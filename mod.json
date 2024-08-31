@@ -6,7 +6,10 @@
     "mac": "2.206",
     "ios": "2.206"
   },
-  "tags": ["customization", "enhancement"],
+  "tags": [
+    "customization",
+    "enhancement"
+  ],
   "id": "catgirldev.ingame-progress-bar-color",
   "name": "Custom In-Game Progress Bar Color",
   "version": "1.4.0",
