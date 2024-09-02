@@ -1,6 +1,4 @@
 
-## <cy>v1.4.3</c> (2024-08-31)
-Added Chroma and Pastel modes (customizable speed!)
 ## <cy>v1.2.621</c> (2024-08-11)
 girlfriend or catgirl?
 
