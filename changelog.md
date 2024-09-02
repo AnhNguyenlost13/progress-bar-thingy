@@ -1,4 +1,7 @@
 
+## <cy>v1.4.4</c> (2024-09-02)
+Not sure about you, but I sure do love looking at catgirls!
+
 ## <cy>v1.4.0</c> (2024-09-02)
 Added Chroma and Pastel modes. You can customize how fast the color changes in the mod settings.
 
