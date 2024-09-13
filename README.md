@@ -23,7 +23,7 @@ geode build
 <img src="/resources/misc/with.png">
 
 ## TODO
-- [ ] RGB progress bar
+- [x] RGB progress bar
 - [ ] Mode-dependent colors (differentiate between Practice and Normal modes)
 
 ## Attributions
