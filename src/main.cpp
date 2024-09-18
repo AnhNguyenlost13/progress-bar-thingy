@@ -1,8 +1,8 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
-#define updateProgressBar updateProgressbar // fuck this shit
+#define updateProgressBar updateProgressbar // sorry RobTop
 
-#include "util/color.hpp" // holy shit
+#include "util/color.hpp" // Never thought I would see this day.
 
 using namespace geode::prelude;
 
@@ -54,6 +54,11 @@ class $modify(PlayLayer) {
         // colorutil::update(CCDirector::get()->getDeltaTime());
         if (!m_level->isPlatformer() && m_progressFill) {
             m_progressFill->setColor(paint());
+        }
+        
+        float uwu = static_cast<float>(PlayLayer::getCurrentPercentInt());
+        if (uwu > (m_level->m_normalPercent)) {
+            // later
         }
     }
 };
