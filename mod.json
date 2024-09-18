@@ -37,6 +37,20 @@
       "default": 1,
       "min": 0,
       "max": 1
+    },
+    {
+    "change-on-new-best": {
+      "name": "Change on New Best",
+      "description": "Self-explanatory, enables the feature. Configure the color below.",
+      "type": "bool",
+      "default": false
+    },
+    {
+    "best-color": {
+      "name": "Color on New Best",
+      "description": "Set the <cg>color</c> of the progress bar when you achieve a <cy>new best</c>.",
+      "type": "color",
+      "default": "FFFF00"
     }
   },
   "resources": {
