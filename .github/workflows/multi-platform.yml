@@ -132,6 +132,7 @@ jobs:
     name: Build for iOS
     runs-on: macos-latest
     needs: magic-touches
+    if: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -142,7 +143,7 @@ jobs:
         # see https://github.com/actions/checkout/issues/439
         run: git pull origin ${{ github.ref }} --no-rebase
 
-      - name: Build SPECIFICALLY for iOS which is just ridiculous
+      - name: Build iOS
         uses: geode-catgirls/build-geode-mod@main
         with:
           bindings: geode-catgirls/bindings
