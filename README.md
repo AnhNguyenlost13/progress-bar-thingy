@@ -25,6 +25,7 @@ geode build
 ## TODO
 - [x] RGB progress bar
 - [ ] Mode-dependent colors (differentiate between Practice and Normal modes)
+- [ ] Change the color on new best
 
 ## Attributions
 * some code taken from Naxrin's ProgressBarColor mod (i'm terribly sorry!)
