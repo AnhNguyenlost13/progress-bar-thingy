@@ -45,7 +45,6 @@
       "type": "bool",
       "default": false
     },
-    {
     "best-color": {
       "name": "Color on New Best",
       "description": "Set the <cg>color</c> of the progress bar when you achieve a <cy>new best</c>.",
