@@ -6,6 +6,7 @@ on:
       - "v**"
     paths:
       - "src/**"
+      - "mod.json"
   pull_request:
     branches:
       - "v**"
