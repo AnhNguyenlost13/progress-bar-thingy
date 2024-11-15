@@ -3,12 +3,12 @@ name: Build Geode Mod
 on:
   push:
     branches:
-      - "**"
+      - "v**"
     paths:
       - "src/**"
   pull_request:
     branches:
-      - "main"
+      - "v**"
     paths:
       - "src/**"
       
