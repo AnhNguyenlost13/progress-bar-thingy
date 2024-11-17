@@ -1,5 +1,5 @@
 {
-  "geode": "4.0.0-alpha.1",
+  "geode": "4.0.0-beta.1",
   "gd": {
     "win": "2.2074",
     "android": "2.2074",
@@ -14,7 +14,7 @@
   "name": "Custom In-Game Progress Bar Color",
   "version": "1.4.4",
   "developer": "catgirldev",
-  "description": "Lets you change your progress bar color in-game.",
+  "description": "Change your in-game progress bar color!",
   "settings": {
     "mode": {
       "name": "Working Mode (see info)",
@@ -56,7 +56,6 @@
       "./resources/misc/with*.png"
     ]
   },
-  "repository": "https://github.com/AnhNguyenlost13/progress-bar-thingy",
   "links": {
     "source": "https://github.com/AnhNguyenlost13/progress-bar-thingy",
     "community": "https://discord.gg/uFj8SSUhRa"
