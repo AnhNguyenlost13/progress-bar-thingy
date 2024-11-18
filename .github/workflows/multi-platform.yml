@@ -132,7 +132,7 @@ jobs:
     name: Build for iOS
     runs-on: macos-latest
     needs: magic-touches
-    if: false
+    if: ${{ false }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
