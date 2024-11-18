@@ -46,6 +46,7 @@ class $modify(PlayLayer) {
             m_progressFill->setColor(paint());
         }
     }
+    
     void updateProgressBar() {
         PlayLayer::updateProgressBar();
         // Please kill me.
@@ -61,4 +62,11 @@ class $modify(PlayLayer) {
             // later
         }
     }
+
+    void togglePracticeMode(bool practiceMode) {
+        if (practiceMode == true) {
+        // hi
+        } else {
+        // meow
+        }
 };
