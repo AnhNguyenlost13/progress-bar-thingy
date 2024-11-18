@@ -64,7 +64,7 @@ class $modify(PlayLayer) {
     }
 
     void togglePracticeMode(bool practiceMode) {
-        PlayLayer::togglePracticeMode(bool practiceMode);
+        PlayLayer::togglePracticeMode(practiceMode);
         if (practiceMode == true) {
         // hi
         } else {
