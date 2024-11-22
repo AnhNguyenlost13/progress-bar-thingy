@@ -1,5 +1,5 @@
 {
-  "geode": "4.0.0-beta.1",
+  "geode": "4.0.1",
   "gd": {
     "win": "2.2074",
     "android": "2.2074",
@@ -16,39 +16,153 @@
   "developer": "catgirldev",
   "description": "Change your in-game progress bar color!",
   "settings": {
-    "mode": {
-      "name": "Working Mode (see info)",
-      "description": "What the numbers mean:\n\n<cg>0: Vanilla Behavior</c> (uses your primary color)\n<cy>1: Secondary Color</c>\n<co>2: Player Glow Color</c>\n<cp>3: Custom (set below!)</c>\n<cl>4: Chroma</c>\n<cj>5: Pastel</c>\n<cr>The ability to change how fast chroma/pastel color updates will be added in the future.</c>",
-      "type": "int",
-      "default": 0,
-      "min": 0,
-      "max": 5
-    },
-    "color": {
-      "name": "Custom Color",
-      "description": "Set the <cg>custom progress bar</c> color here. <cy>Working mode</c> must be set to <co>3</c>.",
-      "type": "color",
-      "default": "FFFFFF"
-    },
-    "speed": {
-      "name": "RGB Speed",
-      "description": "Set <cg>how fast</c> the color alternates. <cy>Working mode</c> must be set to <co>4 or 5</c>.\n<cr>Setting it to 0 won't crash the game.</c>",
-      "type": "float",
-      "default": 1,
-      "min": 0,
-      "max": 1
-    },
-    "change-on-new-best": {
-      "name": "Change on New Best",
-      "description": "Self-explanatory, enables the feature. Configure the color below.",
+    "practice-override": {
       "type": "bool",
+      "name": "Override Practice",
+      "description": "Displays the new best color instead when you get a new best in practice mode.",
       "default": false
     },
-    "best-color": {
-      "name": "Color on New Best",
-      "description": "Set the <cg>color</c> of the progress bar when you achieve a <cy>new best</c>.",
-      "type": "color",
-      "default": "FFFF00"
+    "normal-mode-title": {
+      "type": "title",
+      "name": "Normal Mode",
+      "description": "These settings affect the progress bar color in normal mode."
+    },
+    "normal-working-mode": {
+      "type": "string",
+      "name": "Color",
+      "one-of": [
+        "Player Col 1",
+        "Player Col 2",
+        "Player Glow",
+        "Chroma",
+        "Pastel",
+        "Custom"
+      ],
+      "description": "You can configure the chroma, pastel and custom colors below. Support for gradient mode will be added in the future.",
+      "default": "Player Col 1"
+    },
+    "normal-custom-color": {
+      "type": "rgb",
+      "name": "Custom Color",
+      "default": "#FFB2FF"
+    },
+    "normal-rgb-speed": {
+      "type": "float",
+      "name": "Update Speed",
+      "description": "How fast the color updates. The higher the value the faster the speed.",
+      "default": 0.123456,
+      "min": 0,
+      "max": 1,
+      "controls": { 
+        "arrows": false,
+        "big-arrows": false,
+        "slider": true,
+        "input": false
+      }
+    },
+    "practice-mode-title": {
+      "type": "title",
+      "name": "Practice Mode",
+      "description": "These settings affect the progress bar color in practice mode."
+    },
+    "practice-mode-toggle": {
+      "type":"bool",
+      "name": "Enabled",
+      "description": "Turn off to inherit colors from normal mode.",
+      "default": true
+    },
+    "practice-working-mode": {
+      "type": "string",
+      "name": "Color",
+      "one-of": [
+        "Player Col 1",
+        "Player Col 2",
+        "Player Glow",
+        "Chroma",
+        "Pastel",
+        "Custom"
+      ],
+      "description": "You can configure the chroma, pastel and custom colors below. Support for gradient mode will be added in the future.",
+      "default": "Player Col 1",
+      "enable-if": "practice-mode-toggle"
+    },
+    "practice-custom-color": {
+      "type": "rgb",
+      "name": "Custom Color",
+      "default": "#83CBFF",
+      "enable-if": "practice-mode-toggle"
+    },
+    "practice-rgb-speed": {
+      "type": "float",
+      "name": "Update Speed",
+      "description": "How fast the color updates. The higher the value the faster the speed.",
+      "default": 0.123456,
+      "min": 0,
+      "max": 1,
+      "controls": { 
+        "arrows": false,
+        "big-arrows": false,
+        "slider": true,
+        "input": false
+      },
+      "enable-if": "practice-mode-toggle"
+    },
+    "new-best-title": {
+      "type": "title",
+      "name": "On New Best",
+      "description": "These settings affect the progress bar color when you get a new best."
+    },
+    "new-best-toggle": {
+      "type":"bool",
+      "name": "Enabled",
+      "description": "Turn off to inherit colors from normal/practice mode.",
+      "default": true
+    },
+    "enby-working-mode": {
+      "type": "string",
+      "name": "Color",
+      "one-of": [
+        "Player Col 1",
+        "Player Col 2",
+        "Player Glow",
+        "Chroma",
+        "Pastel",
+        "Custom"
+      ],
+      "description": "You can configure the chroma, pastel and custom colors below. Support for gradient mode will be added in the future.",
+      "default": "Player Col 1"
+    },
+    "enby-custom-color": {
+      "type": "rgb",
+      "name": "Custom Color",
+      "default": "#FFFFFF"
+    },
+    "enby-rgb-speed": {
+      "type": "float",
+      "name": "Update Speed",
+      "description": "How fast the color updates. The higher the value the faster the speed.",
+      "default": 0.123456,
+      "min": 0,
+      "max": 1,
+      "controls": { 
+        "arrows": false,
+        "big-arrows": false,
+        "slider": true,
+        "input": false
+      }
+    },
+    "haha": {
+      "type": "title",
+      "name": "haha",
+      "description": "hri3eoij2rk3jkfejkjjrlkwfm"
+    },
+    "product-key": {
+      "type": "string",
+      "description": "The product key. Click the support button (gold gift icon) to learn more about obtaining one.\n\n<cy>pffft just read the source code and make a keygen lmao</c>",
+      "name": "Product Key",
+      "match": "^[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}$",
+      "filter": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689-",
+      "default": "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
     }
   },
   "resources": {

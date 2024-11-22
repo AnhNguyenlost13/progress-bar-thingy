@@ -1,1 +1,1 @@
-support me mentally by giving a kind "meow" :3
+I would be really glad if you can buy me a pair of thigh highs or arm sleeves, but unfortunately I probably can't accept anything from strangers.
