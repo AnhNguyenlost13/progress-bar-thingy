@@ -12,9 +12,9 @@ ccColor3B paint() {
     auto pl = PlayLayer::get();
     auto mg = Mod::get();
 
-    auto meow = mg->getSettingValue<std::string>("normal-working-mode");
-    auto uwu = mg->getSettingValue<std::string>("practice-working-mode");
-    auto nyaa = mg->getSettingValue<std::string>("enby-working-mode");
+    auto normalWorkingMode = mg->getSettingValue<std::string>("normal-working-mode");
+    auto practiceWorkingMode = mg->getSettingValue<std::string>("practice-working-mode");
+    auto newBestWorkingMode = mg->getSettingValue<std::string>("enby-working-mode");
     auto pt = mg->getSettingValue<bool>("practice-mode-toggle");
     auto po = mg->getSettingValue<bool>("practice-override");
 
@@ -24,69 +24,69 @@ ccColor3B paint() {
    // hello yanderedev
    if (lp > lb) {
     if (pm->m_isPracticeMode && po) {
-        if (uwu == "Player Col 1") {
+        if (practiceWorkingMode == "Player Col 1") {
             return gm->colorForIdx(gm->getPlayerColor());
-        } else if (uwu == "Player Col 2") {
+        } else if (practiceWorkingMode == "Player Col 2") {
             return gm->colorForIdx(gm->getPlayerColor2());
-        } else if (uwu == "Player Glow") {
+        } else if (practiceWorkingMode == "Player Glow") {
             return gm->colorForIdx(gm->getPlayerGlowColor());
-        } else if (uwu == "Chroma") {
+        } else if (practiceWorkingMode == "Chroma") {
             return colorutil::getChromaColour();
-        } else if (uwu == "Pastel") {
+        } else if (practiceWorkingMode == "Pastel") {
             return colorutil::getPastelColour();
-        } else if (uwu == "Custom") {
+        } else if (practiceWorkingMode == "Custom") {
             return Mod::get()->getSettingValue<ccColor3B>("practice-custom-color");
-      //} else if (uwu == "Gradient") {
+      //} else if (practiceWorkingMode == "Gradient") {
             // Placeholder
         }
     } else {
-        if (nyaa == "Player Col 1") {
+        if (newBestWorkingMode == "Player Col 1") {
             return gm->colorForIdx(gm->getPlayerColor());
-        } else if (nyaa == "Player Col 2") {
+        } else if (newBestWorkingMode == "Player Col 2") {
             return gm->colorForIdx(gm->getPlayerColor2());
-        } else if (nyaa == "Player Glow") {
+        } else if (newBestWorkingMode == "Player Glow") {
             return gm->colorForIdx(gm->getPlayerGlowColor());
-        } else if (nyaa == "Chroma") {
+        } else if (newBestWorkingMode == "Chroma") {
             return colorutil::getChromaColour();
-        } else if (nyaa == "Pastel") {
+        } else if (newBestWorkingMode == "Pastel") {
             return colorutil::getPastelColour();
-        } else if (nyaa == "Custom") {
+        } else if (newBestWorkingMode == "Custom") {
             return Mod::get()->getSettingValue<ccColor3B>("enby-custom-color");
-      //} else if (nyaa == "Gradient") {
+      //} else if (newBestWorkingMode == "Gradient") {
             // Placeholder
         }
     }
    } else {
     if (pm->m_isPracticeMode && pt) {    
-        if (uwu == "Player Col 1") {
+        if (practiceWorkingMode == "Player Col 1") {
             return gm->colorForIdx(gm->getPlayerColor());
-        } else if (uwu == "Player Col 2") {
+        } else if (practiceWorkingMode == "Player Col 2") {
             return gm->colorForIdx(gm->getPlayerColor2());
-        } else if (uwu == "Player Glow") {
+        } else if (practiceWorkingMode == "Player Glow") {
             return gm->colorForIdx(gm->getPlayerGlowColor());
-        } else if (uwu == "Chroma") {
+        } else if (practiceWorkingMode == "Chroma") {
             return colorutil::getChromaColour();
-        } else if (uwu == "Pastel") {
+        } else if (practiceWorkingMode == "Pastel") {
             return colorutil::getPastelColour();
-        } else if (uwu == "Custom") {
+        } else if (practiceWorkingMode == "Custom") {
             return Mod::get()->getSettingValue<ccColor3B>("practice-custom-color");
-      //} else if (uwu == "Gradient") {
+      //} else if (practiceWorkingMode == "Gradient") {
             // Placeholder
         }
     } else {
-        if (meow == "Player Col 1") {
+        if (normalWorkingMode == "Player Col 1") {
             return gm->colorForIdx(gm->getPlayerColor());
-        } else if (meow == "Player Col 2") {
+        } else if (normalWorkingMode == "Player Col 2") {
             return gm->colorForIdx(gm->getPlayerColor2());
-        } else if (meow == "Player Glow") {
+        } else if (normalWorkingMode == "Player Glow") {
             return gm->colorForIdx(gm->getPlayerGlowColor());
-        } else if (meow == "Chroma") {
+        } else if (normalWorkingMode == "Chroma") {
             return colorutil::getChromaColour();
-        } else if (meow == "Pastel") {
+        } else if (normalWorkingMode == "Pastel") {
             return colorutil::getPastelColour();
-        } else if (meow == "Custom") {
+        } else if (normalWorkingMode == "Custom") {
             return Mod::get()->getSettingValue<ccColor3B>("normal-custom-color");
-      //} else if (meow == "Gradient") {
+      //} else if (normalWorkingMode == "Gradient") {
             // Placeholder
         }
     }
@@ -97,7 +97,7 @@ ccColor3B paint() {
 class $modify(PlayLayer) {
     void startGame() {
         PlayLayer::startGame();
-        if (Mod::get()->getSettingValue<int64_t>("mode") < 4 && !m_level->isPlatformer() && m_progressFill) {
+        if (!m_level->isPlatformer() && m_progressFill) {
             m_progressFill->setColor(paint());
         }
     }
