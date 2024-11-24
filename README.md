@@ -19,7 +19,7 @@ geode build
 ```
 
 ## Preview
-<img src="/resources/misc/EB30BCBC-CC1B-44E9-9A43-543BE0B3A936.png">
+<img src="/resources/misc/prefs.png">
 <img src="/resources/misc/with.png">
 
 ## TODO
