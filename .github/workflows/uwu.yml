@@ -46,6 +46,7 @@ jobs:
           bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
+          
             
   package:
     name: Package builds
