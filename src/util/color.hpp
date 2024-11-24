@@ -2,6 +2,8 @@
 
 #include <Geode/Geode.hpp>
 
+using namespace geode::prelude;
+
 class colorutil
 {
 	public:
@@ -12,7 +14,7 @@ class colorutil
 			va += dt;
 		}
 
-		static geode::prelude::ccColor3B hsvToRgb(const geode::prelude::ccHSVValue& hsv) {
+		static ccColor3B hsvToRgb(const ccHSVValue& hsv) {
 			float hue = hsv.h;
 			float saturation = hsv.s;
 			float value = hsv.v;
@@ -36,16 +38,16 @@ class colorutil
 				default: r = g = b = 0; break;
 			}
 
-			return geode::prelude::ccc3(static_cast<uint8_t>(r * 255), static_cast<uint8_t>(g * 255), static_cast<uint8_t>(b * 255));
+			return ccc3(static_cast<uint8_t>(r * 255), static_cast<uint8_t>(g * 255), static_cast<uint8_t>(b * 255));
 		}
 
-		static geode::prelude::ccColor3B getChromaColour()
+		static ccColor3B getChromaColour()
 		{
-			return hsvToRgb(geode::prelude::cchsv((va * 180) / 10.0f, 1.0f, 1.0f, true, true));
+			return hsvToRgb(cchsv((va * 180) / 10.0f, 1.0f, 1.0f, true, true));
 		}
 
-		static geode::prelude::ccColor3B getPastelColour(int i = 0)
+		static ccColor3B getPastelColour(int i = 0)
 		{
-			return hsvToRgb(geode::prelude::cchsv((va * 180) / 10.0f, 155.0f / 255.0f, 1.0f, true, true));
+			return hsvToRgb(cchsv((va * 180) / 10.0f, 155.0f / 255.0f, 1.0f, true, true));
 		}
 };
