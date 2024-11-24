@@ -91,6 +91,7 @@ ccColor3B paint() {
         }
     }
    }
+   return {255, 255, 255}; // Congrats!
 }
 
 class $modify(PlayLayer) {
