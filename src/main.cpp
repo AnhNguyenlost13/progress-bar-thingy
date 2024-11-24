@@ -38,7 +38,7 @@ ccColor3B paint() {
             return Mod::get()->getSettingValue<ccColor3B>("practice-custom-color");
       //} else if (uwu == "Gradient") {
             // Placeholder
-      //}
+        }
     } else {
         if (nyaa == "Player Col 1") {
             return gm->colorForIdx(gm->getPlayerColor());
@@ -54,7 +54,7 @@ ccColor3B paint() {
             return Mod::get()->getSettingValue<ccColor3B>("enby-custom-color");
       //} else if (nyaa == "Gradient") {
             // Placeholder
-      //}
+        }
     }
    } else {
     if (pm->m_isPracticeMode && pt) {    
@@ -72,7 +72,7 @@ ccColor3B paint() {
             return Mod::get()->getSettingValue<ccColor3B>("practice-custom-color");
       //} else if (uwu == "Gradient") {
             // Placeholder
-      //}
+        }
     } else {
         if (meow == "Player Col 1") {
             return gm->colorForIdx(gm->getPlayerColor());
@@ -88,7 +88,7 @@ ccColor3B paint() {
             return Mod::get()->getSettingValue<ccColor3B>("normal-custom-color");
       //} else if (meow == "Gradient") {
             // Placeholder
-      //}
+        }
     }
    }
 }
