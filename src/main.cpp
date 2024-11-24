@@ -35,7 +35,7 @@ ccColor3B paint() {
         } else if (uwu == "Pastel") {
             return colorutil::getPastelColour();
         } else if (uwu == "Custom") {
-            return Mod::get()->getSettingValue<ccColor3B>("color");
+            return Mod::get()->getSettingValue<ccColor3B>("practice-custom-color");
         } else if (uwu == "Gradient") {
             // Placeholder
         }
@@ -51,7 +51,7 @@ ccColor3B paint() {
         } else if (nyaa == "Pastel") {
             return colorutil::getPastelColour();
         } else if (nyaa == "Custom") {
-            return Mod::get()->getSettingValue<ccColor3B>("color");
+            return Mod::get()->getSettingValue<ccColor3B>("enby-custom-color");
         } else if (nyaa == "Gradient") {
             // Placeholder
         }
@@ -69,7 +69,7 @@ ccColor3B paint() {
         } else if (uwu == "Pastel") {
             return colorutil::getPastelColour();
         } else if (uwu == "Custom") {
-            return Mod::get()->getSettingValue<ccColor3B>("color");
+            return Mod::get()->getSettingValue<ccColor3B>("practice-custom-color");
         } else if (uwu == "Gradient") {
             // Placeholder
         }
@@ -85,7 +85,7 @@ ccColor3B paint() {
         } else if (meow == "Pastel") {
             return colorutil::getPastelColour();
         } else if (meow == "Custom") {
-            return Mod::get()->getSettingValue<ccColor3B>("color");
+            return Mod::get()->getSettingValue<ccColor3B>("normal-custom-color");
         } else if (meow == "Gradient") {
             // Placeholder
         }
