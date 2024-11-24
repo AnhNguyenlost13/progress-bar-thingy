@@ -12,7 +12,7 @@
   ],
   "id": "catgirldev.ingame-progress-bar-color",
   "name": "Custom In-Game Progress Bar Color",
-  "version": "1.4.4",
+  "version": "1.5.0",
   "developer": "catgirldev",
   "description": "Change your in-game progress bar color!",
   "settings": {
@@ -60,7 +60,7 @@
       "description": "These settings affect the progress bar color in practice mode."
     },
     "practice-mode-toggle": {
-      "type":"bool",
+      "type": "bool",
       "name": "Enabled",
       "description": "Turn off to inherit colors from normal mode.",
       "default": true
@@ -101,7 +101,7 @@
       "description": "These settings affect the progress bar color when you get a new best."
     },
     "new-best-toggle": {
-      "type":"bool",
+      "type": "bool",
       "name": "Enabled",
       "description": "Turn off to inherit colors from normal/practice mode.",
       "default": true

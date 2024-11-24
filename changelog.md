@@ -1,4 +1,8 @@
 
+## <cy>v1.5.0</c> (2024-11-24)
+- Updated to Geode v4
+- Colors can now be separated (practice, normal, new best)
+
 ## <cy>v1.4.4</c> (2024-09-02)
 Not sure about you, but I sure do love looking at catgirls!
 
