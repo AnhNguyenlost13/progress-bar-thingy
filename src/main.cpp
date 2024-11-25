@@ -1,7 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
-#define updateProgressBar updateProgressbar // sorry RobTop
 
+#define updateProgressBar updateProgressbar // I blame RobTop.
 #include "util/color.hpp" // Thanks TheSillyDoggo
 
 using namespace geode::prelude;
@@ -12,17 +12,18 @@ ccColor3B paint() {
     auto pl = PlayLayer::get();
     auto mg = Mod::get();
 
-    auto normalWorkingMode = mg->getSettingValue<std::string>("normal-working-mode");
-    auto practiceWorkingMode = mg->getSettingValue<std::string>("practice-working-mode");
-    auto newBestWorkingMode = mg->getSettingValue<std::string>("enby-working-mode");
-    auto pt = mg->getSettingValue<bool>("practice-mode-toggle");
-    auto po = mg->getSettingValue<bool>("practice-override");
+    auto normalWorkingMode = mg->getSettingValue<std::string>("normal-working-mode"); // Normal working mode
+    auto practiceWorkingMode = mg->getSettingValue<std::string>("practice-working-mode"); // Practice working mode
+    auto newBestWorkingMode = mg->getSettingValue<std::string>("enby-working-mode"); // New best working mode
+    auto pt = mg->getSettingValue<bool>("practice-mode-toggle"); // Practice mode toggle
+    auto nbt = mg->getSettingValue<bool>("new-best-toggle"); // New best toggle (I love inconsistent variable naming)
+    auto po = mg->getSettingValue<bool>("practice-override"); // Practice override
 
-    auto lp = as<float>(PlayLayer::get()->getCurrentPercentInt());
-    auto lb = pl->m_level->m_normalPercent;
+    auto lp = as<float>(PlayLayer::get()->getCurrentPercentInt()); // Level progress
+    auto lb = pl->m_level->m_normalPercent; // Level best
 
    // hello yanderedev
-   if (lp > lb) {
+   if (lp > lb && nbt) {
     if (gjbgl->m_isPracticeMode && po) {
         if (practiceWorkingMode == "Player Col 1") {
             return gm->colorForIdx(gm->getPlayerColor());
@@ -91,7 +92,7 @@ ccColor3B paint() {
         }
     }
    }
-   return {255, 255, 255}; // Congrats!
+   return {192, 168, 11}; // Edge case where NOTHING above returns
 }
 
 class $modify(PlayLayer) {
