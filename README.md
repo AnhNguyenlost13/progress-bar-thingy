@@ -6,13 +6,14 @@
 <h1 align="center">In-Game Progress Bar Color Changer</h1>
 
 ## Why?
-Originally inspired by [Naxrin's ProgressBarColor mod](https://github.com/Naxrin/Progress-Bar-Color). I originally intended to write a simple one to just "wash out" the progress bar color to... you guessed it, but decided it would be better to customize it as well!
+Originally inspired by [Naxrin's ProgressBarColor mod](https://github.com/Naxrin/Progress-Bar-Color). I originally intended this to be an even simpler mod to make the texture white, but decided to expand it.
 
 ## Build instructions
 For more info, read  [the Geode docs](https://docs.geode-sdk.org/getting-started/create-mod#build).
 ```sh
-# Clone the repository first!
+# Clone the repository
 git clone https://github.com/AnhNguyenlost13/progress-bar-thingy.git
+cd progress-bar-thingy
 
 # Assuming you have the Geode CLI set up already
 geode build
@@ -20,17 +21,16 @@ geode build
 
 ## Preview
 <img src="/resources/misc/prefs.png">
-<img src="/resources/misc/with.png">
 
 ## TODO
 - [x] RGB progress bar
-- [ ] Mode-dependent colors (differentiate between Practice and Normal modes)
-- [ ] Change the color on new best
+- [x] Mode-dependent colors (differentiate between Practice and Normal modes)
+- [x] Change the color on new best
+- [ ] Optimize code
 
 ## Attributions
-* some code taken from Naxrin's ProgressBarColor mod (i'm terribly sorry!)
-
-<h4><sup>please don't question the developer name, have a great day!</sup></h4>
+* some code taken from Naxrin's ProgressBarColor mod
+* new best code taken from Golden Best from Firee
 
 <!--
 # Resources
