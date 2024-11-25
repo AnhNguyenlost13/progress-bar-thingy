@@ -8,7 +8,7 @@ using namespace geode::prelude;
 
 ccColor3B paint() {
     auto gm = GameManager::sharedState(); // For convenience
-    auto pm = GJBaseGameLayer::get();
+    auto gjbgl = GJBaseGameLayer::get();
     auto pl = PlayLayer::get();
     auto mg = Mod::get();
 
@@ -23,7 +23,7 @@ ccColor3B paint() {
 
    // hello yanderedev
    if (lp > lb) {
-    if (pm->m_isPracticeMode && po) {
+    if (gjbgl->m_isPracticeMode && po) {
         if (practiceWorkingMode == "Player Col 1") {
             return gm->colorForIdx(gm->getPlayerColor());
         } else if (practiceWorkingMode == "Player Col 2") {
@@ -57,7 +57,7 @@ ccColor3B paint() {
         }
     }
    } else {
-    if (pm->m_isPracticeMode && pt) {    
+    if (gjbgl->m_isPracticeMode && pt) {    
         if (practiceWorkingMode == "Player Col 1") {
             return gm->colorForIdx(gm->getPlayerColor());
         } else if (practiceWorkingMode == "Player Col 2") {
