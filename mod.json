@@ -98,7 +98,7 @@
     "new-best-title": {
       "type": "title",
       "name": "On New Best",
-      "description": "These settings affect the progress bar color when you get a new best."
+      "description": "These settings affect the progress bar color when you get a new best.\n\nI recommend pair this with the Golden Best mod!"
     },
     "new-best-toggle": {
       "type": "bool",
