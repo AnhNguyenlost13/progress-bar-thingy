@@ -27,6 +27,7 @@ geode build
 - [x] Mode-dependent colors (differentiate between Practice and Normal modes)
 - [x] Change the color on new best
 - [ ] Optimize code
+- [ ] Improve performance by only getting the mod setting and recoloring the progress bar when needed (when practice is triggered, on new best etc.)
 
 ## Attributions
 * some code taken from Naxrin's ProgressBarColor mod
