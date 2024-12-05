@@ -4,12 +4,14 @@ on:
   push:
     branches:
       - "v**"
+      - main
     paths:
       - "src/**"
       - "mod.json"
   pull_request:
     branches:
       - "v**"
+      - "main"
     paths:
       - "src/**"
       
