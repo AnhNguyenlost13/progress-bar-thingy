@@ -6,6 +6,7 @@
 
 using namespace geode::prelude;
 
+// TODO: clean this code up to exclude practice mode
 ccColor3B paint() {
     auto gm = GameManager::sharedState(); // For convenience
     auto gjbgl = GJBaseGameLayer::get();
@@ -95,6 +96,30 @@ ccColor3B paint() {
    return {192, 168, 11}; // Edge case where NOTHING above returns
 }
 
+ccColor3B paintPractice(isPractice) {
+    auto mg = Mod::get();
+
+    auto practiceWorkingMode = mg->getSettingValue<std::string>("practice-working-mode"); // Practice working mode
+    auto gm = GameManager::sharedState(); // For convenience
+    if (isPractice) {
+        if (practiceWorkingMode == "Player Col 1") {
+            return gm->colorForIdx(gm->getPlayerColor());
+        } else if (practiceWorkingMode == "Player Col 2") {
+            return gm->colorForIdx(gm->getPlayerColor2());
+        } else if (practiceWorkingMode == "Player Glow") {
+            return gm->colorForIdx(gm->getPlayerGlowColor());
+        } else if (practiceWorkingMode == "Chroma") {
+            return colorutil::getChromaColour();
+        } else if (practiceWorkingMode == "Pastel") {
+            return colorutil::getPastelColour();
+        } else if (practiceWorkingMode == "Custom") {
+            return Mod::get()->getSettingValue<ccColor3B>("practice-custom-color");
+      //} else if (practiceWorkingMode == "Gradient") {
+            // Placeholder
+        }
+    }
+}
+
 class $modify(PlayLayer) {
     void startGame() {
         PlayLayer::startGame();
@@ -102,7 +127,8 @@ class $modify(PlayLayer) {
             m_progressFill->setColor(paint());
         }
     }
-    
+    /*
+    // This approach is not optimal as it repaints the progress bar every frame (unnecessarily)
     void updateProgressBar() {
         PlayLayer::updateProgressBar();
         colorutil::update(Mod::get()->getSettingValue<double_t>("speed"));
@@ -111,6 +137,12 @@ class $modify(PlayLayer) {
         if (!m_level->isPlatformer() && m_progressFill) {
             m_progressFill->setColor(paint());
         }
-        
+    */
+
+    void togglePracticeMode(bool enablePractice) {
+        togglePracticeMode(enablePractice);
+        if (enablePractice) {
+
+        }
     }
 };
