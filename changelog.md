@@ -1,4 +1,7 @@
 
+## <cy>v1.5.3</c> (2024-12-27)
+I'm serious this time I tested the code!
+
 ## <cy>v1.5.2</c> (2024-12-27)
 - Some code changes
 - RGB modes actually update colors now
