@@ -15,7 +15,7 @@ enum class WorkingMode {
     Chroma,
     Pastel,
     Custom,
-    // Gradient  /* when ??? */
+    // Gradient, // who knows
     Unknown     // This should never happen either lmao
 };
 
