@@ -1,4 +1,8 @@
 
+## <cy>v1.5.2</c> (2024-12-27)
+- Some code changes
+- RGB modes actually update colors now
+
 ## <cy>v1.5.0</c> (2024-11-24)
 - Updated to Geode v4
 - Colors can now be separated (practice, normal, new best)
