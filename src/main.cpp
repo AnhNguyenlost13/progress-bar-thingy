@@ -103,15 +103,15 @@ float getSpeed() {
 
     if (lp > lb) {
         if (pm->m_isPracticeMode && po) {
-            return mg->getSettingValue<double_t>("practice-speed");
+            return mg->getSettingValue<double_t>("practice-rgb-speed");
         } else {
-            return mg->getSettingValue<double_t>("enby-speed");
+            return mg->getSettingValue<double_t>("enby-rgb-speed");
         }
     } else {
         if (pm->m_isPracticeMode && pt) {
-            return mg->getSettingValue<double_t>("practice-speed");
+            return mg->getSettingValue<double_t>("practice-rgb-speed");
         } else {
-            return mg->getSettingValue<double_t>("normal-speed");
+            return mg->getSettingValue<double_t>("normal-rgb-speed");
         }
     }
 }
