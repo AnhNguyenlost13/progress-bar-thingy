@@ -8,8 +8,9 @@
 ## Why?
 Originally inspired by [Naxrin's ProgressBarColor mod](https://github.com/Naxrin/Progress-Bar-Color). I originally intended this to be an even simpler mod to make the texture white, but decided to expand it.
 
-## Build instructions
+## Building
 For more info, read  [the Geode docs](https://docs.geode-sdk.org/getting-started/create-mod#build).
+You probably should've known how to do this already if you're here right...?
 ```sh
 # Clone the repository
 git clone https://github.com/AnhNguyenlost13/progress-bar-thingy.git
@@ -28,8 +29,9 @@ geode build
 - [x] Change the color on new best
 - [x] Improve code
 ## Attributions
-* some code taken from Naxrin's ProgressBarColor mod
-* new best code taken from Golden Best from Firee
+* Some *(prolly a tiny portion lol)* code taken from Naxrin's ProgressBarColor mod
+* New best (determination) code taken from Golden Best from Firee
+* Mod icon made by Alphalaneous
 
 <!--
 # Resources
