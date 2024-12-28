@@ -79,7 +79,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           # Automatically modified files
           git add mod.json changelog.md
-          git commit -m "Update version and changelog for release ${{ env.VERSION_INPUT }}" || echo "No changes to commit!?"
+          git commit -m "[bot] Release ${{ env.VERSION_INPUT }}" || echo "No changes to commit!?"
           
       - name: Push changes to repository
         run: |
