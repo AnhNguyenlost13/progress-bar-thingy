@@ -5,6 +5,8 @@
 </div>
 <h1 align="center">In-Game Progress Bar Color Changer</h1>
 
+*If you want to report a bug or leave a suggestion, [open a new issue](https://github.com/AnhNguyenlost13/progress-bar-thingy/issues/new/choose) or join the [Discord server](https://discord.gg/uFj8SSUhRa). Contributions are also welcome.*
+
 ## Why?
 Originally inspired by [Naxrin's ProgressBarColor mod](https://github.com/Naxrin/Progress-Bar-Color). I originally intended this to be an even simpler mod to make the texture white, but decided to expand it.
 
