@@ -127,6 +127,8 @@ jobs:
           bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
+          # just in case, probably
+          build-config: RelWithDebInfo
           
   build-ios:
     name: Build for iOS
