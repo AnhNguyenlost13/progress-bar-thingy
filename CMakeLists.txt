@@ -12,7 +12,7 @@ endif()
 
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 # set(GEODE_TARGET_PLATFORM MacOS) # why
-project(test VERSION 1.0.0)
+project(progressBarThingy VERSION 4.2.0)
 
 # Set up the mod binary
 add_library(${PROJECT_NAME} SHARED
