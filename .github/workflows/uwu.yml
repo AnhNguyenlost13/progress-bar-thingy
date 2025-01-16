@@ -50,22 +50,22 @@ jobs:
           combine: true
           target: ${{ matrix.config.target }}
           
-  build-ios:
-    name: Build for iOS
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  # build-ios:
+  #   name: Build for iOS
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Build iOS
-        uses: geode-catgirls/build-geode-mod@main
-        with:
-          bindings: geode-catgirls/bindings
-          target: iOS
-          gh-pat: ${{ secrets.GH_PAT }}
-          # super secret
+  #     - name: Build iOS
+  #       uses: geode-catgirls/build-geode-mod@main
+  #       with:
+  #         bindings: geode-catgirls/bindings
+  #         target: iOS
+  #         gh-pat: ${{ secrets.GH_PAT }}
+  #         # super secret
           
   package:
     name: Package builds
