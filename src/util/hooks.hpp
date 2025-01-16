@@ -11,8 +11,8 @@ class $modify(PlayLayer) {
          
         if (!m_level->isPlatformer() && m_progressFill && m_progressBar->isVisible()) {
             m_progressFill->setColor(paint());
+            // beautiful. kill it with fire.
+            if (auto globedProgressBarWrapper = m_progressBar->getChildByID("dankmeme.globed2/progress-bar-wrapper")) { if (auto globedSelfPlayerProgress = globedProgressBarWrapper->getChildByID("dankmeme.globed2/self-player-progress")) { if (CCLayerColor* target = globedSelfPlayerProgress->getChildByType<CCLayerColor>(0)) { target->setColor(paint()); }}}
         }
     }
-
-    // TODO: globed compat thanks
 };
