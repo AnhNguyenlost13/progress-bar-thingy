@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util/utils.hpp" // Thanks TheSillyDoggo
+#include "utils.hpp" // Thanks TheSillyDoggo
 #define updateProgressBar updateProgressbar // I blame RobTop.
 
 #include <Geode/modify/PlayLayer.hpp>

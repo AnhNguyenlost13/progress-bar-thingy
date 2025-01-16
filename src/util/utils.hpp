@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util/color.hpp" // Thanks TheSillyDoggo
+#include "color.hpp" // Thanks TheSillyDoggo
 
 template<unsigned N>
 struct TemplateStr {
