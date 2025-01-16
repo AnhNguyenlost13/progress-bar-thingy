@@ -1,4 +1,7 @@
 
+## <cy>v1.6.1</c> (2025-01-16)
+10/10 thank you
+
 ## <cy>v1.6.0</c> (2025-01-16)
 some internal changes
 
