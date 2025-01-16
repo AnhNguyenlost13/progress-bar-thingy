@@ -72,7 +72,8 @@ jobs:
             echo ---
           fi
           jq --arg new_version "${VERSION_INPUT#v}" '.version = $new_version' mod.json > tmp.json && mv tmp.json mod.json
-          sed -i "s/\(project(progressBarThingy VERSION \)[0-9.]*\)/\1${VERSION_INPUT#v})/" CMakeLists.txt
+          FILTERED_VERSION=$(echo "${VERSION_INPUT#v}" | sed 's/[()]/\\&/g')
+          sed -i "s/\(project(progressBarThingy VERSION \)[0-9.]*\)/\1${ESCAPED_VERSION}/" CMakeLists.txt
           
       - name: Stage and commit changes
         run: |
