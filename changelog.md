@@ -1,4 +1,7 @@
 
+## <cy>v1.6.0</c> (2025-01-16)
+some internal changes
+
 ## <cy>v1.5.3</c> (2024-12-27)
 I'm serious this time I tested the code!
 
