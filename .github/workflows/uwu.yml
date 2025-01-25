@@ -1,4 +1,4 @@
-name: Build Geode Mod
+name: Build Development
 
 on:
   push:
@@ -49,6 +49,8 @@ jobs:
           bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
+          sdk: nightly
+          
           
   build-ios:
     name: Build for iOS
