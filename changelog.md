@@ -1,4 +1,7 @@
 
+## <cy>v1.7.0</c> (2025-01-25)
+Partial rewrite
+
 ## <cy>v1.6.2</c> (2025-01-16)
 Mod now changes your Globed progress indicator to match with the current progress bar color.
 
