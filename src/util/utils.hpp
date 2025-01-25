@@ -94,6 +94,9 @@ public:
 		normalWorkingMode = getWorkingMode(fastGetSetting<"normal-working-mode", std::string>());
 		practiceWorkingMode = getWorkingMode(fastGetSetting<"practice-working-mode", std::string>());
 		newBestWorkingMode = getWorkingMode(fastGetSetting<"enby-working-mode", std::string>());
+		normalCustomColor = fastGetSetting<"normal-custom-color", ccColor3B>();
+		practiceCustomColor = fastGetSetting<"practice-custom-color", ccColor3B>();
+		enbyCustomColor = fastGetSetting<"enby-custom-color", ccColor3B>();
 		practiceToggle = fastGetSetting<"practice-mode-toggle", bool>();
 		practiceOverride = fastGetSetting<"practice-override", bool>();
 		practiceRgbSpeed = fastGetSetting<"practice-rgb-speed", double_t>();
