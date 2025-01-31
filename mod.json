@@ -59,12 +59,6 @@
       "name": "Practice Mode",
       "description": "These settings affect the progress bar color in practice mode."
     },
-    "practice-mode-toggle": {
-      "type": "bool",
-      "name": "Enabled",
-      "description": "Turn off to inherit colors from normal mode.",
-      "default": true
-    },
     "practice-working-mode": {
       "type": "string",
       "name": "Color",
@@ -99,12 +93,6 @@
       "type": "title",
       "name": "On New Best",
       "description": "These settings affect the progress bar color when you get a new best.\n\nI recommend you also use the Golden Best mod!"
-    },
-    "new-best-toggle": {
-      "type": "bool",
-      "name": "Enabled",
-      "description": "Turn off to inherit colors from normal/practice mode.",
-      "default": true
     },
     "enby-working-mode": {
       "type": "string",
