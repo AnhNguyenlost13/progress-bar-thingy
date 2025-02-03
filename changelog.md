@@ -1,4 +1,7 @@
 
+## <cy>v1.7.3</c> (2025-02-03)
+minor changes
+
 ## <cy>v1.7.2</c> (2025-01-25)
 Fixed an oversight that made custom color settings not work
 
