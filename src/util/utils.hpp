@@ -66,8 +66,8 @@ WorkingMode getWorkingMode(const std::string& mode) {
 		// {"Gradient", WorkingMode::Gradient} /* Placeholder */
 	};
 
-	auto idkWhatToNameThis = modeMap.find(mode);
-	return idkWhatToNameThis != modeMap.end() ? idkWhatToNameThis->second : WorkingMode::Unknown;
+	auto x = modeMap.find(mode);
+	return x != modeMap.end() ? x->second : WorkingMode::Unknown;
 }
 
 std::string contextKey(const Context context) {
@@ -94,24 +94,29 @@ public:
 		normalWorkingMode = getWorkingMode(fastGetSetting<"normal-working-mode", std::string>());
 		practiceWorkingMode = getWorkingMode(fastGetSetting<"practice-working-mode", std::string>());
 		newBestWorkingMode = getWorkingMode(fastGetSetting<"enby-working-mode", std::string>());
+
 		normalCustomColor = fastGetSetting<"normal-custom-color", ccColor3B>();
 		practiceCustomColor = fastGetSetting<"practice-custom-color", ccColor3B>();
 		enbyCustomColor = fastGetSetting<"enby-custom-color", ccColor3B>();
-		practiceToggle = fastGetSetting<"practice-mode-toggle", bool>();
+
 		practiceOverride = fastGetSetting<"practice-override", bool>();
+
 		practiceRgbSpeed = fastGetSetting<"practice-rgb-speed", double_t>();
 		enbyRgbSpeed = fastGetSetting<"enby-rgb-speed", double_t>();
 		normalRgbSpeed = fastGetSetting<"normal-rgb-speed", double_t>();
-		if (normalWorkingMode == WorkingMode::Chroma || normalWorkingMode == WorkingMode::Pastel || practiceWorkingMode == WorkingMode::Chroma || practiceWorkingMode == WorkingMode::Pastel || newBestWorkingMode == WorkingMode::Chroma || newBestWorkingMode == WorkingMode::Pastel) { 
-			dynamic = true; 
-		} else { 
-			dynamic = false; 
-		}
+
+		// Unused
+		// if (normalWorkingMode == WorkingMode::Chroma || normalWorkingMode == WorkingMode::Pastel || practiceWorkingMode == WorkingMode::Chroma || practiceWorkingMode == WorkingMode::Pastel || newBestWorkingMode == WorkingMode::Chroma || newBestWorkingMode == WorkingMode::Pastel) { 
+		// 	dynamic = true; 
+		// } else { 
+		// 	dynamic = false; 
+		// }
 	}
 	
 	WorkingMode normalWorkingMode;
 	WorkingMode practiceWorkingMode;
 	WorkingMode newBestWorkingMode;
+
 	bool practiceToggle;
 	bool practiceOverride;
 	double_t practiceRgbSpeed;
@@ -127,12 +132,15 @@ public:
 private:
 	static Catgirl* meow;
 	
-		Catgirl() {
-			updateSettings();
-		}
+	Catgirl() {
+		updateSettings();
+	}
 
 	Catgirl(const Catgirl&) = delete;
 	Catgirl& operator=(const Catgirl&) = delete;
+
+protected:
+	// your mom
 };
 
 Catgirl* Catgirl::meow = nullptr;
@@ -146,8 +154,6 @@ ccColor3B paint() {
 	Context context = delegate->context;
 	WorkingMode workingMode;
 	auto gm = GameManager::sharedState();
-
-	log::debug("Context: {}", static_cast<int>(context));
 
 	// Check for the context first
 	switch (context) {
@@ -165,8 +171,6 @@ ccColor3B paint() {
 			break;
 	}
 
-	log::debug("Working Mode: {}", static_cast<int>(workingMode));
-
 	// Decide the working mode
 	switch (workingMode) {
 		case WorkingMode::PlayerCol1:
@@ -180,7 +184,6 @@ ccColor3B paint() {
 		case WorkingMode::Pastel:
 			return colorutil::getPastelColour();
 		case WorkingMode::Custom:
-			// log::debug("Returning Custom color for context: {}", static_cast<int>(context));
 			switch (context) {
 				case Context::Normal:
 					return delegate->normalCustomColor;
@@ -192,7 +195,7 @@ ccColor3B paint() {
 					return {0, 0, 0};
 			}
 		default:
-			return {0, 0, 0}; // Default
+			return {252, 181, 255}; // If your color is stuck at this please report
 	}
 }
 
