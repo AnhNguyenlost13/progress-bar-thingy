@@ -1,14 +1,12 @@
 {
   "geode"        :  "4.2.1",
-  "gd"           :  
-  {
+  "gd"           :  {
     "win"      :  "2.2074",
     "android"  :  "2.2074",
     "mac"      :  "2.2074",
     "ios"      :  "2.2074"
   },
-  "tags"         :  
-  [
+  "tags"         :  [
     "customization",
     "enhancement"
   ],
@@ -17,27 +15,22 @@
   "version"      :  "1.7.3",
   "developer"    :  "catgirldev",
   "description"  :  "Change your in-game progress bar color!",
-  "settings"     :  
-  {
-    "practice-override"    :  
-    {
+  "settings"     :  {
+    "practice-override"    :  {
       "type"         :  "bool",
       "name"         :  "Override Practice",
       "description"  :  "Displays the new best color instead when you get a new best in practice mode.",
       "default"      :  false
     },
-    "normal-mode-title"   :  
-    {
+    "normal-mode-title"   :  {
       "type"         :  "title",
       "name"         :  "Normal Mode",
       "description"  :  "These settings affect the progress bar color in normal mode."
     },
-    "normal-working-mode"  :  
-    {
+    "normal-working-mode"  :  {
       "type"         :  "string",
       "name"         :  "Color",
-      "one-of"       :  
-      [
+      "one-of"       :  [
         "Player Col 1",
         "Player Col 2",
         "Player Glow",
@@ -48,14 +41,12 @@
       "description"  :  "You can configure the chroma, pastel and custom colors below. Support for gradient mode will be added in the future.",
       "default"      :  "Player Col 1"
     },
-    "normal-custom-color"  :  
-    {
+    "normal-custom-color"  :  {
       "type"         :  "rgb",
       "name"         :  "Custom Color",
       "default"      :  "#FFB2FF"
     },
-    "normal-rgb-speed"     :  
-    {
+    "normal-rgb-speed"     :  {
       "type"         :  "float",
       "name"         :  "Update Speed",
       "description"  :  "How fast the color updates. The higher the value the faster the speed.",
@@ -63,18 +54,15 @@
       "min"          :  0,
       "max"          :  1
     },
-    "practice-mode-title"  :  
-    {
+    "practice-mode-title"  :  {
       "type"         :  "title",
       "name"         :  "Practice Mode",
       "description"  :  "These settings affect the progress bar color in practice mode."
     },
-    "practice-working-mode" :  
-    {
+    "practice-working-mode" :  {
       "type"         :  "string",
       "name"         :  "Color",
-      "one-of"       :  
-      [
+      "one-of"       :  [
         "Player Col 1",
         "Player Col 2",
         "Player Glow",
@@ -86,15 +74,13 @@
       "default"      :  "Player Col 1",
       "enable-if"    :  "practice-mode-toggle"
     },
-    "practice-custom-color" :  
-    {
+    "practice-custom-color" :  {
       "type"         :  "rgb",
       "name"         :  "Custom Color",
       "default"      :  "#83CBFF",
       "enable-if"    :  "practice-mode-toggle"
     },
-    "practice-rgb-speed"    :  
-    {
+    "practice-rgb-speed"    :  {
       "type"         :  "float",
       "name"         :  "Update Speed",
       "description"  :  "How fast the color updates. The higher the value the faster the speed.",
@@ -103,18 +89,15 @@
       "max"          :  1,
       "enable-if"    :  "practice-mode-toggle"
     },
-    "new-best-title"        :  
-    {
+    "new-best-title"        :  {
       "type"         :  "title",
       "name"         :  "On New Best",
       "description"  :  "These settings affect the progress bar color when you get a new best.\n\nI recommend you also use the Golden Best mod!"
     },
-    "enby-working-mode"     :  
-    {
+    "enby-working-mode"     :  {
       "type"         :  "string",
       "name"         :  "Color",
-      "one-of"       :  
-      [
+      "one-of"       :  [
         "Player Col 1",
         "Player Col 2",
         "Player Glow",
@@ -125,14 +108,12 @@
       "description"  :  "You can configure the chroma, pastel and custom colors below. Support for gradient mode will be added in the future.",
       "default"      :  "Player Col 1"
     },
-    "enby-custom-color"     :  
-    {
+    "enby-custom-color"     :  {
       "type"         :  "rgb",
       "name"         :  "Custom Color",
       "default"      :  "#FFFFFF"
     },
-    "enby-rgb-speed"        :  
-    {
+    "enby-rgb-speed"        :  {
       "type"         :  "float",
       "name"         :  "Update Speed",
       "description"  :  "How fast the color updates. The higher the value the faster the speed.",
@@ -141,20 +122,16 @@
       "max"          :  1
     }
   },
-  "resources"    :  
-  {
-    "sprites"    :  
-    [
+  "resources"    :  {
+    "sprites"    :  [
       "./resources/misc/with*.png"
     ]
   },
-  "links"        :  
-  {
+  "links"        :  {
     "source"     :  "https://github.com/AnhNguyenlost13/progress-bar-thingy",
     "community"  :  "https://discord.gg/uFj8SSUhRa"
   },
-  "issues"       :  
-  {
+  "issues"       :  {
     "info"       :  "Please report any problems or suggestions you have to this mod's GitHub repository by making an issue!",
     "url"        :  "https://github.com/AnhNguyenlost13/progress-bar-thingy/issues"
   }
