@@ -1,7 +1,3 @@
-
-## <cy>v1.7.4</c> (2025-02-27)
-Fixed a bug that prevented practice color settings from being changed
-
 ## <cy>v1.7.3</c> (2025-02-03)
 minor changes
 
