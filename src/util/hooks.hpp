@@ -1,3 +1,4 @@
+// ReSharper disable CppHidingFunction
 #pragma once
 
 #include "utils.hpp" // Thanks TheSillyDoggo
@@ -6,10 +7,10 @@
 #include <Geode/modify/PlayLayer.hpp>
 class $modify(canvas, PlayLayer) {
     // Custom function
-    void repaint() {
+    void repaint() const {
         m_progressFill->setColor(paint());
         // beautiful. kill it with fire.
-        if (auto globedProgressBarWrapper = m_progressBar->getChildByID("dankmeme.globed2/progress-bar-wrapper")) { if (auto globedSelfPlayerProgress = globedProgressBarWrapper->getChildByID("dankmeme.globed2/self-player-progress")) { if (CCLayerColor* target = globedSelfPlayerProgress->getChildByType<CCLayerColor>(0)) { target->setColor(paint()); }}}
+        if (CCNode* globedProgressBarWrapper = m_progressBar->getChildByID("dankmeme.globed2/progress-bar-wrapper")) { if (CCNode* globedSelfPlayerProgress = globedProgressBarWrapper->getChildByID("dankmeme.globed2/self-player-progress")) { if (auto target = globedSelfPlayerProgress->getChildByType<CCLayerColor>(0)) { target->setColor(paint()); }}}
     }
 
     $override void startGame() {
@@ -24,9 +25,9 @@ class $modify(canvas, PlayLayer) {
 
     $override void updateProgressBar() {
         PlayLayer::updateProgressBar();
-        auto levelPercentage = as<float>(PlayLayer::get()->getCurrentPercentInt());
+        const auto levelPercentage = as<float>(PlayLayer::get()->getCurrentPercentInt());
 	    auto levelBest = PlayLayer::get()->m_level->m_normalPercent;
-        auto delegate = Catgirl::getInstance();
+        const auto delegate = Catgirl::getInstance();
         // set context
         if (m_isPracticeMode) {
             if (levelPercentage > levelBest) {

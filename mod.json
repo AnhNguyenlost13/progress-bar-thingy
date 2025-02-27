@@ -71,14 +71,12 @@
         "Custom"
       ],
       "description"  :  "You can configure the chroma, pastel and custom colors below. Support for gradient mode will be added in the future.",
-      "default"      :  "Player Col 1",
-      "enable-if"    :  "practice-mode-toggle"
+      "default"      :  "Player Col 1"
     },
     "practice-custom-color" :  {
       "type"         :  "rgb",
       "name"         :  "Custom Color",
-      "default"      :  "#83CBFF",
-      "enable-if"    :  "practice-mode-toggle"
+      "default"      :  "#83CBFF"
     },
     "practice-rgb-speed"    :  {
       "type"         :  "float",
@@ -86,8 +84,7 @@
       "description"  :  "How fast the color updates. The higher the value the faster the speed.",
       "default"      :  0.123456,
       "min"          :  0,
-      "max"          :  1,
-      "enable-if"    :  "practice-mode-toggle"
+      "max"          :  1
     },
     "new-best-title"        :  {
       "type"         :  "title",

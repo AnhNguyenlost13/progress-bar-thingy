@@ -6,12 +6,14 @@ template<unsigned N>
 struct TemplateStr {
     char buf[N + 1]{};
 
-    constexpr TemplateStr(char const* s) {
-        for (unsigned i = 0; i != N; ++i) buf[i] = s[i];
+    explicit constexpr TemplateStr(char const* s)
+    {
+        for (unsigned i = 0; i != N; ++i)
+            buf[i] = s[i];
     }
 
-    constexpr operator char const*() const { return buf; }
-    constexpr operator std::string_view() const { return std::string_view(buf); }
+    explicit constexpr operator char const*() const { return buf; }
+    explicit constexpr operator std::string_view() const { return std::string_view(buf); }
 };
 
 template<unsigned N> TemplateStr(char const (&)[N]) -> TemplateStr<N - 1>;
@@ -51,33 +53,31 @@ enum class Context {
 
 /**
  * @brief string to enum converter real
- * 
+ *
  * @param mode Working mode string
  * @return the enum
  */
-WorkingMode getWorkingMode(const std::string& mode) {
-	static const std::unordered_map<std::string, WorkingMode> modeMap = {
-		{"Player Col 1", WorkingMode::PlayerCol1}, // 0
-		{"Player Col 2", WorkingMode::PlayerCol2}, // 1
-		{"Player Glow", WorkingMode::PlayerGlow},  // 2
-		{"Chroma", WorkingMode::Chroma},           // 3
-		{"Pastel", WorkingMode::Pastel},           // 4
-		{"Custom", WorkingMode::Custom}            // 5
-		// {"Gradient", WorkingMode::Gradient} /* Placeholder */
-	};
+inline WorkingMode getWorkingMode(const std::string& mode)
+{
+    static const std::unordered_map<std::string, WorkingMode> modeMap = {
+        {"Player Col 1", WorkingMode::PlayerCol1}, // 0
+        {"Player Col 2", WorkingMode::PlayerCol2}, // 1
+        {"Player Glow", WorkingMode::PlayerGlow}, // 2
+        {"Chroma", WorkingMode::Chroma}, // 3
+        {"Pastel", WorkingMode::Pastel}, // 4
+        {"Custom", WorkingMode::Custom} // 5
+        // {"Gradient", WorkingMode::Gradient} /* Placeholder */
+    };
 
-	auto x = modeMap.find(mode);
-	return x != modeMap.end() ? x->second : WorkingMode::Unknown;
+    const auto x = modeMap.find(mode);
+    return x != modeMap.end() ? x->second : WorkingMode::Unknown;
 }
 
-std::string contextKey(const Context context) {
+inline std::string contextKey(const Context context) {
 	static const std::unordered_map<Context, std::string> contextMap = {
-		{Context::Normal, "normal"},
-		{Context::Practice, "practice"},
-		{Context::NewBest, "enby"}
-	};
+        {Context::Normal, "normal"}, {Context::Practice, "practice"}, {Context::NewBest, "enby"}};
 
-	auto ret = contextMap.find(context);
+    const auto ret = contextMap.find(context);
 	return ret != contextMap.end() ? ret->second : "normal";
 }
 
@@ -146,14 +146,14 @@ protected:
 Catgirl* Catgirl::meow = nullptr;
 /**
  * @brief this also gets... the color, but this depends on the level state as well!
- * 
+ *
  * @return c o l o r
  */
-ccColor3B paint() {
-	Catgirl* delegate = Catgirl::getInstance();
-	Context context = delegate->context;
+inline ccColor3B paint() {
+    const Catgirl* delegate = Catgirl::getInstance();
+    const Context context = delegate->context;
 	WorkingMode workingMode;
-	auto gm = GameManager::sharedState();
+    const auto gm = GameManager::sharedState();
 
 	// Check for the context first
 	switch (context) {
@@ -203,11 +203,9 @@ ccColor3B paint() {
  * @brief Gets the color change rate based on some factors.
  * @return float
  */
-float getSpeed() {
-	Catgirl* delegate = Catgirl::getInstance();
-	Context context = delegate->context;
+inline float getSpeed() {
 
-	switch (context) {
+    switch (const Catgirl* delegate = Catgirl::getInstance(); delegate->context) {
 		case Context::Normal:
 			return delegate->normalRgbSpeed;
 		case Context::Practice:

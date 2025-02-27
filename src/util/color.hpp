@@ -9,22 +9,22 @@ class colorutil
 	public:
 		static inline float va = 0.0f;
 
-		static void update(float dt)
+		static void update(const float dt)
 		{
 			va += dt;
 		}
 
 		static ccColor3B hsvToRgb(const ccHSVValue& hsv) {
-			float hue = hsv.h;
-			float saturation = hsv.s;
-			float value = hsv.v;
+			const float hue = hsv.h;
+			const float saturation = hsv.s;
+			const float value = hsv.v;
 
-			int hi = static_cast<int>(std::floor(hue / 60.0f)) % 6;
-			float f = hue / 60.0f - std::floor(hue / 60.0f);
+			const int hi = static_cast<int>(std::floor(hue / 60.0f)) % 6;
+			const float f = hue / 60.0f - std::floor(hue / 60.0f);
 
-			float p = value * (1 - saturation);
-			float q = value * (1 - f * saturation);
-			float t = value * (1 - (1 - f) * saturation);
+			const float p = value * (1 - saturation);
+			const float q = value * (1 - f * saturation);
+			const float t = value * (1 - (1 - f) * saturation);
 
 			float r, g, b;
 
