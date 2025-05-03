@@ -44,7 +44,7 @@
     "normal-custom-color": {
       "type": "rgb",
       "name": "Custom Color",
-      "default": "#FFB2FF"
+      "default": "#83CBFF"
     },
     "normal-rgb-speed": {
       "type": "float",
@@ -76,7 +76,7 @@
     "practice-custom-color": {
       "type": "rgb",
       "name": "Custom Color",
-      "default": "#83CBFF"
+      "default": "#FFB2FF"
     },
     "practice-rgb-speed": {
       "type": "float",
