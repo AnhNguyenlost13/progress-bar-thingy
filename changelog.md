@@ -1,6 +1,6 @@
 
 ## <cy>v1.7.5</c> (2025-04-02)
-Minor internal change (thanks km7dev)
+iOS support (thank you kam)
 
 ## <cy>v1.7.4</c> (2025-02-27)
 Fixed a bug that prevented practice color settings from being changed
