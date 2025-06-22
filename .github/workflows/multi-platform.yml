@@ -126,6 +126,11 @@ jobs:
         # see https://github.com/actions/checkout/issues/439
         run: git pull origin ${{ github.ref }} --no-rebase
 
+      # thank you GitHub
+      - name: Update LLVM 
+        run: choco upgrade llvm
+        if: matrix.config.os == 'windows-latest'
+
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
         with:
