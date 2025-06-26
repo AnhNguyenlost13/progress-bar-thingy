@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 
 if ("${GEODE_TARGET_PLATFORM}" STREQUAL "iOS" OR IOS)
     set(CMAKE_OSX_ARCHITECTURES "arm64")
@@ -11,13 +10,11 @@ else()
 endif()
 
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-# set(GEODE_TARGET_PLATFORM MacOS) # why
-project(progressBarThingy VERSION 1.6.3)
+project(progressBarThingy VERSION 1.7.4)
 
 # Set up the mod binary
 add_library(${PROJECT_NAME} SHARED
     src/main.cpp
-        # Add any extra C++ source files here
 )
 
 if (NOT DEFINED ENV{GEODE_SDK})
