@@ -1,5 +1,5 @@
 {
-  "geode": "4.6.2",
+  "geode": "4.10.0",
   "gd": {
     "win": "2.2074",
     "android": "2.2074",
@@ -26,6 +26,10 @@
       "type": "title",
       "name": "Normal Mode",
       "description": "These settings affect the progress bar color in normal mode."
+    },
+    "normal-preview": {
+      "name": "Preview",
+      "type": "custom:normal-preview"
     },
     "normal-working-mode": {
       "type": "string",
@@ -59,6 +63,10 @@
       "name": "Practice Mode",
       "description": "These settings affect the progress bar color in practice mode."
     },
+    "practice-preview": {
+      "name": "Preview",
+      "type": "custom:practice-preview"
+    },
     "practice-working-mode": {
       "type": "string",
       "name": "Color",
@@ -90,6 +98,10 @@
       "type": "title",
       "name": "On New Best",
       "description": "These settings affect the progress bar color when you get a new best.\n\nI recommend you also use the Golden Best mod!"
+    },
+    "new-best-preview": {
+      "name": "Preview",
+      "type": "custom:new-best-preview"
     },
     "enby-working-mode": {
       "type": "string",

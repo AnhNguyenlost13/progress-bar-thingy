@@ -73,12 +73,13 @@ inline WorkingMode getWorkingMode(const std::string& mode)
 
 inline std::string contextKey(const Context context) {
 	static const std::unordered_map<Context, std::string> contextMap = {
-        {Context::Normal, "normal"}, {Context::Practice, "practice"}, {Context::NewBest, "enby"}};
+        {Context::Normal, "normal"}, {Context::Practice, "practice"}, {Context::NewBest, "newBest"}};
 
     const auto ret = contextMap.find(context);
 	return ret != contextMap.end() ? ret->second : "normal";
 }
 
+// aka the global struct. terrible naming from her
 class Catgirl {
 public:
 	static Catgirl* getInstance() {
@@ -95,12 +96,12 @@ public:
 
 		normalCustomColor = fastGetSetting<"normal-custom-color", ccColor3B>();
 		practiceCustomColor = fastGetSetting<"practice-custom-color", ccColor3B>();
-		enbyCustomColor = fastGetSetting<"enby-custom-color", ccColor3B>();
+		newBestCustomColor = fastGetSetting<"enby-custom-color", ccColor3B>();
 
 		practiceOverride = fastGetSetting<"practice-override", bool>();
 
 		practiceRgbSpeed = fastGetSetting<"practice-rgb-speed", double_t>();
-		enbyRgbSpeed = fastGetSetting<"enby-rgb-speed", double_t>();
+		newBestRgbSpeed = fastGetSetting<"enby-rgb-speed", double_t>();
 		normalRgbSpeed = fastGetSetting<"normal-rgb-speed", double_t>();
 
 		// Unused
@@ -109,6 +110,8 @@ public:
 		// } else { 
 		// 	dynamic = false; 
 		// }
+
+		updateId++;
 	}
 	
 	WorkingMode normalWorkingMode;
@@ -118,12 +121,14 @@ public:
 	bool practiceToggle;
 	bool practiceOverride;
 	double_t practiceRgbSpeed;
-	double_t enbyRgbSpeed;
+	double_t newBestRgbSpeed;
 	double_t normalRgbSpeed;
 	ccColor3B normalCustomColor;
 	ccColor3B practiceCustomColor;
-	ccColor3B enbyCustomColor;
+	ccColor3B newBestCustomColor;
 	Context context;
+
+	short updateId;
 
 	bool dynamic;
 
@@ -136,16 +141,13 @@ private:
 
 	Catgirl(const Catgirl&) = delete;
 	Catgirl& operator=(const Catgirl&) = delete;
-
-protected:
-	// your mom
 };
 
 Catgirl* Catgirl::meow = nullptr;
 /**
- * @brief this also gets... the color, but this depends on the level state as well!
+ * @brief Gets the level state-dependent color.
  *
- * @return c o l o r
+ * @return ccColor3B The color based on the current context and working mode.
  */
 inline ccColor3B paint() {
     const Catgirl* delegate = Catgirl::getInstance();
@@ -188,12 +190,12 @@ inline ccColor3B paint() {
 				case Context::Practice:
 					return delegate->practiceCustomColor;
 				case Context::NewBest:
-					return delegate->enbyCustomColor;
+					return delegate->newBestCustomColor;
 				default:
 					return {0, 0, 0};
 			}
 		default:
-			return {252, 181, 255}; // If your color is stuck at this please report
+			return {252, 255, 255}; // White
 	}
 }
 
@@ -209,7 +211,7 @@ inline float getSpeed() {
 		case Context::Practice:
 			return delegate->practiceRgbSpeed;
 		case Context::NewBest:
-			return delegate->enbyRgbSpeed;
+			return delegate->newBestRgbSpeed;
 		default:
 			return delegate->normalRgbSpeed;
 	};
