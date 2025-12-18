@@ -5,10 +5,7 @@
 </div>
 <h1 align="center">In-Game Progress Bar Color Changer</h1>
 
-*If you want to report a bug/leave a suggestion, [open a new issue](https://github.com/AnhNguyenlost13/progress-bar-thingy/issues/new/choose) or join [my Discord server](https://discord.gg/uFj8SSUhRa).*
-
-## Why?
-Originally inspired by [Naxrin's ProgressBarColor mod](https://github.com/Naxrin/Progress-Bar-Color). I originally intended this to be an even simpler mod to make the texture white, but decided to expand it.
+<p align="center"><i>If you want to report a bug/leave a suggestion, <a href="https://github.com/AnhNguyenlost13/progress-bar-thingy/issues/new/choose">open a new issue</a> or join <a href="https://discord.gg/uFj8SSUhRa">my Discord server</a>.</i></p>
 
 ## Building
 For more info, refer to the [docs](https://docs.geode-sdk.org/getting-started/create-mod#build).
@@ -32,8 +29,10 @@ Feel free to open a pull request or an issue if you want to contribute to this m
 - [x] RGB progress bar
 - [x] Mode-dependent colors (differentiate between Practice and Normal modes)
 - [x] Change the color on new best
-- [x] Improve code
-- 
+- [ ] Improve code
+- [ ] Gradient modes
+- [ ] Progress bar preview in settings page
+
 ## Attributions
 * Naxrin's ProgressBarColor mod: Inspiration + code reference
 * Firee's Golden Best mod: new best detection reference
