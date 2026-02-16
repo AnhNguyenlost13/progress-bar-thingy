@@ -46,7 +46,8 @@ protected:
         mButton = CCMenuItemSpriteExtra::create(mButtonSprite, this, menu_selector(NormalProgressBarSettingNode::onRefreshButton));
         mButton->setPosition(width - 30.0f, 0.0f);
         mButton->setScale(0.8f);
-        mMenu = CCMenu::create(mButton, nullptr);
+        mMenu = CCMenu::create();
+        mMenu->addChild(mButton);
         mMenu->setPosition(mMenu->getPositionX() - 240, mMenu->getPositionY()); // disgusting
         addChild(mMenu);
         return true;
