@@ -25,7 +25,7 @@ template <TemplateStr settingName, typename T>
  * @return The cached setting value
  */
 T fastGetSetting() {
-	static T cachedSetting = (geode::listenForSettingChanges<T>(settingName, [](T v) {
+	static T cachedSetting = (geode::listenForSettingChanges<T>(std::string(settingName), [](T v) { // TemplateStr doesn't implicitly convert to std::string
 	    cachedSetting = v;
 	}), geode::Mod::get()->getSettingValue<T>(settingName));
 	return cachedSetting;
