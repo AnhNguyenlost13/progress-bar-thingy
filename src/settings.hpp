@@ -37,29 +37,33 @@ protected:
     bool init(const std::shared_ptr<NormalProgressBarSetting>& setting, const float width)
     {
         if (!SettingNodeV3::init(setting, width)) return false;
-        mProgressBar = ProgressBar::create();
+        mProgressBar = ProgressBar::create(ProgressBarStyle::Level);
         addChildAtPosition(mProgressBar, Anchor::Center);
-        as<AnchorLayoutOptions*>(mProgressBar->getLayoutOptions())->setOffset(ccp(-45, -7));
+        mProgressBar->updateAnchoredPosition(Anchor::Center, ccp(-45, -7));
         mProgressBar->updateProgress(static_cast<float>(rand() % 61 + 20));
+        // apply DA STYLE
+        mProgressBar->setFillColor(paint());
         const auto mButtonSprite = ButtonSprite::createWithSpriteFrameName("GJ_updateBtn_001.png");
         mButtonSprite->setScale(0.5f);
         mButton = CCMenuItemSpriteExtra::create(mButtonSprite, this, menu_selector(NormalProgressBarSettingNode::onRefreshButton));
-        mButton->setPosition(width - 30.0f, 0.0f);
+        mButton->setPosition(width - 230.0f, 16.0f);
         mButton->setScale(0.8f);
         mMenu = CCMenu::create();
         mMenu->addChild(mButton);
-        mMenu->setPosition(mMenu->getPositionX() - 240, mMenu->getPositionY()); // disgusting
+        mMenu->setPosition(0.0f, 0.0f);
         addChild(mMenu);
         return true;
     }
 
     void onRefreshButton(CCObject* sender)
     {
-        if (mLastUpdateId == Catgirl::getInstance()->updateId) return FLAlertLayer::create("Info", "OK", "Progress bar is already up to date!")->show();
-        if (mProgressBar) mProgressBar->removeFromParentAndCleanup(true);
-        mProgressBar = ProgressBar::create();
+        if (mLastUpdateId == Catgirl::getInstance()->updateId) return FLAlertLayer::create("Info", "Progress bar is already up to date!", "OK")->show();
+        // if (mProgressBar) mProgressBar->removeFromParentAndCleanup(true);
+        // mProgressBar = ProgressBar::create();
         /*mMenu->*/addChildAtPosition(mProgressBar, Anchor::Center);
-        as<AnchorLayoutOptions*>(mProgressBar->getLayoutOptions())->setOffset(ccp(-45, -7));
+        mProgressBar->updateAnchoredPosition(Anchor::Center, ccp(-45, -7));
+        // reapply DA STYLE
+        mProgressBar->setFillColor(paint());
         mProgressBar->updateProgress(static_cast<float>(rand() % 61 + 20));
         mLastUpdateId = Catgirl::getInstance()->updateId;
         Notification::create("Progress bar updated!", NotificationIcon::Success)->show();
@@ -88,10 +92,10 @@ public:
         return nullptr;
     }
 
-    bool hasUncommittedChanges() const override { return false; }
-    bool hasNonDefaultValue() const override { return false; }
+    [[nodiscard]] bool hasUncommittedChanges() const override { return false; }
+    [[nodiscard]] bool hasNonDefaultValue() const override { return false; }
 
-    std::shared_ptr<NormalProgressBarSetting> getNormalProgressBarSetting() const { return std::static_pointer_cast<NormalProgressBarSetting>(getSetting()); }
+    [[nodiscard]] std::shared_ptr<NormalProgressBarSetting> getNormalProgressBarSetting() const { return std::static_pointer_cast<NormalProgressBarSetting>(getSetting()); }
 };
 
 

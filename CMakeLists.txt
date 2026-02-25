@@ -14,7 +14,7 @@ project(progressBarThingy VERSION 1.7.4)
 
 # Set up the mod binary
 add_library(${PROJECT_NAME} SHARED
-    src/main.cpp
+        src/dllmain.cpp
 )
 
 if (NOT DEFINED ENV{GEODE_SDK})

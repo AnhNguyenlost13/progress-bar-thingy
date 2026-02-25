@@ -6,12 +6,12 @@ template<unsigned N>
 struct TemplateStr {
 	char buf[N + 1]{};
 
-	constexpr TemplateStr(char const* s) {
+    explicit constexpr TemplateStr(char const* s) {
 		for (unsigned i = 0; i != N; ++i) buf[i] = s[i];
 	}
 
-	constexpr operator char const*() const { return buf; }
-	constexpr operator std::string_view() const { return std::string_view(buf); }
+    explicit constexpr operator char const*() const { return buf; }
+    explicit constexpr operator std::string_view() const { return std::string_view(buf); }
 };
 
 template<unsigned N> TemplateStr(char const (&)[N]) -> TemplateStr<N - 1>;
@@ -27,7 +27,7 @@ template <TemplateStr settingName, typename T>
 T fastGetSetting() {
 	static T cachedSetting = (geode::listenForSettingChanges<T>(std::string(settingName), [](T v) { // TemplateStr doesn't implicitly convert to std::string
 	    cachedSetting = v;
-	}), geode::Mod::get()->getSettingValue<T>(settingName));
+	}), Mod::get()->getSettingValue<T>(settingName));
 	return cachedSetting;
 }
 
@@ -114,23 +114,23 @@ public:
 		updateId++;
 	}
 	
-	WorkingMode normalWorkingMode;
-	WorkingMode practiceWorkingMode;
-	WorkingMode newBestWorkingMode;
+	WorkingMode normalWorkingMode = WorkingMode::Unknown;
+	WorkingMode practiceWorkingMode = WorkingMode::Unknown;
+	WorkingMode newBestWorkingMode = WorkingMode::Unknown;
 
-	bool practiceToggle;
-	bool practiceOverride;
-	double_t practiceRgbSpeed;
-	double_t newBestRgbSpeed;
-	double_t normalRgbSpeed;
-	ccColor3B normalCustomColor;
-	ccColor3B practiceCustomColor;
-	ccColor3B newBestCustomColor;
-	Context context;
+	bool practiceToggle = false;
+	bool practiceOverride = false;
+    double_t practiceRgbSpeed{};
+	double_t newBestRgbSpeed{};
+	double_t normalRgbSpeed{};
+	ccColor3B normalCustomColor{};
+	ccColor3B practiceCustomColor{};
+	ccColor3B newBestCustomColor{};
+	Context context = Context::Normal;
 
-	short updateId;
+	short updateId = 0;
 
-	bool dynamic;
+	bool dynamic = false;
 
 private:
 	static Catgirl* meow;
@@ -138,16 +138,17 @@ private:
 	Catgirl() {
 		updateSettings();
 	}
-
+public:
 	Catgirl(const Catgirl&) = delete;
 	Catgirl& operator=(const Catgirl&) = delete;
 };
 
 Catgirl* Catgirl::meow = nullptr;
+
 /**
  * @brief Gets the level state-dependent color.
  *
- * @return ccColor3B The color based on the current context and working mode.
+ * @return The color based on the current context and working mode.
  */
 inline ccColor3B paint() {
     const Catgirl* delegate = Catgirl::getInstance();
