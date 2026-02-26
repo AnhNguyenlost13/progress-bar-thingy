@@ -1,6 +1,5 @@
 // ReSharper disable CppHidingFunction
 #pragma once
-#define as static_cast
 
 #include "utils.hpp" // Thanks TheSillyDoggo
 
@@ -16,14 +15,15 @@ class $modify(canvas, PlayLayer) {
         PlayLayer::startGame();
     }
 
-    $override void resetLevel() {
+    $override void resetLevel() override
+    {
         Catgirl::getInstance()->updateSettings();
         PlayLayer::resetLevel();
     }
 
     $override void updateProgressbar() {
         PlayLayer::updateProgressbar();
-        const auto levelPercentage = as<float>(get()->getCurrentPercentInt());
+        const auto levelPercentage = static_cast<float>(get()->getCurrentPercentInt());
 	    auto levelBest = get()->m_level->m_normalPercent;
         const auto delegate = Catgirl::getInstance();
 
