@@ -31,7 +31,7 @@ Feel free to open a pull request or an issue if you want to contribute to this m
 - [x] Change the color on new best
 - [ ] Improve code
 - [ ] Gradient modes
-- [ ] Progress bar preview in settings page
+- [x] Progress bar preview in settings page
 
 ## Attributions
 * Naxrin's ProgressBarColor mod: Inspiration + code reference

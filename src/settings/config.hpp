@@ -32,8 +32,8 @@ struct ColorConfig
     float chromaSpeed = 1.0f;
     ColorConfigType type = CustomColor;
     std::vector<GradientLocation> gradientLocations = {{cocos2d::ccc3(255, 0, 0), 0}, {cocos2d::ccc3(0, 255, 0), 1}};
-    bool smoothGradient = true; // true = gradient mapped across bar, false = flat single-color cycling
-    bool gradientFollowsProgress = false; // true = position based on level %, false = time-based animation
+    bool smoothGradient = true;
+    bool gradientFollowsProgress = false;
 
     cocos2d::ccColor3B colorForConfig(std::string channel, float levelProgress = -1.f);
     cocos2d::ccColor3B colorForGradient(float v);
