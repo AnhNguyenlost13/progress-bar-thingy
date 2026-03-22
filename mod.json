@@ -1,5 +1,5 @@
 {
-  "geode": "5.0.1",
+  "geode": "5.3.0",
   "gd": {
     "win": "2.2081",
     "android": "2.2081",
@@ -22,6 +22,19 @@
       "description": "Displays the new best color instead when you get a new best in practice mode.",
       "default": false
     },
+    "gradient-segments": {
+      "type": "int",
+      "name": "Gradient Segments",
+      "description": "Number of color segments for spread gradients. More = smoother, but heavier.",
+      "default": 24,
+      "min": 4,
+      "max": 256,
+      "control": {
+        "slider": true,
+        "slider-step": 4,
+        "arrows": false
+      }
+    },
     "normal-mode-title": {
       "type": "title",
       "name": "Normal Mode",
@@ -30,33 +43,6 @@
     "normal-preview": {
       "name": "Preview",
       "type": "custom:normal-preview"
-    },
-    "normal-working-mode": {
-      "type": "string",
-      "name": "Color",
-      "one-of": [
-        "Player Col 1",
-        "Player Col 2",
-        "Player Glow",
-        "Chroma",
-        "Pastel",
-        "Custom"
-      ],
-      "description": "You can configure the chroma, pastel and custom colors below. Support for gradient mode will be added in the future.",
-      "default": "Player Col 1"
-    },
-    "normal-custom-color": {
-      "type": "rgb",
-      "name": "Custom Color",
-      "default": "#83CBFF"
-    },
-    "normal-rgb-speed": {
-      "type": "float",
-      "name": "Update Speed",
-      "description": "How fast the color updates. The higher the value the faster the speed.",
-      "default": 0.12345,
-      "min": 0,
-      "max": 1
     },
     "practice-mode-title": {
       "type": "title",
@@ -67,33 +53,6 @@
       "name": "Preview",
       "type": "custom:practice-preview"
     },
-    "practice-working-mode": {
-      "type": "string",
-      "name": "Color",
-      "one-of": [
-        "Player Col 1",
-        "Player Col 2",
-        "Player Glow",
-        "Chroma",
-        "Pastel",
-        "Custom"
-      ],
-      "description": "You can configure the chroma, pastel and custom colors below. Support for gradient mode will be added in the future.",
-      "default": "Player Col 1"
-    },
-    "practice-custom-color": {
-      "type": "rgb",
-      "name": "Custom Color",
-      "default": "#FFB2FF"
-    },
-    "practice-rgb-speed": {
-      "type": "float",
-      "name": "Update Speed",
-      "description": "How fast the color updates. The higher the value the faster the speed.",
-      "default": 0.12345,
-      "min": 0,
-      "max": 1
-    },
     "new-best-title": {
       "type": "title",
       "name": "On New Best",
@@ -102,38 +61,11 @@
     "new-best-preview": {
       "name": "Preview",
       "type": "custom:new-best-preview"
-    },
-    "enby-working-mode": {
-      "type": "string",
-      "name": "Color",
-      "one-of": [
-        "Player Col 1",
-        "Player Col 2",
-        "Player Glow",
-        "Chroma",
-        "Pastel",
-        "Custom"
-      ],
-      "description": "You can configure the chroma, pastel and custom colors below. Support for gradient mode will be added in the future.",
-      "default": "Player Col 1"
-    },
-    "enby-custom-color": {
-      "type": "rgb",
-      "name": "Custom Color",
-      "default": "#FFFFFF"
-    },
-    "enby-rgb-speed": {
-      "type": "float",
-      "name": "Update Speed",
-      "description": "How fast the color updates. The higher the value the faster the speed.",
-      "default": 0.12345,
-      "min": 0,
-      "max": 1
     }
   },
   "resources": {
     "sprites": [
-      "./resources/misc/with*.png"
+      "/resources/misc/with*.png"
     ]
   },
   "links": {

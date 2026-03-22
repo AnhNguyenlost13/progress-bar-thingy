@@ -2,14 +2,19 @@
 // ReSharper disable CppNonExplicitConvertingConstructor
 #pragma once
 
-#include "color.hpp" // Thanks TheSillyDoggo
+#include "color.hpp"
+#include "settings/config.hpp"
 
 template <size_t N>
 struct TemplateStr
 {
     char data[N];
 
-    constexpr TemplateStr(const char (&s)[N]) { for (size_t i = 0; i < N; ++i) data[i] = s[i]; }
+    constexpr TemplateStr(const char (&s)[N])
+    {
+        for (size_t i = 0; i < N; ++i)
+            data[i] = s[i];
+    }
     constexpr operator std::string_view() const noexcept { return std::string_view(data, N - 1); }
 };
 
@@ -19,121 +24,74 @@ TemplateStr(const char (&)[N]) -> TemplateStr<N>;
 template <TemplateStr SettingName, typename T>
 T fastGetSetting()
 {
-    static T s = (geode::listenForSettingChanges<T>(std::string(std::string_view(SettingName)), [](T v) { s = v; }), Mod::get()->getSettingValue<T>(std::string(std::string_view(SettingName))));
+    static T s = (geode::listenForSettingChanges<T>(std::string(std::string_view(SettingName)), [](T v) { s = v; }),
+                  Mod::get()->getSettingValue<T>(std::string(std::string_view(SettingName))));
     return s;
 }
-
-enum class WorkingMode
-{
-    PlayerCol1,
-    PlayerCol2,
-    PlayerGlow,
-    Chroma,
-    Pastel,
-    Custom,
-    // Gradient, // who knows
-    Unknown // This should never happen either lmao
-};
 
 enum class Context
 {
     Normal,
     Practice,
     NewBest,
-    Unknown // hate you
+    Unknown
 };
-
-/**
- * @brief string to enum converter real
- *
- * @param mode Working mode string
- * @return the enum
- */
-inline WorkingMode getWorkingMode(const std::string& mode)
-{
-    static const std::unordered_map<std::string, WorkingMode> modeMap = {
-        {"Player Col 1", WorkingMode::PlayerCol1}, // 0
-        {"Player Col 2", WorkingMode::PlayerCol2}, // 1
-        {"Player Glow", WorkingMode::PlayerGlow}, // 2
-        {"Chroma", WorkingMode::Chroma}, // 3
-        {"Pastel", WorkingMode::Pastel}, // 4
-        {"Custom", WorkingMode::Custom} // 5
-        // {"Gradient", WorkingMode::Gradient} /* Placeholder */
-    };
-
-    const auto x = modeMap.find(mode);
-    return x != modeMap.end() ? x->second : WorkingMode::Unknown;
-}
-
-inline std::string contextKey(const Context context)
-{
-    static const std::unordered_map<Context, std::string> contextMap = {
-        {Context::Normal, "normal"}, {Context::Practice, "practice"}, {Context::NewBest, "newBest"}};
-
-    const auto ret = contextMap.find(context);
-    return ret != contextMap.end() ? ret->second : "normal";
-}
 
 class Catgirl
 {
 public:
-    static Catgirl* getInstance()
-    {
-        if (meow == nullptr)
-        {
-            meow = new Catgirl();
-        }
-        return meow;
-    }
+    static Catgirl* getInstance() { return meow ? meow : meow = new Catgirl(); }
 
     void updateSettings()
     {
-        normalWorkingMode = getWorkingMode(fastGetSetting<"normal-working-mode", std::string>());
-        practiceWorkingMode = getWorkingMode(fastGetSetting<"practice-working-mode", std::string>());
-        newBestWorkingMode = getWorkingMode(fastGetSetting<"enby-working-mode", std::string>());
-
-        normalCustomColor = fastGetSetting<"normal-custom-color", ccColor3B>();
-        practiceCustomColor = fastGetSetting<"practice-custom-color", ccColor3B>();
-        newBestCustomColor = fastGetSetting<"enby-custom-color", ccColor3B>();
-
-        practiceOverride = fastGetSetting<"practice-override", bool>();
-
-        practiceRgbSpeed = fastGetSetting<"practice-rgb-speed", double_t>();
-        newBestRgbSpeed = fastGetSetting<"enby-rgb-speed", double_t>();
-        normalRgbSpeed = fastGetSetting<"normal-rgb-speed", double_t>();
-
-        // Unused
-        // if (normalWorkingMode == WorkingMode::Chroma || normalWorkingMode == WorkingMode::Pastel ||
-        // practiceWorkingMode == WorkingMode::Chroma || practiceWorkingMode == WorkingMode::Pastel ||
-        // newBestWorkingMode == WorkingMode::Chroma || newBestWorkingMode == WorkingMode::Pastel) { 	dynamic = true;
-        // } else { 	dynamic = false;
-        // }
-
+        normalConfig = loadConfigFor(Context::Normal);
+        practiceConfig = loadConfigFor(Context::Practice);
+        newBestConfig = loadConfigFor(Context::NewBest);
         updateId++;
     }
 
-    WorkingMode normalWorkingMode = WorkingMode::Unknown;
-    WorkingMode practiceWorkingMode = WorkingMode::Unknown;
-    WorkingMode newBestWorkingMode = WorkingMode::Unknown;
+    ColorConfig normalConfig;
+    ColorConfig practiceConfig;
+    ColorConfig newBestConfig;
 
-    bool practiceToggle = false;
-    bool practiceOverride = false;
-    double_t practiceRgbSpeed{};
-    double_t newBestRgbSpeed{};
-    double_t normalRgbSpeed{};
-    ccColor3B normalCustomColor{};
-    ccColor3B practiceCustomColor{};
-    ccColor3B newBestCustomColor{};
     Context context = Context::Normal;
-
     short updateId = 0;
-
-    bool dynamic = false;
 
 private:
     static Catgirl* meow;
-
     Catgirl() { updateSettings(); }
+
+    static ColorConfig loadConfigFor(Context ctx)
+    {
+        const char* key;
+        ccColor3B defaultColor;
+
+        switch (ctx)
+        {
+        case Context::Normal:
+            key = "normal-config";
+            defaultColor = ccc3(0xFF, 0xB2, 0xFF);
+            break;
+        case Context::Practice:
+            key = "practice-config";
+            defaultColor = ccc3(0x83, 0xCB, 0xFF);
+            break;
+        case Context::NewBest:
+            key = "newBest-config";
+            defaultColor = ccc3(0xFF, 0xFF, 0xFF);
+            break;
+        default:
+            return {};
+        }
+
+        ColorConfig def;
+        def.type = (ctx == Context::NewBest) ? Pastel : (ctx == Context::Practice) ? Player2 : Player1;
+        def.customColor = defaultColor;
+        def.chromaSpeed = (ctx == Context::NewBest) ? 0.1f : 0.5f;
+
+        def.fromJson(Mod::get()->getSavedValue<matjson::Value>(key, matjson::Value{}));
+        return def;
+    }
 
 public:
     Catgirl(const Catgirl&) = delete;
@@ -144,79 +102,38 @@ Catgirl* Catgirl::meow = nullptr;
 
 /**
  * @brief Gets the level state-dependent color.
- *
- * @return The color based on the current context and working mode.
  */
-inline ccColor3B paint()
+inline ccColor3B paint(float levelProgress = -1.f)
 {
-    const Catgirl* delegate = Catgirl::getInstance();
-    const Context context = delegate->context;
-    WorkingMode workingMode;
-    const auto gm = GameManager::sharedState();
-
-    // Check for the context first
-    switch (context)
+    auto* d = Catgirl::getInstance();
+    ColorConfig* cfg;
+    switch (d->context)
     {
-    case Context::Normal:
-        workingMode = delegate->normalWorkingMode;
-        break;
     case Context::Practice:
-        workingMode = delegate->practiceWorkingMode;
+        cfg = &d->practiceConfig;
         break;
     case Context::NewBest:
-        workingMode = delegate->newBestWorkingMode;
+        cfg = &d->newBestConfig;
         break;
     default:
-        workingMode = delegate->normalWorkingMode;
+        cfg = &d->normalConfig;
         break;
     }
-
-    // Decide the working mode
-    switch (workingMode)
-    {
-    case WorkingMode::PlayerCol1:
-        return gm->colorForIdx(gm->getPlayerColor());
-    case WorkingMode::PlayerCol2:
-        return gm->colorForIdx(gm->getPlayerColor2());
-    case WorkingMode::PlayerGlow:
-        return gm->colorForIdx(gm->getPlayerGlowColor());
-    case WorkingMode::Chroma:
-        return colorutil::getChromaColour();
-    case WorkingMode::Pastel:
-        return colorutil::getPastelColour();
-    case WorkingMode::Custom:
-        switch (context)
-        {
-        case Context::Normal:
-            return delegate->normalCustomColor;
-        case Context::Practice:
-            return delegate->practiceCustomColor;
-        case Context::NewBest:
-            return delegate->newBestCustomColor;
-        default:
-            return {0, 0, 0};
-        }
-    default:
-        return {252, 255, 255}; // White
-    }
+    return cfg->colorForConfig("", levelProgress);
 }
 
 /**
- * @brief Gets the color change rate based on some factors.
- * @return float
+ * @brief Gets the chroma animation speed for the current context.
  */
 inline float getSpeed()
 {
-
-    switch (const Catgirl* delegate = Catgirl::getInstance(); delegate->context)
+    switch (const auto* d = Catgirl::getInstance(); d->context)
     {
-    case Context::Normal:
-        return delegate->normalRgbSpeed;
     case Context::Practice:
-        return delegate->practiceRgbSpeed;
+        return d->practiceConfig.chromaSpeed;
     case Context::NewBest:
-        return delegate->newBestRgbSpeed;
+        return d->newBestConfig.chromaSpeed;
     default:
-        return delegate->normalRgbSpeed;
-    };
+        return d->normalConfig.chromaSpeed;
+    }
 }
