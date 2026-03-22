@@ -160,8 +160,8 @@ public:
     void onSpeedSliderChanged(CCObject* sender);
     void onToggleGradientMapped(CCObject* sender);
     void onToggleGradientProgress(CCObject* sender);
-    static void onSpreadInfo(CCObject*);
-    static void onProgressInfo(CCObject*);
+    void onSpreadInfo(CCObject*);
+    void onProgressInfo(CCObject*);
 
     void setStartConfig(const ColorConfig& config);
     void setDefaultConfig(const ColorConfig& config);
