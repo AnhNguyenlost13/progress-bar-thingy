@@ -421,9 +421,11 @@ CCNode* SetupColorConfigUI::createGradientLine(const bool timePreview, const ccC
 void SetupColorConfigUI::updateGradientPreview()
 {
 
-    if (currentConfig.smoothGradient && gradientPreviewBar->isVisible())
+
+    if (!(currentConfig.smoothGradient && gradientPreviewBar->isVisible()))
         for (const auto& [layer, v] : gradientPreviewSprites)
             layer->setColor(currentConfig.colorForGradient(v));
+
     else
         for (int i = 0; i < static_cast<int>(barOverlaySegments.size()); i++)
             barOverlaySegments[i]->setColor(
@@ -457,7 +459,7 @@ void SetupColorConfigUI::updateGradientLines()
     fixTouchPriorities();
 }
 
-void SetupColorConfigUI::onSelectGradientLine(const CCObject* sender)
+void SetupColorConfigUI::onSelectGradientLine(CCObject* sender)
 {
     selectedGradientLine = sender->getTag();
     updateGradientLines();

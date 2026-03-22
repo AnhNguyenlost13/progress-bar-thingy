@@ -152,7 +152,7 @@ public:
     void onChangeType(CCObject* sender);
     void onSetDefault(CCObject* sender);
     void onUndoChanged(CCObject* sender);
-    void onSelectGradientLine(const CCObject* sender);
+    void onSelectGradientLine(CCObject* sender);
     void onChangeGradientLineColor(CCObject* sender);
     void onGradientLocationSlider(CCObject* sender);
     void onAddGradientStep(CCObject* sender);
