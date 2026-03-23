@@ -1027,10 +1027,10 @@ void SetupColorConfigUI::textChanged(CCTextInputNode* node)
         case 5:
             {
                 if (const auto pct = utils::numFromString<int>(gradientLinePositionInput->getString()); pct.isOk())
-                currentConfig.gradientLocations[selectedGradientLine].percentageLocation =
-                    std::clamp(pct.unwrap(), 0, 100) / 100.f;
-            break;
-        }
+                    currentConfig.gradientLocations[selectedGradientLine].percentageLocation =
+                        std::clamp(pct.unwrap(), 0, 100) / 100.f;
+                break;
+            }
         default:
             break;
         }
@@ -1394,7 +1394,8 @@ void PresetPopup::onSavePreset(CCObject*)
 
 void PresetPopup::FLAlert_Clicked(FLAlertLayer*, const bool btn2)
 {
-    if (!btn2) return;
+    if (!btn2)
+        return;
 
     const auto& name = m_pendingPresetName;
 
