@@ -92,6 +92,7 @@ protected:
     ColorConfig m_committedConfig;
     ColorConfig m_pendingConfig;
     std::vector<CCLayerColor*> m_barOverlaySegments;
+    float m_previewTime = 0.f;
 
     static const char* configKey()
     {
@@ -156,14 +157,18 @@ protected:
             mProgressBar->setFillColor(ccWHITE);
             for (int i = 0; i < static_cast<int>(m_barOverlaySegments.size()); i++)
             {
-                m_barOverlaySegments[i]->setColor(
-                    m_pendingConfig.colorForGradient((static_cast<float>(i) + 0.5f) / m_barOverlaySegments.size()));
+                const float pos = (static_cast<float>(i) + 0.5f) / m_barOverlaySegments.size();
+                if (m_pendingConfig.gradientScrolling)
+                    m_barOverlaySegments[i]->setColor(
+                        m_pendingConfig.colorForGradient(fmodf(pos + colorutil::getRGBStripOffset(), 1.0f)));
+                else
+                    m_barOverlaySegments[i]->setColor(m_pendingConfig.colorForGradient(pos));
                 m_barOverlaySegments[i]->setVisible(true);
             }
         }
         else
         {
-            mProgressBar->setFillColor(m_pendingConfig.colorForConfig(configKey()));
+            mProgressBar->setFillColor(m_pendingConfig.colorForConfig());
             for (const auto seg : m_barOverlaySegments)
                 seg->setVisible(false);
         }
@@ -192,7 +197,7 @@ protected:
         addChildAtPosition(mProgressBar, Anchor::Center);
         mProgressBar->updateAnchoredPosition(Anchor::Center, ccp(-45, -7));
         mProgressBar->updateProgress(static_cast<float>(rand() % 61 + 20));
-        mProgressBar->setFillColor(m_pendingConfig.colorForConfig(configKey()));
+        mProgressBar->setFillColor(m_pendingConfig.colorForConfig());
 
         if (const auto barSpr = mProgressBar->getChildByID("progress-bar"))
         {
@@ -242,8 +247,11 @@ protected:
     {
         if (m_pendingConfig.type != Chroma && m_pendingConfig.type != Pastel && m_pendingConfig.type != Gradient)
             return;
-        colorutil::update(m_pendingConfig.chromaSpeed);
+        m_previewTime += dt * m_pendingConfig.chromaSpeed * 60.f;
+        const float savedVa = colorutil::va;
+        colorutil::va = m_previewTime;
         updatePreviewFromPending();
+        colorutil::va = savedVa;
     }
 
     void onConfigure(CCObject*)
@@ -259,7 +267,6 @@ protected:
 
         ui->setStartConfig(m_pendingConfig);
         ui->setDefaultConfig(defaultColorConfig());
-        ui->setPreviewChannel(configKey());
         ui->show();
     }
 

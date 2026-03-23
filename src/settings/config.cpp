@@ -3,9 +3,9 @@
 
 using namespace cocos2d;
 
-ccColor3B ColorConfig::colorForConfig(std::string channel, float levelProgress)
+ccColor3B ColorConfig::colorForConfig(const float levelProgress) const
 {
-    auto gm = GameManager::sharedState();
+    const auto gm = GameManager::sharedState();
     switch (type)
     {
     case Player1:
@@ -22,9 +22,9 @@ ccColor3B ColorConfig::colorForConfig(std::string channel, float levelProgress)
         {
             float v;
             if (gradientFollowsProgress && levelProgress >= 0.f)
-                v = levelProgress / 100.f; // levelProgress is 0-100
+                v = levelProgress / 100.f; // it's the %
             else
-                v = (sinf(colorutil::va * chromaSpeed) + 1.0f) / 2.0f;
+                v = (sinf(colorutil::va * chromaSpeed * 0.1f) + 1.0f) / 2.0f;
             return colorForGradient(v);
         }
     case CustomColor:
@@ -33,14 +33,14 @@ ccColor3B ColorConfig::colorForConfig(std::string channel, float levelProgress)
     }
 }
 
-ccColor3B ColorConfig::colorForGradient(float v)
+ccColor3B ColorConfig::colorForGradient(const float v) const
 {
     if (gradientLocations.empty())
-        return ccc3(255, 255, 255);
+        return ccWHITE;
 
     auto sorted = gradientLocations;
-    std::sort(sorted.begin(), sorted.end(), [](const GradientLocation& a, const GradientLocation& b)
-              { return a.percentageLocation < b.percentageLocation; });
+    std::ranges::sort(sorted, [](const GradientLocation& a, const GradientLocation& b)
+                      { return a.percentageLocation < b.percentageLocation; });
 
     if (v <= sorted.front().percentageLocation)
         return sorted.front().color;
@@ -51,12 +51,12 @@ ccColor3B ColorConfig::colorForGradient(float v)
     {
         if (v <= sorted[i].percentageLocation)
         {
-            float t = (v - sorted[i - 1].percentageLocation) /
+            const float t = (v - sorted[i - 1].percentageLocation) /
                 (sorted[i].percentageLocation - sorted[i - 1].percentageLocation);
-            const auto& c1 = sorted[i - 1].color;
-            const auto& c2 = sorted[i].color;
-            return ccc3(static_cast<uint8_t>(c1.r + t * (c2.r - c1.r)), static_cast<uint8_t>(c1.g + t * (c2.g - c1.g)),
-                        static_cast<uint8_t>(c1.b + t * (c2.b - c1.b)));
+            const auto& [r1, g1, b1] = sorted[i - 1].color;
+            const auto& [r2, g2, b2] = sorted[i].color;
+            return ccc3(static_cast<uint8_t>(r1 + t * (r2 - r1)), static_cast<uint8_t>(g1 + t * (g2 - g1)),
+                        static_cast<uint8_t>(b1 + t * (b2 - b1)));
         }
     }
 
@@ -69,22 +69,23 @@ matjson::Value ColorConfig::toJson()
     for (const auto& loc : gradientLocations)
     {
         stops.push(matjson::makeObject({
-            {"r", (int)loc.color.r},
-            {"g", (int)loc.color.g},
-            {"b", (int)loc.color.b},
+            {"r", static_cast<int>(loc.color.r)},
+            {"g", static_cast<int>(loc.color.g)},
+            {"b", static_cast<int>(loc.color.b)},
             {"pos", loc.percentageLocation},
         }));
     }
 
     return matjson::makeObject({
-        {"r", (int)customColor.r},
-        {"g", (int)customColor.g},
-        {"b", (int)customColor.b},
+        {"r", static_cast<int>(customColor.r)},
+        {"g", static_cast<int>(customColor.g)},
+        {"b", static_cast<int>(customColor.b)},
         {"opacity", opacity},
         {"chromaSpeed", chromaSpeed},
-        {"type", (int)type},
+        {"type", static_cast<int>(type)},
         {"smoothGradient", smoothGradient},
         {"gradientFollowsProgress", gradientFollowsProgress},
+        {"gradientScrolling", gradientScrolling},
         {"gradient", stops},
     });
 }
@@ -94,21 +95,23 @@ void ColorConfig::fromJson(matjson::Value value)
     if (!value.isObject())
         return;
     if (value.contains("r"))
-        customColor.r = (uint8_t)value["r"].asInt().unwrapOr(255);
+        customColor.r = static_cast<uint8_t>(value["r"].asInt().unwrapOr(255));
     if (value.contains("g"))
-        customColor.g = (uint8_t)value["g"].asInt().unwrapOr(255);
+        customColor.g = static_cast<uint8_t>(value["g"].asInt().unwrapOr(255));
     if (value.contains("b"))
-        customColor.b = (uint8_t)value["b"].asInt().unwrapOr(255);
+        customColor.b = static_cast<uint8_t>(value["b"].asInt().unwrapOr(255));
     if (value.contains("opacity"))
-        opacity = (float)value["opacity"].asDouble().unwrapOr(1.0);
+        opacity = static_cast<float>(value["opacity"].asDouble().unwrapOr(1.0));
     if (value.contains("chromaSpeed"))
-        chromaSpeed = (float)value["chromaSpeed"].asDouble().unwrapOr(1.0);
+        chromaSpeed = static_cast<float>(value["chromaSpeed"].asDouble().unwrapOr(1.0));
     if (value.contains("type"))
-        type = (ColorConfigType)value["type"].asInt().unwrapOr(0);
+        type = static_cast<ColorConfigType>(value["type"].asInt().unwrapOr(0));
     if (value.contains("smoothGradient"))
         smoothGradient = value["smoothGradient"].asBool().unwrapOr(true);
     if (value.contains("gradientFollowsProgress"))
         gradientFollowsProgress = value["gradientFollowsProgress"].asBool().unwrapOr(false);
+    if (value.contains("gradientScrolling"))
+        gradientScrolling = value["gradientScrolling"].asBool().unwrapOr(false);
 
     if (value.contains("gradient") && value["gradient"].isArray())
     {
@@ -116,10 +119,10 @@ void ColorConfig::fromJson(matjson::Value value)
         for (auto& stop : value["gradient"])
         {
             GradientLocation loc;
-            loc.color.r = (uint8_t)stop["r"].asInt().unwrapOr(255);
-            loc.color.g = (uint8_t)stop["g"].asInt().unwrapOr(255);
-            loc.color.b = (uint8_t)stop["b"].asInt().unwrapOr(255);
-            loc.percentageLocation = (float)stop["pos"].asDouble().unwrapOr(0.0);
+            loc.color.r = static_cast<uint8_t>(stop["r"].asInt().unwrapOr(255));
+            loc.color.g = static_cast<uint8_t>(stop["g"].asInt().unwrapOr(255));
+            loc.color.b = static_cast<uint8_t>(stop["b"].asInt().unwrapOr(255));
+            loc.percentageLocation = static_cast<float>(stop["pos"].asDouble().unwrapOr(0.0));
             gradientLocations.push_back(loc);
         }
     }

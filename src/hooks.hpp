@@ -39,20 +39,32 @@ class $modify(canvas, PlayLayer)
         m_fields->currentSegmentCount = count;
     }
 
-    void updateGradientSegments(ColorConfig* cfg)
+    void updateGradientSegments(const ColorConfig* cfg)
     {
-        const auto fillSize = m_progressFill->getContentSize();
-        m_fields->gradientOverlay->setContentSize(fillSize);
+        const float fillHeight = m_progressFill->getContentSize().height;
+        const float fullWidth = m_progressFill->getParent()->getContentSize().width - 4;
+        const float visibleWidth = m_progressFill->getTextureRect().size.width;
+        const float progressFrac = fullWidth > 0 ? visibleWidth / fullWidth : 1.f;
+
+        m_fields->gradientOverlay->setContentSize(ccp(fullWidth, fillHeight));
 
         const int count = m_fields->currentSegmentCount;
-        const float segWidth = fillSize.width / count;
+        const float segWidth = fullWidth / count;
         int i = 0;
         for (const auto seg : CCArrayExt<CCLayerColor*>(m_fields->gradientOverlay->getChildren()))
         {
-            const float t = (static_cast<float>(i) + 0.5f) / count;
-            seg->setContentSize(ccp(ceilf(segWidth) + 1, fillSize.height));
-            seg->setPosition(ccp(segWidth * i, 0));
-            seg->setColor(cfg->colorForGradient(t));
+            const float x = segWidth * i;
+            seg->setContentSize(ccp(fminf(ceilf(segWidth) + 1, fullWidth - x), fillHeight));
+            seg->setPosition(ccp(x, 0));
+            seg->setVisible(x < visibleWidth);
+
+            float t = (static_cast<float>(i) + 0.5f) / count;
+            if (!cfg->gradientFollowsProgress && progressFrac > 0.01f)
+                t = t / progressFrac;
+            if (cfg->gradientScrolling)
+                seg->setColor(cfg->colorForGradient(fmodf(t + colorutil::getRGBStripOffset(), 1.0f)));
+            else
+                seg->setColor(cfg->colorForGradient(fminf(t, 1.0f)));
             i++;
         }
     }
@@ -76,7 +88,7 @@ class $modify(canvas, PlayLayer)
 
         if (cfg->type == Gradient && cfg->smoothGradient)
         {
-            if (cfg->gradientLocations.size() <= 2)
+            if (cfg->gradientLocations.size() <= 2 && !cfg->gradientScrolling && !cfg->gradientFollowsProgress)
             {
                 if (m_fields->gradientOverlay)
                     m_fields->gradientOverlay->setVisible(false);
@@ -148,7 +160,7 @@ class $modify(canvas, PlayLayer)
         else
             delegate->context = Context::Normal;
 
-        colorutil::update(getSpeed());
+        colorutil::update(getSpeed() * CCDirector::get()->getDeltaTime() * 60.f);
         if (!m_level->isPlatformer() && m_progressFill && m_progressBar->isVisible())
             repaint(levelPercentage);
     }

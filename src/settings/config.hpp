@@ -34,16 +34,17 @@ struct ColorConfig
     std::vector<GradientLocation> gradientLocations = {{cocos2d::ccc3(255, 0, 0), 0}, {cocos2d::ccc3(0, 255, 0), 1}};
     bool smoothGradient = true;
     bool gradientFollowsProgress = false;
+    bool gradientScrolling = false;
 
-    cocos2d::ccColor3B colorForConfig(std::string channel, float levelProgress = -1.f);
-    cocos2d::ccColor3B colorForGradient(float v);
+    cocos2d::ccColor3B colorForConfig(float levelProgress = -1.f) const;
+    cocos2d::ccColor3B colorForGradient(float v) const;
 
     bool operator==(const ColorConfig& o) const
     {
         return customColor.r == o.customColor.r && customColor.g == o.customColor.g &&
             customColor.b == o.customColor.b && opacity == o.opacity && chromaSpeed == o.chromaSpeed &&
             type == o.type && gradientLocations == o.gradientLocations && smoothGradient == o.smoothGradient &&
-            gradientFollowsProgress == o.gradientFollowsProgress;
+            gradientFollowsProgress == o.gradientFollowsProgress && gradientScrolling == o.gradientScrolling;
     }
     bool operator!=(const ColorConfig& o) const { return !(*this == o); }
 

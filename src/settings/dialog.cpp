@@ -1,3 +1,6 @@
+// ReSharper disable CppParameterMayBeConstPtrOrRef
+// ReSharper disable CppMemberFunctionMayBeStatic
+// ReSharper disable CppMemberFunctionMayBeConst
 #include "dialog.hpp"
 #include "../color.hpp"
 
@@ -297,42 +300,73 @@ void SetupColorConfigUI::createGradientPreview()
     optsTitle->setPosition(ccp(0, 20));
     gradientOptsMenu->addChild(optsTitle);
 
-    gradientMappedToggle = CCMenuItemToggler::createWithStandardSprites(
-        this, menu_selector(SetupColorConfigUI::onToggleGradientMapped), 0.5f);
+    const auto optsRow = CCMenu::create();
+    optsRow->setID("gradient-options-row"_spr);
+    optsRow->setContentSize(ccp(300, 20));
+    optsRow->setLayout(RowLayout::create()->setAutoScale(false)->setAxisAlignment(AxisAlignment::Center)->setGap(2));
+
+    auto makeToggle = [&](auto callback, float sprScale)
+    {
+        auto t = CCMenuItemToggler::createWithStandardSprites(this, callback, 1.0f);
+        t->m_onButton->getNormalImage()->setScale(sprScale);
+        t->m_offButton->getNormalImage()->setScale(sprScale);
+        auto sz = t->m_onButton->getNormalImage()->getScaledContentSize();
+        t->m_onButton->setContentSize(sz);
+        t->m_offButton->setContentSize(sz);
+        t->m_onButton->getNormalImage()->setPosition(sz / 2);
+        t->m_offButton->getNormalImage()->setPosition(sz / 2);
+        t->setContentSize(sz);
+        return t;
+    };
+
+    auto makeInfoBtn = [&](auto callback)
+    {
+        auto spr = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
+        spr->setScale(0.35f);
+        auto btn = CCMenuItemSpriteExtra::create(spr, this, callback);
+        btn->setLayoutOptions(AxisLayoutOptions::create()->setNextGap(12));
+        return btn;
+    };
+
+    gradientMappedToggle = makeToggle(menu_selector(SetupColorConfigUI::onToggleGradientMapped), 0.5f);
     gradientMappedToggle->setID("gradient-mapped-toggle"_spr);
-    gradientMappedToggle->setPosition(ccp(-80, 0));
-    gradientOptsMenu->addChild(gradientMappedToggle);
+    optsRow->addChild(gradientMappedToggle);
 
     const auto mappedLabel = CCLabelBMFont::create("Spread", "bigFont.fnt");
     mappedLabel->setID("gradient-mapped-label"_spr);
-    mappedLabel->setAnchorPoint(ccp(0, 0.5f));
-    mappedLabel->setPosition(ccp(-68, 0));
     mappedLabel->setScale(0.28f);
-    gradientOptsMenu->addChild(mappedLabel);
+    optsRow->addChild(mappedLabel);
 
-    const auto spreadInfoSpr = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
-    spreadInfoSpr->setScale(0.35f);
-    spreadInfoBtn = CCMenuItemSpriteExtra::create(spreadInfoSpr, this, menu_selector(SetupColorConfigUI::onSpreadInfo));
-    gradientOptsMenu->addChild(spreadInfoBtn);
+    spreadInfoBtn = makeInfoBtn(menu_selector(SetupColorConfigUI::onSpreadInfo));
+    optsRow->addChild(spreadInfoBtn);
 
-    gradientProgressToggle = CCMenuItemToggler::createWithStandardSprites(
-        this, menu_selector(SetupColorConfigUI::onToggleGradientProgress), 0.5f);
+    gradientProgressToggle = makeToggle(menu_selector(SetupColorConfigUI::onToggleGradientProgress), 0.5f);
     gradientProgressToggle->setID("gradient-progress-toggle"_spr);
-    gradientProgressToggle->setPosition(ccp(10, 0));
-    gradientOptsMenu->addChild(gradientProgressToggle);
+    optsRow->addChild(gradientProgressToggle);
 
     gradientProgressLabel = CCLabelBMFont::create("Follow Level", "bigFont.fnt");
     gradientProgressLabel->setID("gradient-progress-label"_spr);
-    gradientProgressLabel->setAnchorPoint(ccp(0, 0.5f));
-    gradientProgressLabel->setPosition(ccp(22, 0));
     gradientProgressLabel->setScale(0.28f);
-    gradientOptsMenu->addChild(gradientProgressLabel);
+    optsRow->addChild(gradientProgressLabel);
 
-    const auto progressInfoSpr = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
-    progressInfoSpr->setScale(0.35f);
-    progressInfoBtn =
-        CCMenuItemSpriteExtra::create(progressInfoSpr, this, menu_selector(SetupColorConfigUI::onProgressInfo));
-    gradientOptsMenu->addChild(progressInfoBtn);
+    progressInfoBtn = makeInfoBtn(menu_selector(SetupColorConfigUI::onProgressInfo));
+    optsRow->addChild(progressInfoBtn);
+
+    gradientScrollToggle = makeToggle(menu_selector(SetupColorConfigUI::onToggleGradientScroll), 0.5f);
+    gradientScrollToggle->setID("gradient-scroll-toggle"_spr);
+    optsRow->addChild(gradientScrollToggle);
+
+    gradientScrollLabel = CCLabelBMFont::create("Scroll", "bigFont.fnt");
+    gradientScrollLabel->setID("gradient-scroll-label"_spr);
+    gradientScrollLabel->setScale(0.28f);
+    optsRow->addChild(gradientScrollLabel);
+
+    scrollInfoBtn = makeInfoBtn(menu_selector(SetupColorConfigUI::onScrollInfo));
+    optsRow->addChild(scrollInfoBtn);
+
+    optsRow->updateLayout();
+    gradientOptsMenu->addChild(optsRow);
+    optsRow->setPosition(ccp(0, 0));
 
     gradientPreviewBar = ProgressBar::create(ProgressBarStyle::Level);
     gradientPreviewBar->setID("gradient-preview-bar"_spr);
@@ -340,9 +374,7 @@ void SetupColorConfigUI::createGradientPreview()
     gradientPreviewBar->updateProgress(100.f);
     gradientPreviewBar->setFillColor(ccWHITE);
     gradientPreviewBar->setVisible(false);
-
-    const float barNativeWidth = gradientPreviewBar->getContentSize().width;
-    gradientPreviewBar->setScale(180.f / barNativeWidth);
+    gradientPreviewBar->setScale(180.f / gradientPreviewBar->getContentSize().width);
 
     if (const auto barSpr = gradientPreviewBar->getChildByID("progress-bar"))
     {
@@ -420,8 +452,6 @@ CCNode* SetupColorConfigUI::createGradientLine(const bool timePreview, const ccC
 
 void SetupColorConfigUI::updateGradientPreview()
 {
-
-
     if (!(currentConfig.smoothGradient && gradientPreviewBar->isVisible()))
         for (const auto& [layer, v] : gradientPreviewSprites)
             layer->setColor(currentConfig.colorForGradient(v));
@@ -495,7 +525,6 @@ void SetupColorConfigUI::onChangeGradientLineColor(CCObject*)
 
     ui->setStartConfig({currentConfig.gradientLocations[selectedGradientLine].color});
     ui->setDefaultConfig({ccc3(255, 0, 0)});
-    ui->setPreviewChannel("");
     ui->show();
 }
 
@@ -544,7 +573,7 @@ void SetupColorConfigUI::fixTouchPriorities()
     fixTree(gradientStepRow);
 }
 
-void SetupColorConfigUI::onAddGradientStep(CCObject* sender)
+void SetupColorConfigUI::onAddGradientStep(CCObject*)
 {
     constexpr float x = 0.5f;
     currentConfig.gradientLocations.push_back({currentConfig.colorForGradient(x), x});
@@ -553,7 +582,7 @@ void SetupColorConfigUI::onAddGradientStep(CCObject* sender)
     updateGradientBarMode();
 }
 
-void SetupColorConfigUI::onDeleteGradientStep(CCObject* sender)
+void SetupColorConfigUI::onDeleteGradientStep(CCObject*)
 {
     if (currentConfig.gradientLocations.size() == 1)
         return FLAlertLayer::create("Gradient Steps", "There must be at least <cc>one</c> gradient step!", "OK")
@@ -581,23 +610,23 @@ void SetupColorConfigUI::addTypeButtons(CCMenu* menu)
 
     static constexpr float row = 30.f;
     static const TypeEntry types[] = {
-        {Player1, "P1", 0, row * 4},    {Player2, "P2", 55, row * 4}, {PlayerGlow, "Glow", 0, row * 3},
-        {Chroma, "Chroma", 0, row * 2}, {Pastel, "Pastel", 0, row},   {Gradient, "Gradient", 0, 0},
+        {Player1, "P1", 0, row * 5},    {Player2, "P2", 55, row * 5},   {PlayerGlow, "Glow", 0, row * 4},
+        {Chroma, "Chroma", 0, row * 3}, {Pastel, "Pastel", 0, row * 2}, {Gradient, "Gradient", 0, row},
     };
 
-    for (const auto& t : types)
+    for (const auto& [type, typeLabel, x, y] : types)
     {
         auto toggler =
             CCMenuItemToggler::createWithStandardSprites(this, menu_selector(SetupColorConfigUI::onChangeType), 0.75f);
-        toggler->setPosition(ccp(t.x, t.y));
-        std::string s = t.label;
+        toggler->setPosition(ccp(x, y));
+        std::string s = typeLabel;
         std::ranges::replace(s, ' ', '-');
         std::ranges::transform(s, s.begin(), tolower);
         toggler->setID((GEODE_MOD_ID + std::string("/type-btn-") + s));
 
-        const auto label = CCLabelBMFont::create(t.label, "bigFont.fnt");
+        const auto label = CCLabelBMFont::create(typeLabel, "bigFont.fnt");
         label->setAnchorPoint(ccp(0, 0.5f));
-        label->setPosition(ccp(t.x + 18, t.y));
+        label->setPosition(ccp(x + 18, y));
         label->setScale(0.35f);
         label->setID((GEODE_MOD_ID + std::string("/type-label-") + s));
 
@@ -607,7 +636,7 @@ void SetupColorConfigUI::addTypeButtons(CCMenu* menu)
 
         menu->addChild(toggler);
         menu->addChild(label);
-        configTypes.emplace(toggler, t.type);
+        configTypes.emplace(toggler, type);
     }
 
     updateTypeButtons(nullptr);
@@ -633,7 +662,7 @@ void SetupColorConfigUI::updateTypeButtons(const CCMenuItemToggler* excluding) c
 
 void SetupColorConfigUI::onChangeType(CCObject* sender)
 {
-    const auto btn = static_cast<CCMenuItemToggler*>(sender);
+    const auto btn = typeinfo_cast<CCMenuItemToggler*>(sender);
 
     if (currentConfig.type == configTypes[btn])
         currentConfig.type = CustomColor;
@@ -646,13 +675,25 @@ void SetupColorConfigUI::onChangeType(CCObject* sender)
 
 void SetupColorConfigUI::update(const float dt)
 {
-    colorutil::update(dt);
-    startColor->setColor(startConfig.colorForConfig(previewChannel));
-    endColor->setColor(currentConfig.colorForConfig(previewChannel));
+    m_previewTime += dt * currentConfig.chromaSpeed * 60.f;
+
+    const float savedVa = colorutil::va;
+    colorutil::va = m_previewTime;
+    startColor->setColor(startConfig.colorForConfig());
+    endColor->setColor(currentConfig.colorForConfig());
+    colorutil::va = savedVa;
 
     gradientLineLocation->setValue(currentConfig.gradientLocations[selectedGradientLine].percentageLocation);
 
     updateGradientPreview();
+
+    if (currentConfig.gradientScrolling && currentConfig.smoothGradient && gradientPreviewBar->isVisible())
+    {
+        const float offset = m_previewTime * 0.05f;
+        for (int i = 0; i < static_cast<int>(barOverlaySegments.size()); i++)
+            barOverlaySegments[i]->setColor(currentConfig.colorForGradient(
+                fmodf((static_cast<float>(i) + 0.5f) / barOverlaySegments.size() + offset, 1.0f)));
+    }
 }
 
 void SetupColorConfigUI::show()
@@ -701,8 +742,6 @@ void SetupColorConfigUI::setStartConfig(const ColorConfig& config)
 
 void SetupColorConfigUI::setDefaultConfig(const ColorConfig& config) { defaultConfig = config; }
 
-void SetupColorConfigUI::setPreviewChannel(const std::string& channel) { previewChannel = channel; }
-
 void SetupColorConfigUI::updateGradientBarMode()
 {
     const bool fullBar = currentConfig.type == Gradient && currentConfig.smoothGradient;
@@ -715,7 +754,7 @@ void SetupColorConfigUI::updateGradientBarMode()
     for (const auto line : gradientLines)
     {
         if (auto* vLine = line->getChildren()->objectAtIndex(0))
-            static_cast<CCNode*>(vLine)->setVisible(!fullBar);
+            typeinfo_cast<CCNode*>(vLine)->setVisible(!fullBar);
 
         line->setContentSize(ccp(1, fullBar ? 0 : 50));
         if (line->getChildrenCount() > 1)
@@ -723,17 +762,13 @@ void SetupColorConfigUI::updateGradientBarMode()
                 menu->setPositionY(fullBar ? -2 : -12);
     }
 
-    gradientProgressToggle->setVisible(!fullBar);
-    gradientProgressLabel->setVisible(!fullBar);
-    progressInfoBtn->setVisible(!fullBar);
+    gradientProgressLabel->setString(fullBar ? "Cut" : "Follow Level");
+    gradientScrollToggle->setVisible(fullBar);
+    gradientScrollLabel->setVisible(fullBar);
+    scrollInfoBtn->setVisible(fullBar);
 
-    auto positionBtn = [](CCLabelBMFont* label, CCMenuItemSpriteExtra* btn, const float gap)
-    { btn->setPosition(ccp(label->getPositionX() + label->getScaledContentWidth() + gap, label->getPositionY())); };
-
-    if (auto* spreadLabel = static_cast<CCLabelBMFont*>(gradientOptsMenu->getChildByID("gradient-mapped-label"_spr)))
-        positionBtn(spreadLabel, spreadInfoBtn, 6);
-
-    positionBtn(gradientProgressLabel, progressInfoBtn, 6);
+    if (auto* row = gradientOptsMenu->getChildByID("gradient-options-row"_spr))
+        row->updateLayout();
 }
 
 void SetupColorConfigUI::updateUI()
@@ -749,8 +784,10 @@ void SetupColorConfigUI::updateUI()
     gradientOptsMenu->setVisible(isGradient);
     gradientMappedToggle->toggle(currentConfig.smoothGradient);
     gradientProgressToggle->toggle(currentConfig.gradientFollowsProgress);
+    gradientScrollToggle->toggle(currentConfig.gradientScrolling);
     updateGradientLines();
     updateGradientBarMode();
+
     speedSlider->setValue(speedTo01(currentConfig.chromaSpeed));
     speedInput->setString(utils::numToString<float>(currentConfig.chromaSpeed, 2));
     bottomLeft->setVisible(allowEffects && currentConfig.type >= Chroma);
@@ -762,20 +799,31 @@ void SetupColorConfigUI::onSpeedSliderChanged(CCObject*)
 {
     currentConfig.chromaSpeed = speedFrom01(speedSlider->getValue());
     speedInput->setString(utils::numToString<float>(currentConfig.chromaSpeed, 2));
+
+    if (!m_epilepsyWarned && currentConfig.chromaSpeed >= 2.5f)
+    {
+        m_epilepsyWarned = true;
+        FLAlertLayer::create(
+            "Warning",
+            "<cr>High speed values</c> may cause <cl>rapid flashing</c>.\n\n"
+            "This could be harmful for people with <cy>photosensitive epilepsy</c>. Proceed with caution.",
+            "OK")
+            ->show();
+    }
 }
 
 void SetupColorConfigUI::onToggleGradientMapped(CCObject* sender)
 {
-    currentConfig.smoothGradient = !static_cast<CCMenuItemToggler*>(sender)->isToggled();
+    currentConfig.smoothGradient = !typeinfo_cast<CCMenuItemToggler*>(sender)->isToggled();
     updateGradientBarMode();
 }
 
 void SetupColorConfigUI::onToggleGradientProgress(CCObject* sender)
 {
-    currentConfig.gradientFollowsProgress = !static_cast<CCMenuItemToggler*>(sender)->isToggled();
+    currentConfig.gradientFollowsProgress = !typeinfo_cast<CCMenuItemToggler*>(sender)->isToggled();
 }
 
-void SetupColorConfigUI::onSpreadInfo(CCObject*)
+void SetupColorConfigUI::onSpreadInfo(CCObject*) // NOLINT(*-convert-member-functions-to-static)
 {
     FLAlertLayer::create("Spread Gradient",
                          "Maps the <cl>full gradient</c> across the bar's width.\n\n"
@@ -785,11 +833,36 @@ void SetupColorConfigUI::onSpreadInfo(CCObject*)
         ->show();
 }
 
+void SetupColorConfigUI::onToggleGradientScroll(CCObject* sender)
+{
+    currentConfig.gradientScrolling = !typeinfo_cast<CCMenuItemToggler*>(sender)->isToggled();
+}
+
 void SetupColorConfigUI::onProgressInfo(CCObject*)
 {
-    FLAlertLayer::create("Follow Level",
-                         "<cg>ON</c>: Color is based on your <cl>level progress %</c>.\n"
-                         "<cr>OFF</c>: Color cycles through the gradient over <cl>time</c> (use Speed to control).",
+    if (currentConfig.smoothGradient)
+    {
+        FLAlertLayer::create("Cut Gradient",
+                             "<cg>ON</c>: Gradient ends at the <cl>progress fill edge</c>.\n"
+                             "<cr>OFF</c>: Gradient spans the <cl>full bar</c>, visible past the fill.",
+                             "OK")
+            ->show();
+    }
+    else
+    {
+        FLAlertLayer::create("Follow Level",
+                             "<cg>ON</c>: Color is based on your <cl>level progress %</c>.\n"
+                             "<cr>OFF</c>: Color cycles through the gradient over <cl>time</c> (use Speed to control).",
+                             "OK")
+            ->show();
+    }
+}
+
+void SetupColorConfigUI::onScrollInfo(CCObject*)
+{
+    FLAlertLayer::create("Scroll",
+                         "Scrolls the gradient across the bar like <cl>RGB light strips</c>.\n\n"
+                         "The gradient loops seamlessly. Use <cy>Speed</c> to control scroll speed.",
                          "OK")
         ->show();
 }

@@ -72,4 +72,6 @@ public:
     {
         return hsvToRgb(cchsv(va * 180 / 1000.0f, 155.0f / 255.0f, 1.0f, true, true));
     }
+
+    static float getRGBStripOffset() { return fmodf(va * 0.05f, 1.0f); }
 };

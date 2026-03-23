@@ -8,7 +8,7 @@
 template <size_t N>
 struct TemplateStr
 {
-    char data[N];
+    char data[N]{};
 
     constexpr TemplateStr(const char (&s)[N])
     {
@@ -119,7 +119,7 @@ inline ccColor3B paint(float levelProgress = -1.f)
         cfg = &d->normalConfig;
         break;
     }
-    return cfg->colorForConfig("", levelProgress);
+    return cfg->colorForConfig(levelProgress);
 }
 
 /**

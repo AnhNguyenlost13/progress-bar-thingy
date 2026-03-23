@@ -105,7 +105,6 @@ class SetupColorConfigUI : public PopupBase, public ColorPickerDelegate, public 
     std::function<void(ColorConfig)> onFinishFunc = nullptr;
     CCLayerColor* startColor = nullptr;
     CCLayerColor* endColor = nullptr;
-    std::string previewChannel = "";
     CCControlColourPicker* picker = nullptr;
     CCMenu* typeMenu = nullptr;
     CCMenu* bottomLeft = nullptr;
@@ -131,13 +130,18 @@ class SetupColorConfigUI : public PopupBase, public ColorPickerDelegate, public 
     CCNode* shader = nullptr;
     CCMenuItemToggler* gradientMappedToggle = nullptr;
     CCMenuItemToggler* gradientProgressToggle = nullptr;
+    CCMenuItemToggler* gradientScrollToggle = nullptr;
     CCLabelBMFont* gradientProgressLabel = nullptr;
+    CCLabelBMFont* gradientScrollLabel = nullptr;
     CCMenuItemSpriteExtra* spreadInfoBtn = nullptr;
     CCMenuItemSpriteExtra* progressInfoBtn = nullptr;
+    CCMenuItemSpriteExtra* scrollInfoBtn = nullptr;
     ProgressBar* gradientPreviewBar = nullptr;
     std::vector<CCLayerColor*> barOverlaySegments;
     CCMenu* gradientOptsMenu = nullptr;
     bool m_subPopupOpen = false;
+    bool m_epilepsyWarned = false;
+    float m_previewTime = 0.f;
 
     void setMenusEnabled(bool enabled) const;
     void fixTouchPriorities();
@@ -160,16 +164,16 @@ public:
     void onSpeedSliderChanged(CCObject* sender);
     void onToggleGradientMapped(CCObject* sender);
     void onToggleGradientProgress(CCObject* sender);
+    void onToggleGradientScroll(CCObject* sender);
     void onSpreadInfo(CCObject*);
     void onProgressInfo(CCObject*);
+    void onScrollInfo(CCObject*);
 
     void setStartConfig(const ColorConfig& config);
     void setDefaultConfig(const ColorConfig& config);
     void updateUI();
     void updateGradientBarMode();
     void updateInputs(const TextInput* except) const;
-
-    void setPreviewChannel(const std::string& channel);
 
     void addTypeButtons(CCMenu* menu);
     void updateTypeButtons(const CCMenuItemToggler* excluding) const;
