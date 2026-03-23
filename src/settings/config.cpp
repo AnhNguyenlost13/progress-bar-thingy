@@ -63,16 +63,32 @@ ccColor3B ColorConfig::colorForGradient(const float v) const
     return sorted.back().color;
 }
 
+ccColor3B ColorConfig::colorForGradientLooped(float v) const
+{
+    v = fmodf(v, 1.0f);
+    if (v < 0)
+        v += 1.0f;
+
+    if (gradientMirrorLoop)
+    {
+        v = v * 2.0f;
+        if (v > 1.0f)
+            v = 2.0f - v;
+    }
+
+    return colorForGradient(v);
+}
+
 matjson::Value ColorConfig::toJson()
 {
     auto stops = matjson::Value::array();
-    for (const auto& loc : gradientLocations)
+    for (const auto& [color, percentageLocation] : gradientLocations)
     {
         stops.push(matjson::makeObject({
-            {"r", static_cast<int>(loc.color.r)},
-            {"g", static_cast<int>(loc.color.g)},
-            {"b", static_cast<int>(loc.color.b)},
-            {"pos", loc.percentageLocation},
+            {"r", static_cast<int>(color.r)},
+            {"g", static_cast<int>(color.g)},
+            {"b", static_cast<int>(color.b)},
+            {"pos", percentageLocation},
         }));
     }
 
@@ -86,6 +102,7 @@ matjson::Value ColorConfig::toJson()
         {"smoothGradient", smoothGradient},
         {"gradientFollowsProgress", gradientFollowsProgress},
         {"gradientScrolling", gradientScrolling},
+        {"gradientMirrorLoop", gradientMirrorLoop},
         {"gradient", stops},
     });
 }
@@ -112,6 +129,8 @@ void ColorConfig::fromJson(matjson::Value value)
         gradientFollowsProgress = value["gradientFollowsProgress"].asBool().unwrapOr(false);
     if (value.contains("gradientScrolling"))
         gradientScrolling = value["gradientScrolling"].asBool().unwrapOr(false);
+    if (value.contains("gradientMirrorLoop"))
+        gradientMirrorLoop = value["gradientMirrorLoop"].asBool().unwrapOr(false);
 
     if (value.contains("gradient") && value["gradient"].isArray())
     {

@@ -150,7 +150,7 @@ protected:
         Catgirl::getInstance()->updateSettings();
     }
 
-    void updatePreviewFromPending()
+    void updatePreviewFromPending() const
     {
         if (m_pendingConfig.type == Gradient && m_pendingConfig.smoothGradient)
         {
@@ -160,7 +160,7 @@ protected:
                 const float pos = (static_cast<float>(i) + 0.5f) / m_barOverlaySegments.size();
                 if (m_pendingConfig.gradientScrolling)
                     m_barOverlaySegments[i]->setColor(
-                        m_pendingConfig.colorForGradient(fmodf(pos + colorutil::getRGBStripOffset(), 1.0f)));
+                        m_pendingConfig.colorForGradientLooped(pos + colorutil::getRGBStripOffset()));
                 else
                     m_barOverlaySegments[i]->setColor(m_pendingConfig.colorForGradient(pos));
                 m_barOverlaySegments[i]->setVisible(true);

@@ -117,6 +117,7 @@ class SetupColorConfigUI : public PopupBase, public ColorPickerDelegate, public 
     CCMenu* gradientLineConfigNode = nullptr;
     CCSprite* gradientLineColor = nullptr;
     Slider* gradientLineLocation = nullptr;
+    TextInput* gradientLinePositionInput = nullptr;
     CCMenuItemSpriteExtra* gradientAddStepBtn = nullptr;
     CCMenuItemSpriteExtra* gradientDelStepBtn = nullptr;
     CCMenu* gradientStepRow = nullptr;
@@ -136,6 +137,8 @@ class SetupColorConfigUI : public PopupBase, public ColorPickerDelegate, public 
     CCMenuItemSpriteExtra* spreadInfoBtn = nullptr;
     CCMenuItemSpriteExtra* progressInfoBtn = nullptr;
     CCMenuItemSpriteExtra* scrollInfoBtn = nullptr;
+    CCMenuItemToggler* gradientMirrorToggle = nullptr;
+    CCLabelBMFont* gradientMirrorLabel = nullptr;
     ProgressBar* gradientPreviewBar = nullptr;
     std::vector<CCLayerColor*> barOverlaySegments;
     CCMenu* gradientOptsMenu = nullptr;
@@ -165,9 +168,13 @@ public:
     void onToggleGradientMapped(CCObject* sender);
     void onToggleGradientProgress(CCObject* sender);
     void onToggleGradientScroll(CCObject* sender);
+    void onToggleGradientMirror(CCObject* sender);
     void onSpreadInfo(CCObject*);
     void onProgressInfo(CCObject*);
     void onScrollInfo(CCObject*);
+    void onPresets(CCObject*);
+    void onDistributeStops(CCObject*);
+    void onCloseLoop(CCObject*);
 
     void setStartConfig(const ColorConfig& config);
     void setDefaultConfig(const ColorConfig& config);
@@ -186,4 +193,43 @@ public:
     void colorValueChanged(ccColor3B color) override;
     void update(float dt) override;
     bool setup() override;
+};
+
+struct Preset
+{
+    std::string name;
+    ColorConfig config;
+};
+
+class PresetPopup : public PopupBase, public FLAlertLayerProtocol
+{
+    struct CellRef
+    {
+        ProgressBar* bar;
+        std::vector<CCLayerColor*> segments;
+        ColorConfig config;
+    };
+
+    std::function<void(ColorConfig)> m_onSelect;
+    ColorConfig m_currentConfig;
+    ScrollLayer* m_scroll = nullptr;
+    std::vector<Preset> m_presets;
+    std::vector<CellRef> m_cellRefs;
+    float m_previewTime = 0.f;
+    std::string m_pendingPresetName;
+
+    void rebuildList();
+    CCNode* createCell(const Preset& preset, int index, float width);
+    void loadPresets();
+    void savePresets();
+
+public:
+    static PresetPopup* create(const ColorConfig& current, std::function<void(ColorConfig)> onSelect);
+    bool setup() override;
+    void show() override;
+    void update(float dt) override;
+    void onSavePreset(CCObject*);
+    void onDeletePreset(CCObject* sender);
+    void onSelectPreset(CCObject* sender);
+    void FLAlert_Clicked(FLAlertLayer* alert, bool btn2) override;
 };

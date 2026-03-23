@@ -1,6 +1,7 @@
 # Custom In-Game Progress Bar Color
 
-Simple mod to change the progress bar color **in-game**. Also useful when using custom (<cr>c</c><co>o</c><cy>l</c><cj>o</c><cl>r</c><cb>e</c><cp>d</c>) progress bar textures!
+Simple mod to change the progress bar color **in-game**. Also useful when using custom
+(<cr>c</c><co>o</c><cy>l</c><cj>o</c><cl>r</c><cb>e</c><cp>d</c>) progress bar textures!
 
 ## Features
 

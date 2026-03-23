@@ -62,7 +62,7 @@ class $modify(canvas, PlayLayer)
             if (!cfg->gradientFollowsProgress && progressFrac > 0.01f)
                 t = t / progressFrac;
             if (cfg->gradientScrolling)
-                seg->setColor(cfg->colorForGradient(fmodf(t + colorutil::getRGBStripOffset(), 1.0f)));
+                seg->setColor(cfg->colorForGradientLooped(t + colorutil::getRGBStripOffset()));
             else
                 seg->setColor(cfg->colorForGradient(fminf(t, 1.0f)));
             i++;

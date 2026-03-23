@@ -90,6 +90,19 @@ bool SetupColorConfigUI::setup()
         menu_selector(SetupColorConfigUI::onSetDefault));
     defaultBtn->setID("default-btn"_spr);
     topRightMenu->addChild(defaultBtn);
+    if (allowEffects)
+    {
+        const auto presetBtn = CCMenuItemSpriteExtra::create(
+            ButtonSprite::create("Presets", 0, false, "goldFont.fnt", "GJ_button_04.png", 30, 0.6f), this,
+            menu_selector(SetupColorConfigUI::onPresets));
+        presetBtn->setID("preset-btn"_spr);
+        topRightMenu->addChild(presetBtn);
+    }
+
+    const auto undoDistRow = CCMenu::create();
+    undoDistRow->setContentSize(ccp(66, 30));
+    undoDistRow->setLayout(AxisLayout::create(Axis::Row)->setAutoScale(false)->setGap(6));
+
     const auto undoBg = CCScale9Sprite::create("GJ_button_04.png", {0, 0, 40, 40});
     undoBg->setContentSize({30, 30});
     const auto undoIcon = CCSprite::createWithSpriteFrameName("geode.loader/reset-gold.png");
@@ -98,7 +111,21 @@ bool SetupColorConfigUI::setup()
     undoBg->addChild(undoIcon);
     const auto undoBtn = CCMenuItemSpriteExtra::create(undoBg, this, menu_selector(SetupColorConfigUI::onUndoChanged));
     undoBtn->setID("undo-btn"_spr);
-    topRightMenu->addChild(undoBtn);
+    undoDistRow->addChild(undoBtn);
+
+    const auto distBg = CCScale9Sprite::create("GJ_button_04.png", {0, 0, 40, 40});
+    distBg->setContentSize({30, 30});
+    const auto distIcon = CCLabelBMFont::create("=", "bigFont.fnt");
+    distIcon->setPosition(distBg->getContentSize() / 2);
+    distIcon->setScale(0.6f);
+    distBg->addChild(distIcon);
+    const auto distBtn =
+        CCMenuItemSpriteExtra::create(distBg, this, menu_selector(SetupColorConfigUI::onDistributeStops));
+    distBtn->setID("gradient-dist-btn"_spr);
+    undoDistRow->addChild(distBtn);
+
+    undoDistRow->updateLayout();
+    topRightMenu->addChild(undoDistRow);
 
     gradientStepRow = CCMenu::create();
     const auto stepRow = gradientStepRow;
@@ -126,10 +153,18 @@ bool SetupColorConfigUI::setup()
         CCMenuItemSpriteExtra::create(delBg, this, menu_selector(SetupColorConfigUI::onDeleteGradientStep));
     gradientDelStepBtn->setID("gradient-del-step-btn"_spr);
 
+    stepRow->setContentSize(ccp(80, 30));
     stepRow->addChild(gradientAddStepBtn);
     stepRow->addChild(gradientDelStepBtn);
     stepRow->updateLayout();
     topRightMenu->addChild(stepRow);
+
+    const auto loopBtn = CCMenuItemSpriteExtra::create(
+        ButtonSprite::create("Loop", 60, false, "bigFont.fnt", "GJ_button_04.png", 25, 0.5f), this,
+        menu_selector(SetupColorConfigUI::onCloseLoop));
+    loopBtn->setID("gradient-loop-btn"_spr);
+    topRightMenu->addChild(loopBtn);
+
     topRightMenu->updateLayout();
 
     bottomLeft = CCMenu::create();
@@ -269,8 +304,8 @@ void SetupColorConfigUI::createGradientPreview()
     const auto lblColor = CCLabelBMFont::create("Color:", "bigFont.fnt");
     lblColor->setID("gradient-color-label"_spr);
     lblColor->setAnchorPoint(ccp(0, 0.5f));
-    lblColor->setScale(0.45f);
-    lblColor->setPosition(ccp(-40, -17));
+    lblColor->setScale(0.35f);
+    lblColor->setPosition(ccp(-75, -17));
     gradientLineConfigNode->addChild(lblColor);
 
     gradientLineColor = CCSprite::createWithSpriteFrameName("GJ_colorBtn_001.png");
@@ -280,10 +315,24 @@ void SetupColorConfigUI::createGradientPreview()
     const auto colBtn = CCMenuItemSpriteExtra::create(gradientLineColor, this,
                                                       menu_selector(SetupColorConfigUI::onChangeGradientLineColor));
     colBtn->setID("gradient-color-btn"_spr);
-    colBtn->setPosition(ccp(22, -17));
+    colBtn->setPosition(ccp(-22, -17));
     gradientLineConfigNode->addChild(colBtn);
 
-    gradientLineLocation = Slider::create(this, menu_selector(SetupColorConfigUI::onGradientLocationSlider), 0.9f);
+    const auto lblPos = CCLabelBMFont::create("Pos:", "bigFont.fnt");
+    lblPos->setID("gradient-pos-label"_spr);
+    lblPos->setAnchorPoint(ccp(0, 0.5f));
+    lblPos->setScale(0.35f);
+    lblPos->setPosition(ccp(0, -17));
+    gradientLineConfigNode->addChild(lblPos);
+
+    gradientLinePositionInput = TextInput::create(45, "%");
+    gradientLinePositionInput->setID("gradient-pos-input"_spr);
+    gradientLinePositionInput->setScale(0.7f);
+    gradientLinePositionInput->setPosition(ccp(45, -17));
+    gradientLinePositionInput->setDelegate(this, 5);
+    gradientLineConfigNode->addChild(gradientLinePositionInput);
+
+    gradientLineLocation = Slider::create(this, menu_selector(SetupColorConfigUI::onGradientLocationSlider), 0.8f);
     gradientLineLocation->setID("gradient-location-slider"_spr);
     gradientLineLocation->setAnchorPoint(ccp(0, 0));
     gradientLineLocation->setPosition(ccp(0, 7));
@@ -363,6 +412,15 @@ void SetupColorConfigUI::createGradientPreview()
 
     scrollInfoBtn = makeInfoBtn(menu_selector(SetupColorConfigUI::onScrollInfo));
     optsRow->addChild(scrollInfoBtn);
+
+    gradientMirrorToggle = makeToggle(menu_selector(SetupColorConfigUI::onToggleGradientMirror), 0.5f);
+    gradientMirrorToggle->setID("gradient-mirror-toggle"_spr);
+    optsRow->addChild(gradientMirrorToggle);
+
+    gradientMirrorLabel = CCLabelBMFont::create("Mirror", "bigFont.fnt");
+    gradientMirrorLabel->setID("gradient-mirror-label"_spr);
+    gradientMirrorLabel->setScale(0.28f);
+    optsRow->addChild(gradientMirrorLabel);
 
     optsRow->updateLayout();
     gradientOptsMenu->addChild(optsRow);
@@ -685,14 +743,22 @@ void SetupColorConfigUI::update(const float dt)
 
     gradientLineLocation->setValue(currentConfig.gradientLocations[selectedGradientLine].percentageLocation);
 
+    // Update position % input (only when not actively editing)
+    if (!gradientLinePositionInput->getInputNode()->m_selected)
+    {
+        const int pct =
+            static_cast<int>(currentConfig.gradientLocations[selectedGradientLine].percentageLocation * 100.f + 0.5f);
+        gradientLinePositionInput->setString(std::to_string(pct));
+    }
+
     updateGradientPreview();
 
     if (currentConfig.gradientScrolling && currentConfig.smoothGradient && gradientPreviewBar->isVisible())
     {
         const float offset = m_previewTime * 0.05f;
         for (int i = 0; i < static_cast<int>(barOverlaySegments.size()); i++)
-            barOverlaySegments[i]->setColor(currentConfig.colorForGradient(
-                fmodf((static_cast<float>(i) + 0.5f) / barOverlaySegments.size() + offset, 1.0f)));
+            barOverlaySegments[i]->setColor(currentConfig.colorForGradientLooped(
+                (static_cast<float>(i) + 0.5f) / barOverlaySegments.size() + offset));
     }
 }
 
@@ -763,9 +829,12 @@ void SetupColorConfigUI::updateGradientBarMode()
     }
 
     gradientProgressLabel->setString(fullBar ? "Cut" : "Follow Level");
+    const bool scrollOn = fullBar && currentConfig.gradientScrolling;
     gradientScrollToggle->setVisible(fullBar);
     gradientScrollLabel->setVisible(fullBar);
     scrollInfoBtn->setVisible(fullBar);
+    gradientMirrorToggle->setVisible(scrollOn);
+    gradientMirrorLabel->setVisible(scrollOn);
 
     if (auto* row = gradientOptsMenu->getChildByID("gradient-options-row"_spr))
         row->updateLayout();
@@ -785,6 +854,7 @@ void SetupColorConfigUI::updateUI()
     gradientMappedToggle->toggle(currentConfig.smoothGradient);
     gradientProgressToggle->toggle(currentConfig.gradientFollowsProgress);
     gradientScrollToggle->toggle(currentConfig.gradientScrolling);
+    gradientMirrorToggle->toggle(currentConfig.gradientMirrorLoop);
     updateGradientLines();
     updateGradientBarMode();
 
@@ -836,6 +906,12 @@ void SetupColorConfigUI::onSpreadInfo(CCObject*) // NOLINT(*-convert-member-func
 void SetupColorConfigUI::onToggleGradientScroll(CCObject* sender)
 {
     currentConfig.gradientScrolling = !typeinfo_cast<CCMenuItemToggler*>(sender)->isToggled();
+    updateGradientBarMode();
+}
+
+void SetupColorConfigUI::onToggleGradientMirror(CCObject* sender)
+{
+    currentConfig.gradientMirrorLoop = !typeinfo_cast<CCMenuItemToggler*>(sender)->isToggled();
 }
 
 void SetupColorConfigUI::onProgressInfo(CCObject*)
@@ -865,6 +941,50 @@ void SetupColorConfigUI::onScrollInfo(CCObject*)
                          "The gradient loops seamlessly. Use <cy>Speed</c> to control scroll speed.",
                          "OK")
         ->show();
+}
+
+void SetupColorConfigUI::onDistributeStops(CCObject*)
+{
+    const auto count = currentConfig.gradientLocations.size();
+    if (count < 2)
+        return;
+    for (size_t i = 0; i < count; i++)
+        currentConfig.gradientLocations[i].percentageLocation = static_cast<float>(i) / (static_cast<float>(count) - 1);
+    updateGradientLines();
+    updateGradientBarMode();
+}
+
+void SetupColorConfigUI::onCloseLoop(CCObject*)
+{
+    if (currentConfig.gradientLocations.size() < 2)
+        return;
+
+    const auto& [firstCol, firstPos] = currentConfig.gradientLocations.front();
+    const auto& [lastCol, lastPos] = currentConfig.gradientLocations.back();
+    if (firstCol.r == lastCol.r && firstCol.g == lastCol.g && firstCol.b == lastCol.b)
+        return Notification::create("The first and last colors are already the same!", NotificationIcon::Warning)
+            ->show();
+
+    currentConfig.gradientLocations.push_back({firstCol, 0.f});
+    const auto count = currentConfig.gradientLocations.size();
+    for (size_t i = 0; i < count; i++)
+        currentConfig.gradientLocations[i].percentageLocation = static_cast<float>(i) / (static_cast<float>(count) - 1);
+    selectedGradientLine = static_cast<int>(count) - 1;
+    updateGradientLines();
+    updateGradientBarMode();
+}
+
+void SetupColorConfigUI::onPresets(CCObject*)
+{
+    auto* popup = PresetPopup::create(currentConfig,
+                                      [this](const ColorConfig& cfg)
+                                      {
+                                          currentConfig = cfg;
+                                          selectedGradientLine = 0;
+                                          updateUI();
+                                          updateTypeButtons(nullptr);
+                                      });
+    popup->show();
 }
 
 void SetupColorConfigUI::colorValueChanged(const ccColor3B color)
@@ -904,6 +1024,13 @@ void SetupColorConfigUI::textChanged(CCTextInputNode* node)
                 cc3bFromHexString(hexInput->getString(), true).unwrapOr(currentConfig.customColor);
             updateInputs(hexInput);
             break;
+        case 5:
+            {
+                if (const auto pct = utils::numFromString<int>(gradientLinePositionInput->getString()); pct.isOk())
+                currentConfig.gradientLocations[selectedGradientLine].percentageLocation =
+                    std::clamp(pct.unwrap(), 0, 100) / 100.f;
+            break;
+        }
         default:
             break;
         }
@@ -926,4 +1053,352 @@ void SetupColorConfigUI::updateInputs(const TextInput* except) const
     if (except != hexInput)
         hexInput->setString(cc3bToHexString(currentConfig.customColor));
     picker->setColorValue(currentConfig.customColor);
+}
+
+static ColorConfig makeGradientPreset(std::initializer_list<std::pair<ccColor3B, float>> stops)
+{
+    ColorConfig c;
+    c.type = Gradient;
+    c.smoothGradient = true;
+    c.gradientLocations.clear();
+    for (const auto& [col, pos] : stops)
+        c.gradientLocations.push_back({col, pos});
+    return c;
+}
+
+static Preset makeSimplePreset(const char* name, const ColorConfigType type, const ccColor3B color = ccWHITE,
+                               const float speed = 0.5f)
+{
+    ColorConfig c;
+    c.type = type;
+    c.customColor = color;
+    c.chromaSpeed = speed;
+    return {name, c};
+}
+
+static std::vector<Preset> getDefaultPresets()
+{
+    return {makeSimplePreset("Player Col 1", Player1),
+            makeSimplePreset("Player Col 2", Player2),
+            makeSimplePreset("Chroma", Chroma),
+            makeSimplePreset("Pastel", Pastel, ccWHITE, 0.1f),
+            {"Rainbow",
+             makeGradientPreset({
+                 {ccc3(255, 0, 0), 0.f},
+                 {ccc3(255, 165, 0), 0.17f},
+                 {ccc3(255, 255, 0), 0.33f},
+                 {ccc3(0, 255, 0), 0.5f},
+                 {ccc3(0, 0, 255), 0.67f},
+                 {ccc3(148, 0, 211), 0.83f},
+                 {ccc3(255, 0, 0), 1.f},
+             })},
+            {"Sunset",
+             makeGradientPreset({
+                 {ccc3(255, 94, 77), 0.f},
+                 {ccc3(255, 154, 0), 0.33f},
+                 {ccc3(180, 50, 160), 0.67f},
+                 {ccc3(80, 20, 120), 1.f},
+             })},
+            {"Ocean",
+             makeGradientPreset({
+                 {ccc3(0, 50, 80), 0.f},
+                 {ccc3(0, 150, 200), 0.33f},
+                 {ccc3(0, 200, 180), 0.67f},
+                 {ccc3(100, 255, 220), 1.f},
+             })},
+            {"Fire",
+             makeGradientPreset({
+                 {ccc3(255, 0, 0), 0.f},
+                 {ccc3(255, 100, 0), 0.33f},
+                 {ccc3(255, 200, 0), 0.67f},
+                 {ccc3(255, 255, 100), 1.f},
+             })},
+            {"Pastel Rainbow",
+             makeGradientPreset({
+                 {ccc3(255, 179, 186), 0.f},
+                 {ccc3(255, 223, 186), 0.2f},
+                 {ccc3(255, 255, 186), 0.4f},
+                 {ccc3(186, 255, 201), 0.6f},
+                 {ccc3(186, 225, 255), 0.8f},
+                 {ccc3(219, 186, 255), 1.f},
+             })},
+            // ragebait
+            {"Transgender",
+             makeGradientPreset({
+                 {ccc3(91, 206, 250), 0.f},
+                 {ccc3(245, 169, 184), 0.25f},
+                 {ccc3(255, 255, 255), 0.5f},
+                 {ccc3(245, 169, 184), 0.75f},
+                 {ccc3(91, 206, 250), 1.f},
+             })}};
+}
+
+PresetPopup* PresetPopup::create(const ColorConfig& current, std::function<void(ColorConfig)> onSelect)
+{
+    auto* ret = new PresetPopup();
+    ret->m_onSelect = std::move(onSelect);
+    ret->m_currentConfig = current;
+    if (ret->initAnchored(300, 230))
+    {
+        ret->autorelease();
+        return ret;
+    }
+    CC_SAFE_DELETE(ret);
+    return nullptr;
+}
+
+bool PresetPopup::setup()
+{
+    const auto bg = CCScale9Sprite::create("GJ_square01.png");
+    bg->setContentSize(m_size);
+    m_mainLayer->addChildAtPosition(bg, Anchor::Center);
+    m_buttonMenu->setVisible(false);
+
+    const auto title = CCLabelBMFont::create("Presets", "goldFont.fnt");
+    title->setScale(0.7f);
+    m_mainLayer->addChildAtPosition(title, Anchor::Top, ccp(0, -18));
+
+    const auto closeSpr = CCSprite::createWithSpriteFrameName("GJ_closeBtn_001.png");
+    closeSpr->setScale(0.7f);
+    const auto closeBtn = CCMenuItemSpriteExtra::create(closeSpr, this, menu_selector(PresetPopup::onClose));
+    const auto closeMenu = CCMenu::create();
+    closeMenu->addChild(closeBtn);
+    m_mainLayer->addChildAtPosition(closeMenu, Anchor::TopLeft, ccp(0, 0));
+
+    const auto saveSpr =
+        ButtonSprite::create("Save Current Config as Preset", 0, false, "goldFont.fnt", "GJ_button_01.png", 30, 0.5f);
+    const auto saveBtn = CCMenuItemSpriteExtra::create(saveSpr, this, menu_selector(PresetPopup::onSavePreset));
+    const auto saveMenu = CCMenu::create();
+    saveMenu->addChild(saveBtn);
+    m_mainLayer->addChildAtPosition(saveMenu, Anchor::Bottom, ccp(0, 22));
+
+    const float scrollW = m_size.width - 6;
+    const float scrollH = m_size.height - 80;
+    m_scroll = ScrollLayer::create(ccp(scrollW, scrollH));
+    m_scroll->setPosition(ccp(3, 45));
+    m_mainLayer->addChild(m_scroll);
+
+    loadPresets();
+    rebuildList();
+    this->scheduleUpdate();
+
+    return true;
+}
+
+void PresetPopup::show()
+{
+    PopupBase::show();
+    // we love touch prio again
+    queueInMainThread(
+        [self = Ref(this)]()
+        {
+            CCTouchDispatcher::get()->registerForcePrio(self, 2);
+            handleTouchPriority(self);
+        });
+}
+
+void PresetPopup::update(const float dt)
+{
+    m_previewTime += dt * 60.f;
+
+    const float savedVa = colorutil::va;
+    colorutil::va = m_previewTime;
+
+    for (auto& [bar, segments, config] : m_cellRefs)
+    {
+        if (config.type == Gradient && config.smoothGradient && config.gradientScrolling)
+        {
+            const float offset = m_previewTime * config.chromaSpeed * 0.05f;
+            for (int i = 0; i < static_cast<int>(segments.size()); i++)
+            {
+                const float t = (static_cast<float>(i) + 0.5f) / segments.size();
+                segments[i]->setColor(config.colorForGradientLooped(t + offset));
+            }
+        }
+        else if (config.type == Chroma || config.type == Pastel)
+            bar->setFillColor(config.colorForConfig());
+    }
+
+    colorutil::va = savedVa;
+}
+
+void PresetPopup::loadPresets()
+{
+    m_presets.clear();
+
+    if (auto saved = Mod::get()->getSavedValue<matjson::Value>("user-presets", matjson::Value{});
+        saved.isArray() && !saved.asArray().unwrap().empty())
+    {
+        for (auto& entry : saved)
+        {
+            if (!entry.isObject() || !entry.contains("name") || !entry.contains("config"))
+                continue;
+            Preset p;
+            p.name = entry["name"].asString().unwrapOr("Unnamed");
+            p.config.fromJson(entry["config"]);
+            p.config.type = Gradient;
+            p.config.smoothGradient = true;
+            m_presets.push_back(p);
+        }
+    }
+    else
+    {
+        m_presets = getDefaultPresets();
+        savePresets();
+    }
+}
+
+void PresetPopup::savePresets()
+{
+    auto arr = matjson::Value::array();
+    for (auto& [name, config] : m_presets)
+        arr.push(matjson::makeObject({{"name", name}, {"config", config.toJson()}}));
+    Mod::get()->setSavedValue("user-presets", arr);
+    (void)Mod::get()->saveData();
+}
+
+CCNode* PresetPopup::createCell(const Preset& preset, const int index, const float width)
+{
+    constexpr float cellH = 40.f;
+    auto* cell = CCNode::create();
+    cell->setContentSize(ccp(width, cellH));
+    cell->setAnchorPoint(ccp(0, 1));
+
+    auto* cellBg = CCLayerColor::create(index % 2 == 0 ? ccc4(255, 255, 255, 20) : ccc4(0, 0, 0, 20));
+    cellBg->setContentSize(ccp(width, cellH));
+    cell->addChild(cellBg);
+
+    auto* nameLabel = CCLabelBMFont::create(preset.name.c_str(), "bigFont.fnt");
+    nameLabel->setAnchorPoint(ccp(0, 0.5f));
+    nameLabel->setPosition(ccp(8, cellH / 2));
+    nameLabel->limitLabelWidth(65, 0.3f, 0.15f);
+    cell->addChild(nameLabel);
+
+    const float barVisualWidth = width - 140;
+    auto* bar = ProgressBar::create(ProgressBarStyle::Level);
+    bar->setAnchorPoint(ccp(0, 0.5f));
+    bar->updateProgress(100.f);
+    bar->setFillColor(ccWHITE);
+    bar->setScale(barVisualWidth / bar->getContentSize().width);
+    bar->setPosition(ccp(78, cellH / 2));
+
+    CellRef ref = {bar, {}, preset.config};
+    if (preset.config.type == Gradient && preset.config.smoothGradient)
+    {
+        bar->setFillColor(ccWHITE);
+        if (const auto barSpr = bar->getChildByID("progress-bar"))
+        {
+            if (const auto fillSpr = barSpr->getChildByID("progress-bar-fill"))
+            {
+                const float visW = barSpr->getContentSize().width - 4;
+                const int segs = static_cast<int>(Mod::get()->getSettingValue<int64_t>("gradient-segments"));
+                const float segW = visW / segs;
+                for (int i = 0; i < segs; i++)
+                {
+                    auto seg = CCLayerColor::create(ccc4(255, 255, 255, 255));
+                    seg->ignoreAnchorPointForPosition(false);
+                    seg->setAnchorPoint(ccp(0, 0));
+                    const float x = segW * i;
+                    seg->setContentSize(ccp(fminf(ceilf(segW) + 1, visW - x), fillSpr->getContentSize().height));
+                    seg->setPosition(ccp(x, 0));
+                    seg->setColor(preset.config.colorForGradient((static_cast<float>(i) + 0.5f) / segs));
+                    ref.segments.push_back(seg);
+                    fillSpr->addChild(seg, 1);
+                }
+            }
+        }
+    }
+    else
+        bar->setFillColor(preset.config.colorForConfig());
+
+    m_cellRefs.push_back(ref);
+    cell->addChild(bar);
+
+    auto* cellMenu = CCMenu::create();
+    cellMenu->setPosition(ccp(0, 0));
+
+    auto* selectSpr = CCSprite::createWithSpriteFrameName("GJ_selectSongBtn_001.png");
+    selectSpr->setScale(0.5f);
+    auto* selectBtn = CCMenuItemSpriteExtra::create(selectSpr, this, menu_selector(PresetPopup::onSelectPreset));
+    selectBtn->setTag(index);
+    selectBtn->setPosition(ccp(width - 38, cellH / 2));
+    cellMenu->addChild(selectBtn);
+
+    auto* trashSpr = CCSprite::createWithSpriteFrameName("GJ_trashBtn_001.png");
+    trashSpr->setScale(0.45f);
+    auto* trashBtn = CCMenuItemSpriteExtra::create(trashSpr, this, menu_selector(PresetPopup::onDeletePreset));
+    trashBtn->setTag(index);
+    trashBtn->setPosition(ccp(width - 15, cellH / 2));
+    cellMenu->addChild(trashBtn);
+
+    cell->addChild(cellMenu);
+    return cell;
+}
+
+void PresetPopup::rebuildList()
+{
+    m_cellRefs.clear();
+    const float width = m_scroll->getContentWidth();
+    constexpr float cellH = 40.f;
+    const float scrollH = m_scroll->getContentHeight();
+    const float contentH = cellH * static_cast<float>(m_presets.size());
+    const float totalH = std::max(contentH, scrollH);
+
+    m_scroll->m_contentLayer->removeAllChildren();
+    m_scroll->m_contentLayer->setContentSize(ccp(width, totalH));
+
+    for (int i = 0; i < static_cast<int>(m_presets.size()); i++)
+    {
+        auto* cell = createCell(m_presets[i], i, width);
+        cell->setPosition(ccp(0, totalH - cellH * i));
+        m_scroll->m_contentLayer->addChild(cell);
+    }
+
+    m_scroll->m_contentLayer->setPositionY(-(totalH - scrollH));
+}
+
+void PresetPopup::onSelectPreset(CCObject* sender)
+{
+    if (const int idx = sender->getTag(); idx >= 0 && idx < static_cast<int>(m_presets.size()))
+    {
+        if (m_onSelect)
+            m_onSelect(m_presets[idx].config);
+        onClose(nullptr);
+    }
+}
+
+void PresetPopup::onDeletePreset(CCObject* sender)
+{
+    if (const int idx = sender->getTag(); idx >= 0 && idx < static_cast<int>(m_presets.size()))
+    {
+        m_presets.erase(m_presets.begin() + idx);
+        savePresets();
+        rebuildList();
+    }
+}
+
+void PresetPopup::onSavePreset(CCObject*)
+{
+    m_pendingPresetName = "Unnamed";
+
+    auto* alert =
+        FLAlertLayer::create(this, "Save Preset", "Enter a name for this preset:\n \n ", "Cancel", "Save", 280);
+
+    auto* nameInput = TextInput::create(180, "Preset name...");
+    nameInput->setCallback([this](const std::string& str) { m_pendingPresetName = str.empty() ? "Unnamed" : str; });
+    nameInput->setPosition(alert->m_mainLayer->getContentSize() / 2 + ccp(0, -15));
+    alert->m_mainLayer->addChild(nameInput, 10);
+
+    alert->show();
+}
+
+void PresetPopup::FLAlert_Clicked(FLAlertLayer*, const bool btn2)
+{
+    if (!btn2) return;
+
+    const auto& name = m_pendingPresetName;
+
+    m_presets.push_back({name, m_currentConfig});
+    savePresets();
+    rebuildList();
 }

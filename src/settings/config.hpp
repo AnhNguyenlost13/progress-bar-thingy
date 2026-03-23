@@ -35,16 +35,19 @@ struct ColorConfig
     bool smoothGradient = true;
     bool gradientFollowsProgress = false;
     bool gradientScrolling = false;
+    bool gradientMirrorLoop = false;
 
-    cocos2d::ccColor3B colorForConfig(float levelProgress = -1.f) const;
-    cocos2d::ccColor3B colorForGradient(float v) const;
+    [[nodiscard]] cocos2d::ccColor3B colorForConfig(float levelProgress = -1.f) const;
+    [[nodiscard]] cocos2d::ccColor3B colorForGradient(float v) const;
+    [[nodiscard]] cocos2d::ccColor3B colorForGradientLooped(float v) const;
 
     bool operator==(const ColorConfig& o) const
     {
         return customColor.r == o.customColor.r && customColor.g == o.customColor.g &&
             customColor.b == o.customColor.b && opacity == o.opacity && chromaSpeed == o.chromaSpeed &&
             type == o.type && gradientLocations == o.gradientLocations && smoothGradient == o.smoothGradient &&
-            gradientFollowsProgress == o.gradientFollowsProgress && gradientScrolling == o.gradientScrolling;
+            gradientFollowsProgress == o.gradientFollowsProgress && gradientScrolling == o.gradientScrolling &&
+            gradientMirrorLoop == o.gradientMirrorLoop;
     }
     bool operator!=(const ColorConfig& o) const { return !(*this == o); }
 
