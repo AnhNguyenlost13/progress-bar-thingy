@@ -953,8 +953,8 @@ void SetupColorConfigUI::onDistributeStops(CCObject*)
     if (count < 2)
         return;
     std::ranges::sort(currentConfig.gradientLocations,
-              [](const ColorConfig::GradientLocation& a, const ColorConfig::GradientLocation& b)
-              { return a.percentageLocation < b.percentageLocation; });
+                      [](const ColorConfig::GradientLocation& a, const ColorConfig::GradientLocation& b)
+                      { return a.percentageLocation < b.percentageLocation; });
     for (size_t i = 0; i < count; i++)
         currentConfig.gradientLocations[i].percentageLocation = static_cast<float>(i) / (static_cast<float>(count) - 1);
     selectedGradientLine = 0;
