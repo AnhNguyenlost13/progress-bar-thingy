@@ -850,6 +850,10 @@ void SetupColorConfigUI::updateUI()
     gradientPreviewContainer->setVisible(isGradient);
     gradientLineConfigNode->setVisible(isGradient);
     gradientStepRow->setVisible(isGradient);
+    if (auto* loopBtn = m_mainLayer->getChildByIDRecursive("gradient-loop-btn"_spr))
+        loopBtn->setVisible(isGradient);
+    if (auto* distBtn = m_mainLayer->getChildByIDRecursive("gradient-dist-btn"_spr))
+        distBtn->setVisible(isGradient);
     gradientOptsMenu->setVisible(isGradient);
     gradientMappedToggle->toggle(currentConfig.smoothGradient);
     gradientProgressToggle->toggle(currentConfig.gradientFollowsProgress);
@@ -948,8 +952,12 @@ void SetupColorConfigUI::onDistributeStops(CCObject*)
     const auto count = currentConfig.gradientLocations.size();
     if (count < 2)
         return;
+    std::ranges::sort(currentConfig.gradientLocations,
+              [](const ColorConfig::GradientLocation& a, const ColorConfig::GradientLocation& b)
+              { return a.percentageLocation < b.percentageLocation; });
     for (size_t i = 0; i < count; i++)
         currentConfig.gradientLocations[i].percentageLocation = static_cast<float>(i) / (static_cast<float>(count) - 1);
+    selectedGradientLine = 0;
     updateGradientLines();
     updateGradientBarMode();
 }
