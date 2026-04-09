@@ -1,4 +1,10 @@
 
+## <cy>v2.0.0</c> (2026-04-09)
+- Added gradient modes
+- Added the Presets menu
+- Improved progress bar previews
+- ...
+
 ## <cy>v1.7.5</c> (2025-04-02)
 iOS support (thank you kam)
 
