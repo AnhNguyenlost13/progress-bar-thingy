@@ -12,36 +12,26 @@ static float speedFrom01(const float v) { return v * (SPEED_MAX - SPEED_MIN) + S
 SetupColorConfigUI* SetupColorConfigUI::create(const std::function<void(ColorConfig)>& onFinishFunc,
                                                const bool allowEffects)
 {
-    auto pRet = new SetupColorConfigUI();
-
-    constexpr CCSize size = ccp(380, 250);
-    pRet->onFinishFunc = onFinishFunc;
-    pRet->allowEffects = allowEffects;
-
-    if (pRet && pRet->initAnchored(size.width, size.height))
+    auto* ret = new SetupColorConfigUI();
+    if (ret && ret->init(onFinishFunc, allowEffects))
     {
-        pRet->autorelease();
-        return pRet;
+        ret->autorelease();
+        return ret;
     }
 
-    CC_SAFE_DELETE(pRet);
+    CC_SAFE_DELETE(ret);
     return nullptr;
 }
 
-bool SetupColorConfigUI::setup()
+bool SetupColorConfigUI::init(const std::function<void(ColorConfig)>& onFinishFunc, const bool allowEffects)
 {
+    if (!Popup::init(380.f, 250.f))
+        return false;
+
     this->scheduleUpdate();
-
-    const auto bg = CCScale9Sprite::create("GJ_square01.png");
-    bg->setID("background"_spr);
-    bg->setContentSize(m_size);
-    m_mainLayer->addChildAtPosition(bg, Anchor::Center);
-
-    m_buttonMenu->setVisible(false);
-
-    const auto title = CCLabelBMFont::create("Color Setup", "goldFont.fnt");
-    title->setID("title-label"_spr);
-    title->setScale(0.7f);
+    this->setTitle("Color Setup");
+    this->onFinishFunc = onFinishFunc;
+    this->allowEffects = allowEffects;
 
     const auto menu = CCMenu::create();
     menu->setID("ok-menu"_spr);
@@ -50,7 +40,6 @@ bool SetupColorConfigUI::setup()
     okBtn->setID("ok-btn"_spr);
     menu->addChild(okBtn);
 
-    m_mainLayer->addChildAtPosition(title, Anchor::Top, ccp(0, -18));
     m_mainLayer->addChildAtPosition(menu, Anchor::Bottom, ccp(0, 24.5f));
 
     startColor = CCLayerColor::create(ccc4(0, 0, 0, 255), 30, 15);
@@ -260,7 +249,7 @@ bool SetupColorConfigUI::setup()
     m_mainLayer->addChildAtPosition(shader, Anchor::Center, ccp(0, 0));
     m_mainLayer->addChildAtPosition(endColor, Anchor::TopLeft, ccp(30, -30));
     m_mainLayer->addChildAtPosition(startColor, Anchor::TopLeft, ccp(30, -30 - (15 * 1.5f)));
-    m_mainLayer->addChildAtPosition(typeMenu, Anchor::BottomRight, ccp(-80, 20));
+    m_mainLayer->addChildAtPosition(typeMenu, Anchor::BottomRight, ccp(-80, 0));
     m_mainLayer->addChildAtPosition(topRightMenu, Anchor::TopRight, ccp(-38, -12));
     m_mainLayer->addChildAtPosition(bottomLeft, Anchor::BottomLeft, ccp(65, 25));
     m_mainLayer->addChildAtPosition(colArea, Anchor::Left, ccp(65, 0));
@@ -743,7 +732,6 @@ void SetupColorConfigUI::update(const float dt)
 
     gradientLineLocation->setValue(currentConfig.gradientLocations[selectedGradientLine].percentageLocation);
 
-    // Update position % input (only when not actively editing)
     if (!gradientLinePositionInput->getInputNode()->m_selected)
     {
         const int pct =
@@ -764,7 +752,7 @@ void SetupColorConfigUI::update(const float dt)
 
 void SetupColorConfigUI::show()
 {
-    PopupBase::show();
+    Popup::show();
     // we love touch priority
     queueInMainThread(
         [self = Ref(this)]()
@@ -779,7 +767,7 @@ void SetupColorConfigUI::onClose(CCObject* sender)
     if (onFinishFunc)
         onFinishFunc(currentConfig);
 
-    PopupBase::onClose(sender);
+    Popup::onClose(sender);
 }
 
 void SetupColorConfigUI::onSetDefault(CCObject*)
@@ -1144,9 +1132,7 @@ static std::vector<Preset> getDefaultPresets()
 PresetPopup* PresetPopup::create(const ColorConfig& current, std::function<void(ColorConfig)> onSelect)
 {
     auto* ret = new PresetPopup();
-    ret->m_onSelect = std::move(onSelect);
-    ret->m_currentConfig = current;
-    if (ret->initAnchored(300, 230))
+    if (ret && ret->init(current, std::move(onSelect)))
     {
         ret->autorelease();
         return ret;
@@ -1155,23 +1141,14 @@ PresetPopup* PresetPopup::create(const ColorConfig& current, std::function<void(
     return nullptr;
 }
 
-bool PresetPopup::setup()
+bool PresetPopup::init(const ColorConfig& current, std::function<void(ColorConfig)> onSelect)
 {
-    const auto bg = CCScale9Sprite::create("GJ_square01.png");
-    bg->setContentSize(m_size);
-    m_mainLayer->addChildAtPosition(bg, Anchor::Center);
-    m_buttonMenu->setVisible(false);
+    if (!Popup::init(300.f, 230.f))
+        return false;
 
-    const auto title = CCLabelBMFont::create("Presets", "goldFont.fnt");
-    title->setScale(0.7f);
-    m_mainLayer->addChildAtPosition(title, Anchor::Top, ccp(0, -18));
-
-    const auto closeSpr = CCSprite::createWithSpriteFrameName("GJ_closeBtn_001.png");
-    closeSpr->setScale(0.7f);
-    const auto closeBtn = CCMenuItemSpriteExtra::create(closeSpr, this, menu_selector(PresetPopup::onClose));
-    const auto closeMenu = CCMenu::create();
-    closeMenu->addChild(closeBtn);
-    m_mainLayer->addChildAtPosition(closeMenu, Anchor::TopLeft, ccp(0, 0));
+    m_onSelect = std::move(onSelect);
+    m_currentConfig = current;
+    this->setTitle("Presets");
 
     const auto saveSpr =
         ButtonSprite::create("Save Current Config as Preset", 0, false, "goldFont.fnt", "GJ_button_01.png", 30, 0.5f);
@@ -1195,7 +1172,7 @@ bool PresetPopup::setup()
 
 void PresetPopup::show()
 {
-    PopupBase::show();
+    Popup::show();
     // we love touch prio again
     queueInMainThread(
         [self = Ref(this)]()
