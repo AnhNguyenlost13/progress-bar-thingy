@@ -30,7 +30,7 @@ Feel free to open a pull request or an issue if you want to contribute to this m
 - [x] Mode-dependent colors (differentiate between Practice and Normal modes)
 - [x] Change the color on new best
 - [ ] Improve code
-- [ ] Gradient modes
+- [x] Gradient modes
 - [x] Progress bar preview in settings page
 
 ## Attributions
