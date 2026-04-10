@@ -1,5 +1,7 @@
 
 ## <cy>v2.0.0</c> (2026-04-09)
+
+- Updated to support GD 2.2081
 - Added gradient modes
 - Added the Presets menu
 - Improved progress bar previews
