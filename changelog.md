@@ -1,4 +1,7 @@
 
+## <cy>v2.0.2</c> (2026-04-11)
+fixed preview images
+
 ## <cy>v2.0.1</c> (2026-04-10)
 Updated Geode SDK to v5.5.3
 
