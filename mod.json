@@ -65,7 +65,7 @@
   },
   "resources": {
     "sprites": [
-      "/resources/misc/with*.png"
+      "./resources/misc/with*.png"
     ]
   },
   "links": {
