@@ -1,8 +1,10 @@
 // ReSharper disable CppParameterMayBeConstPtrOrRef
 // ReSharper disable CppMemberFunctionMayBeStatic
 // ReSharper disable CppMemberFunctionMayBeConst
+// ReSharper disable IMayBeALesbian
 #include "dialog.hpp"
 #include "../color.hpp"
+#include "../utils.hpp"
 
 static constexpr float SPEED_MIN = 0.1f;
 static constexpr float SPEED_MAX = 5.0f;
@@ -23,15 +25,15 @@ SetupColorConfigUI* SetupColorConfigUI::create(const std::function<void(ColorCon
     return nullptr;
 }
 
-bool SetupColorConfigUI::init(const std::function<void(ColorConfig)>& onFinishFunc, const bool allowEffects)
+bool SetupColorConfigUI::init(const std::function<void(ColorConfig)>& pOnFinishFunc, const bool pAllowEffects)
 {
     if (!Popup::init(380.f, 250.f))
         return false;
 
     this->scheduleUpdate();
     this->setTitle("Color Setup");
-    this->onFinishFunc = onFinishFunc;
-    this->allowEffects = allowEffects;
+    this->onFinishFunc = pOnFinishFunc;
+    this->allowEffects = pAllowEffects;
 
     const auto menu = CCMenu::create();
     menu->setID("ok-menu"_spr);
@@ -62,7 +64,7 @@ bool SetupColorConfigUI::init(const std::function<void(ColorConfig)>& onFinishFu
     typeMenu->setID("type-menu"_spr);
     typeMenu->setContentSize(ccp(0, 0));
     typeMenu->setScale(0.8f);
-    typeMenu->setVisible(allowEffects);
+    typeMenu->setVisible(pAllowEffects);
 
     const auto topRightMenu = CCMenu::create();
     topRightMenu->setID("top-right-menu"_spr);
@@ -79,7 +81,7 @@ bool SetupColorConfigUI::init(const std::function<void(ColorConfig)>& onFinishFu
         menu_selector(SetupColorConfigUI::onSetDefault));
     defaultBtn->setID("default-btn"_spr);
     topRightMenu->addChild(defaultBtn);
-    if (allowEffects)
+    if (pAllowEffects)
     {
         const auto presetBtn = CCMenuItemSpriteExtra::create(
             ButtonSprite::create("Presets", 0, false, "goldFont.fnt", "GJ_button_04.png", 30, 0.6f), this,
@@ -425,21 +427,18 @@ void SetupColorConfigUI::createGradientPreview()
 
     if (const auto barSpr = gradientPreviewBar->getChildByID("progress-bar"))
     {
-        if (const auto fillSpr = barSpr->getChildByID("progress-bar-fill"))
+        if (const auto fillSpr = typeinfo_cast<CCSprite*>(barSpr->getChildByID("progress-bar-fill")))
         {
             const float visibleWidth = barSpr->getContentSize().width - 4;
-            const float fillHeight = fillSpr->getContentSize().height;
             const int barSegments = static_cast<int>(Mod::get()->getSettingValue<int64_t>("gradient-segments"));
             const float segWidth = visibleWidth / barSegments;
             for (int i = 0; i < barSegments; i++)
             {
-                auto seg = CCLayerColor::create(ccc4(255, 255, 255, 255));
-                seg->ignoreAnchorPointForPosition(false);
-                seg->setAnchorPoint(ccp(0, 0));
+                auto seg = createProgressFillGradientSegment(fillSpr);
                 const float x = segWidth * i;
-                const float w = fminf(ceilf(segWidth) + 1, visibleWidth - x);
-                seg->setContentSize(ccp(w, fillHeight));
-                seg->setPosition(ccp(x, 0));
+                updateProgressFillGradientSegment(
+                    seg, fillSpr, x,
+                    calculateProgressFillGradientSegmentWidth(x, segWidth, visibleWidth, visibleWidth));
                 barOverlaySegments.push_back(seg);
                 fillSpr->addChild(seg, 1);
             }
@@ -533,7 +532,7 @@ void SetupColorConfigUI::updateGradientLines()
         i++;
     }
 
-    fixTouchPriorities();
+    queueTouchPriorityRefresh();
 }
 
 void SetupColorConfigUI::onSelectGradientLine(CCObject* sender)
@@ -560,13 +559,7 @@ void SetupColorConfigUI::onChangeGradientLineColor(CCObject*)
             m_subPopupOpen = false;
             setMenusEnabled(true);
 
-            // hacky stuff because touch prio sucks
-            queueInMainThread(
-                [self = Ref(this)]()
-                {
-                    CCTouchDispatcher::get()->registerForcePrio(self, 2);
-                    self->fixTouchPriorities();
-                });
+            queueTouchPriorityRefresh();
         },
         false);
 
@@ -590,8 +583,22 @@ void SetupColorConfigUI::setMenusEnabled(const bool enabled) const
                     menu->setEnabled(enabled);
 }
 
-// wtf
-void SetupColorConfigUI::fixTouchPriorities()
+// this is just so bad
+void SetupColorConfigUI::queueTouchPriorityRefresh()
+{
+    if (m_touchPriorityRefreshQueued)
+        return;
+
+    m_touchPriorityRefreshQueued = true;
+    queueInMainThread(
+        [self = Ref(this)]()
+        {
+            self->m_touchPriorityRefreshQueued = false;
+            self->refreshTouchPriorities();
+        });
+}
+
+void SetupColorConfigUI::refreshTouchPriorities()
 {
     auto* dispatcher = CCTouchDispatcher::get();
 
@@ -600,24 +607,27 @@ void SetupColorConfigUI::fixTouchPriorities()
         if (const auto* h = dispatcher->findHandler(d))
             popupPrio = h->m_nPriority;
 
-    const int prio = popupPrio - 3;
+    handleTouchPriorityWith(m_mainLayer, popupPrio - 1);
 
-    auto fixTree = [&](CCNode* node)
+    const int editorPrio = popupPrio - 3;
+    auto refreshEditorTree = [&](CCNode* node)
     {
         if (!node)
             return;
+
         if (auto* d = typeinfo_cast<CCTouchDelegate*>(node))
             if (dispatcher->findHandler(d))
-                dispatcher->setPriority(prio, d);
-        handleTouchPriorityWith(node, prio, true);
+                dispatcher->setPriority(editorPrio, d);
+
+        handleTouchPriorityWith(node, editorPrio, true);
     };
 
-    fixTree(gradientLineConfigNode);
-    fixTree(gradientOptsMenu);
-    fixTree(gradientPreviewContainer);
-    fixTree(bottomLeft);
-    fixTree(typeMenu);
-    fixTree(gradientStepRow);
+    refreshEditorTree(gradientLineConfigNode);
+    refreshEditorTree(gradientOptsMenu);
+    refreshEditorTree(gradientPreviewContainer);
+    refreshEditorTree(bottomLeft);
+    refreshEditorTree(typeMenu);
+    refreshEditorTree(gradientStepRow);
 }
 
 void SetupColorConfigUI::onAddGradientStep(CCObject*)
@@ -753,13 +763,7 @@ void SetupColorConfigUI::update(const float dt)
 void SetupColorConfigUI::show()
 {
     Popup::show();
-    // we love touch priority
-    queueInMainThread(
-        [self = Ref(this)]()
-        {
-            CCTouchDispatcher::get()->registerForcePrio(self, 2);
-            self->fixTouchPriorities();
-        });
+    queueTouchPriorityRefresh();
 }
 
 void SetupColorConfigUI::onClose(CCObject* sender)
@@ -1173,13 +1177,33 @@ bool PresetPopup::init(const ColorConfig& current, std::function<void(ColorConfi
 void PresetPopup::show()
 {
     Popup::show();
-    // we love touch prio again
+    queueTouchPriorityRefresh();
+}
+
+void PresetPopup::queueTouchPriorityRefresh()
+{
+    if (m_touchPriorityRefreshQueued)
+        return;
+
+    m_touchPriorityRefreshQueued = true;
     queueInMainThread(
         [self = Ref(this)]()
         {
-            CCTouchDispatcher::get()->registerForcePrio(self, 2);
-            handleTouchPriority(self);
+            self->m_touchPriorityRefreshQueued = false;
+            self->refreshTouchPriorities();
         });
+}
+
+void PresetPopup::refreshTouchPriorities()
+{
+    auto* dispatcher = CCTouchDispatcher::get();
+
+    int popupPrio = -500;
+    if (auto* d = typeinfo_cast<CCTouchDelegate*>(this))
+        if (const auto* h = dispatcher->findHandler(d))
+            popupPrio = h->m_nPriority;
+
+    handleTouchPriorityWith(m_mainLayer, popupPrio - 1);
 }
 
 void PresetPopup::update(const float dt)
@@ -1273,19 +1297,17 @@ CCNode* PresetPopup::createCell(const Preset& preset, const int index, const flo
         bar->setFillColor(ccWHITE);
         if (const auto barSpr = bar->getChildByID("progress-bar"))
         {
-            if (const auto fillSpr = barSpr->getChildByID("progress-bar-fill"))
+            if (const auto fillSpr = typeinfo_cast<CCSprite*>(barSpr->getChildByID("progress-bar-fill")))
             {
                 const float visW = barSpr->getContentSize().width - 4;
                 const int segs = static_cast<int>(Mod::get()->getSettingValue<int64_t>("gradient-segments"));
                 const float segW = visW / segs;
                 for (int i = 0; i < segs; i++)
                 {
-                    auto seg = CCLayerColor::create(ccc4(255, 255, 255, 255));
-                    seg->ignoreAnchorPointForPosition(false);
-                    seg->setAnchorPoint(ccp(0, 0));
+                    auto seg = createProgressFillGradientSegment(fillSpr);
                     const float x = segW * i;
-                    seg->setContentSize(ccp(fminf(ceilf(segW) + 1, visW - x), fillSpr->getContentSize().height));
-                    seg->setPosition(ccp(x, 0));
+                    updateProgressFillGradientSegment(seg, fillSpr, x,
+                                                      calculateProgressFillGradientSegmentWidth(x, segW, visW, visW));
                     seg->setColor(preset.config.colorForGradient((static_cast<float>(i) + 0.5f) / segs));
                     ref.segments.push_back(seg);
                     fillSpr->addChild(seg, 1);
@@ -1340,6 +1362,7 @@ void PresetPopup::rebuildList()
     }
 
     m_scroll->m_contentLayer->setPositionY(-(totalH - scrollH));
+    queueTouchPriorityRefresh();
 }
 
 void PresetPopup::onSelectPreset(CCObject* sender)

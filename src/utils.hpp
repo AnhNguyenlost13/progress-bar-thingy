@@ -58,7 +58,7 @@ public:
     short updateId = 0;
 
 private:
-    static Catgirl* meow;
+    inline static Catgirl* meow = nullptr;
     Catgirl() { updateSettings(); }
 
     static ColorConfig loadConfigFor(Context ctx)
@@ -98,8 +98,6 @@ public:
     Catgirl& operator=(const Catgirl&) = delete;
 };
 
-Catgirl* Catgirl::meow = nullptr;
-
 /**
  * @brief Gets the level state-dependent color.
  */
@@ -136,4 +134,35 @@ inline float getSpeed()
     default:
         return d->normalConfig.chromaSpeed;
     }
+}
+
+//
+// Some other fill helpers
+//
+
+inline CCSprite* createProgressFillGradientSegment(CCSprite* fillSpr)
+{
+    auto* seg = CCSprite::createWithTexture(fillSpr->getTexture());
+    seg->ignoreAnchorPointForPosition(false);
+    seg->setAnchorPoint(ccp(0, 0));
+    return seg;
+}
+
+inline float calculateProgressFillGradientSegmentWidth(const float x, const float segmentWidth,
+                                                       const float visibleWidth, const float fullWidth)
+{
+    const float overlapWidth = fminf(ceilf(segmentWidth) + 1.f, fullWidth - x);
+    return fmaxf(0.f, fminf(overlapWidth, visibleWidth - x));
+}
+
+inline void updateProgressFillGradientSegment(CCSprite* seg, CCSprite* fillSpr, const float x, const float width)
+{
+    if (width <= 0.f)
+        return seg->setVisible(false);
+
+    const auto texRect = fillSpr->getTextureRect();
+    seg->setTexture(fillSpr->getTexture());
+    seg->setTextureRect(CCRectMake(texRect.origin.x + x, texRect.origin.y, width, texRect.size.height));
+    seg->setPosition(ccp(x, 0));
+    seg->setVisible(true);
 }

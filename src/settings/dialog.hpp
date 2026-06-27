@@ -50,20 +50,22 @@ class SetupColorConfigUI : public Popup, public ColorPickerDelegate, public Text
     CCMenuItemToggler* gradientMirrorToggle = nullptr;
     CCLabelBMFont* gradientMirrorLabel = nullptr;
     ProgressBar* gradientPreviewBar = nullptr;
-    std::vector<CCLayerColor*> barOverlaySegments;
+    std::vector<CCSprite*> barOverlaySegments;
     CCMenu* gradientOptsMenu = nullptr;
     bool m_subPopupOpen = false;
     bool m_epilepsyWarned = false;
+    bool m_touchPriorityRefreshQueued = false;
     float m_previewTime = 0.f;
 
     void setMenusEnabled(bool enabled) const;
-    void fixTouchPriorities();
+    void queueTouchPriorityRefresh();
+    void refreshTouchPriorities();
 
     void textChanged(CCTextInputNode* node) override;
 
 public:
     static SetupColorConfigUI* create(const std::function<void(ColorConfig)>& onFinishFunc, bool allowEffects = true);
-    bool init(const std::function<void(ColorConfig)>& onFinishFunc, bool allowEffects);
+    bool init(const std::function<void(ColorConfig)>& pOnFinishFunc, bool pAllowEffects);
 
     void show() override;
     void onClose(CCObject* sender) override;
@@ -116,7 +118,7 @@ class PresetPopup : public Popup, public FLAlertLayerProtocol
     struct CellRef
     {
         ProgressBar* bar;
-        std::vector<CCLayerColor*> segments;
+        std::vector<CCSprite*> segments;
         ColorConfig config;
     };
 
@@ -126,9 +128,12 @@ class PresetPopup : public Popup, public FLAlertLayerProtocol
     std::vector<Preset> m_presets;
     std::vector<CellRef> m_cellRefs;
     float m_previewTime = 0.f;
+    bool m_touchPriorityRefreshQueued = false;
     std::string m_pendingPresetName;
 
     void rebuildList();
+    void queueTouchPriorityRefresh();
+    void refreshTouchPriorities();
     CCNode* createCell(const Preset& preset, int index, float width);
     void loadPresets();
     void savePresets();

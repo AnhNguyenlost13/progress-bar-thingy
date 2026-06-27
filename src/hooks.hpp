@@ -1,7 +1,7 @@
 // ReSharper disable CppHidingFunction
 #pragma once
 
-#include "utils.hpp" // Thanks TheSillyDoggo
+#include "utils.hpp"
 
 #include <Geode/modify/PlayLayer.hpp>
 class $modify(canvas, PlayLayer)
@@ -29,9 +29,7 @@ class $modify(canvas, PlayLayer)
 
         for (int i = 0; i < count; i++)
         {
-            const auto seg = CCLayerColor::create(ccc4(255, 255, 255, 255));
-            seg->ignoreAnchorPointForPosition(false);
-            seg->setAnchorPoint(ccp(0, 0));
+            const auto seg = createProgressFillGradientSegment(m_progressFill);
             m_fields->gradientOverlay->addChild(seg);
         }
 
@@ -41,9 +39,10 @@ class $modify(canvas, PlayLayer)
 
     void updateGradientSegments(const ColorConfig* cfg)
     {
-        const float fillHeight = m_progressFill->getContentSize().height;
+        const auto fillRect = m_progressFill->getTextureRect();
+        const float fillHeight = fillRect.size.height;
         const float fullWidth = m_progressFill->getParent()->getContentSize().width - 4;
-        const float visibleWidth = m_progressFill->getTextureRect().size.width;
+        const float visibleWidth = fillRect.size.width;
         const float progressFrac = fullWidth > 0 ? visibleWidth / fullWidth : 1.f;
 
         m_fields->gradientOverlay->setContentSize(ccp(fullWidth, fillHeight));
@@ -51,12 +50,11 @@ class $modify(canvas, PlayLayer)
         const int count = m_fields->currentSegmentCount;
         const float segWidth = fullWidth / count;
         int i = 0;
-        for (const auto seg : CCArrayExt<CCLayerColor*>(m_fields->gradientOverlay->getChildren()))
+        for (const auto seg : CCArrayExt<CCSprite*>(m_fields->gradientOverlay->getChildren()))
         {
             const float x = segWidth * i;
-            seg->setContentSize(ccp(fminf(ceilf(segWidth) + 1, fullWidth - x), fillHeight));
-            seg->setPosition(ccp(x, 0));
-            seg->setVisible(x < visibleWidth);
+            const float width = calculateProgressFillGradientSegmentWidth(x, segWidth, visibleWidth, fullWidth);
+            updateProgressFillGradientSegment(seg, m_progressFill, x, width);
 
             float t = (static_cast<float>(i) + 0.5f) / count;
             if (!cfg->gradientFollowsProgress && progressFrac > 0.01f)

@@ -1,5 +1,6 @@
 #pragma once
 #include <Geode/Geode.hpp>
+#include "../utils.hpp"
 #include "dialog.hpp"
 
 // Thanks RaZooM!
@@ -91,7 +92,7 @@ protected:
     CCMenu* mMenu = nullptr;
     ColorConfig m_committedConfig;
     ColorConfig m_pendingConfig;
-    std::vector<CCLayerColor*> m_barOverlaySegments;
+    std::vector<CCSprite*> m_barOverlaySegments;
     float m_previewTime = 0.f;
 
     static const char* configKey()
@@ -201,20 +202,18 @@ protected:
 
         if (const auto barSpr = mProgressBar->getChildByID("progress-bar"))
         {
-            if (const auto fillSpr = barSpr->getChildByID("progress-bar-fill"))
+            if (const auto fillSpr = typeinfo_cast<CCSprite*>(barSpr->getChildByID("progress-bar-fill")))
             {
-                const float visibleWidth = barSpr->getContentSize().width - 4;
+                const float visibleWidth = fillSpr->getTextureRect().size.width;
                 const int segs = static_cast<int>(Mod::get()->getSettingValue<int64_t>("gradient-segments"));
                 const float segWidth = visibleWidth / segs;
                 for (int i = 0; i < segs; i++)
                 {
-                    auto seg = CCLayerColor::create(ccc4(255, 255, 255, 255));
-                    seg->ignoreAnchorPointForPosition(false);
-                    seg->setAnchorPoint(ccp(0, 0));
+                    auto seg = createProgressFillGradientSegment(fillSpr);
                     const float x = segWidth * i;
-                    seg->setContentSize(
-                        ccp(fminf(ceilf(segWidth) + 1, visibleWidth - x), fillSpr->getContentSize().height));
-                    seg->setPosition(ccp(x, 0));
+                    updateProgressFillGradientSegment(
+                        seg, fillSpr, x,
+                        calculateProgressFillGradientSegmentWidth(x, segWidth, visibleWidth, visibleWidth));
                     seg->setVisible(false);
                     m_barOverlaySegments.push_back(seg);
                     fillSpr->addChild(seg, 1);
