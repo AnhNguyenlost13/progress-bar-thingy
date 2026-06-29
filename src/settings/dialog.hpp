@@ -120,6 +120,7 @@ class PresetPopup : public Popup, public FLAlertLayerProtocol
         ProgressBar* bar;
         std::vector<CCSprite*> segments;
         ColorConfig config;
+        std::vector<ColorConfig::GradientLocation> sortedStops;
     };
 
     std::function<void(ColorConfig)> m_onSelect;

@@ -156,14 +156,15 @@ protected:
         if (m_pendingConfig.type == Gradient && m_pendingConfig.smoothGradient)
         {
             mProgressBar->setFillColor(ccWHITE);
+            const auto sortedStops = sortedGradientLocationsFor(m_pendingConfig);
             for (int i = 0; i < static_cast<int>(m_barOverlaySegments.size()); i++)
             {
                 const float pos = (static_cast<float>(i) + 0.5f) / m_barOverlaySegments.size();
                 if (m_pendingConfig.gradientScrolling)
-                    m_barOverlaySegments[i]->setColor(
-                        m_pendingConfig.colorForGradientLooped(pos + colorutil::getRGBStripOffset()));
+                    m_barOverlaySegments[i]->setColor(colorForSortedGradientLooped(
+                        m_pendingConfig, sortedStops, pos + colorutil::getRGBStripOffset()));
                 else
-                    m_barOverlaySegments[i]->setColor(m_pendingConfig.colorForGradient(pos));
+                    m_barOverlaySegments[i]->setColor(colorForSortedGradient(sortedStops, pos));
                 m_barOverlaySegments[i]->setVisible(true);
             }
         }
@@ -205,8 +206,12 @@ protected:
             if (const auto fillSpr = typeinfo_cast<CCSprite*>(barSpr->getChildByID("progress-bar-fill")))
             {
                 const float visibleWidth = fillSpr->getTextureRect().size.width;
-                const int segs = static_cast<int>(Mod::get()->getSettingValue<int64_t>("gradient-segments"));
+                const int segs =
+                    std::max(1, static_cast<int>(Mod::get()->getSettingValue<int64_t>("gradient-segments")));
                 const float segWidth = visibleWidth / segs;
+                auto* batch = createProgressFillGradientBatch(fillSpr, segs);
+                batch->setID("preview-gradient-overlay"_spr);
+                fillSpr->addChild(batch, 1);
                 for (int i = 0; i < segs; i++)
                 {
                     auto seg = createProgressFillGradientSegment(fillSpr);
@@ -216,7 +221,7 @@ protected:
                         calculateProgressFillGradientSegmentWidth(x, segWidth, visibleWidth, visibleWidth));
                     seg->setVisible(false);
                     m_barOverlaySegments.push_back(seg);
-                    fillSpr->addChild(seg, 1);
+                    batch->addChild(seg);
                 }
             }
         }

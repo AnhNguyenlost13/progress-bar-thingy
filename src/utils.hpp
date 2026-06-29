@@ -148,6 +148,66 @@ inline CCSprite* createProgressFillGradientSegment(CCSprite* fillSpr)
     return seg;
 }
 
+inline CCSpriteBatchNode* createProgressFillGradientBatch(CCSprite* fillSpr, const int capacity)
+{
+    auto* batch = CCSpriteBatchNode::createWithTexture(fillSpr->getTexture(), std::max(1, capacity));
+    batch->setBlendFunc(fillSpr->getBlendFunc());
+    batch->setAnchorPoint(ccp(0, 0));
+    batch->setPosition(ccp(0, 0));
+    return batch;
+}
+
+inline std::vector<ColorConfig::GradientLocation> sortedGradientLocationsFor(const ColorConfig& cfg)
+{
+    auto sorted = cfg.gradientLocations;
+    std::ranges::sort(sorted, [](const ColorConfig::GradientLocation& a, const ColorConfig::GradientLocation& b)
+                      { return a.percentageLocation < b.percentageLocation; });
+    return sorted;
+}
+
+inline ccColor3B colorForSortedGradient(const std::vector<ColorConfig::GradientLocation>& sorted, const float v)
+{
+    if (sorted.empty())
+        return ccWHITE;
+
+    if (v <= sorted.front().percentageLocation)
+        return sorted.front().color;
+    if (v >= sorted.back().percentageLocation)
+        return sorted.back().color;
+
+    for (size_t i = 1; i < sorted.size(); i++)
+    {
+        if (v <= sorted[i].percentageLocation)
+        {
+            const float t = (v - sorted[i - 1].percentageLocation) /
+                (sorted[i].percentageLocation - sorted[i - 1].percentageLocation);
+            const auto& [r1, g1, b1] = sorted[i - 1].color;
+            const auto& [r2, g2, b2] = sorted[i].color;
+            return ccc3(static_cast<uint8_t>(r1 + t * (r2 - r1)), static_cast<uint8_t>(g1 + t * (g2 - g1)),
+                        static_cast<uint8_t>(b1 + t * (b2 - b1)));
+        }
+    }
+
+    return sorted.back().color;
+}
+
+inline ccColor3B colorForSortedGradientLooped(const ColorConfig& cfg,
+                                              const std::vector<ColorConfig::GradientLocation>& sorted, float v)
+{
+    v = fmodf(v, 1.0f);
+    if (v < 0)
+        v += 1.0f;
+
+    if (cfg.gradientMirrorLoop)
+    {
+        v = v * 2.0f;
+        if (v > 1.0f)
+            v = 2.0f - v;
+    }
+
+    return colorForSortedGradient(sorted, v);
+}
+
 inline float calculateProgressFillGradientSegmentWidth(const float x, const float segmentWidth,
                                                        const float visibleWidth, const float fullWidth)
 {
@@ -161,8 +221,12 @@ inline void updateProgressFillGradientSegment(CCSprite* seg, CCSprite* fillSpr, 
         return seg->setVisible(false);
 
     const auto texRect = fillSpr->getTextureRect();
-    seg->setTexture(fillSpr->getTexture());
+    if (!seg->getBatchNode() && seg->getTexture() != fillSpr->getTexture())
+        seg->setTexture(fillSpr->getTexture());
     seg->setTextureRect(CCRectMake(texRect.origin.x + x, texRect.origin.y, width, texRect.size.height));
     seg->setPosition(ccp(x, 0));
     seg->setVisible(true);
 }
+
+// there's no operator== so
+inline bool colorsEqual(const ccColor3B& a, const ccColor3B& b) { return a.r == b.r && a.g == b.g && a.b == b.b; }

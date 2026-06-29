@@ -431,8 +431,11 @@ void SetupColorConfigUI::createGradientPreview()
         if (const auto fillSpr = typeinfo_cast<CCSprite*>(barSpr->getChildByID("progress-bar-fill")))
         {
             const float visibleWidth = barSpr->getContentSize().width - 4;
-            const int barSegments = static_cast<int>(Mod::get()->getSettingValue<int64_t>("gradient-segments"));
+            const int barSegments = std::max(1, Mod::get()->getSettingValue<int>("gradient-segments"));
             const float segWidth = visibleWidth / barSegments;
+            auto* batch = createProgressFillGradientBatch(fillSpr, barSegments);
+            batch->setID("gradient-preview-overlay"_spr);
+            fillSpr->addChild(batch, 1);
             for (int i = 0; i < barSegments; i++)
             {
                 auto seg = createProgressFillGradientSegment(fillSpr);
@@ -441,7 +444,7 @@ void SetupColorConfigUI::createGradientPreview()
                     seg, fillSpr, x,
                     calculateProgressFillGradientSegmentWidth(x, segWidth, visibleWidth, visibleWidth));
                 barOverlaySegments.push_back(seg);
-                fillSpr->addChild(seg, 1);
+                batch->addChild(seg);
             }
         }
     }
@@ -502,11 +505,10 @@ void SetupColorConfigUI::updateGradientPreview()
     if (!(currentConfig.smoothGradient && gradientPreviewBar->isVisible()))
         for (const auto& [layer, v] : gradientPreviewSprites)
             layer->setColor(currentConfig.colorForGradient(v));
-
     else
         for (int i = 0; i < static_cast<int>(barOverlaySegments.size()); i++)
-            barOverlaySegments[i]->setColor(
-                currentConfig.colorForGradient((static_cast<float>(i) + 0.5f) / barOverlaySegments.size()));
+            barOverlaySegments[i]->setColor(colorForSortedGradient(
+                sortedGradientLocationsFor(currentConfig), (static_cast<float>(i) + 0.5f) / barOverlaySegments.size()));
 
     for (const auto line : gradientLines)
         line->setPositionX(gradientPreviewContainer->getContentWidth() *
@@ -759,12 +761,10 @@ void SetupColorConfigUI::update(const float dt)
     updateGradientPreview();
 
     if (currentConfig.gradientScrolling && currentConfig.smoothGradient && gradientPreviewBar->isVisible())
-    {
-        const float offset = m_previewTime * 0.05f;
         for (int i = 0; i < static_cast<int>(barOverlaySegments.size()); i++)
-            barOverlaySegments[i]->setColor(currentConfig.colorForGradientLooped(
-                (static_cast<float>(i) + 0.5f) / barOverlaySegments.size() + offset));
-    }
+            barOverlaySegments[i]->setColor(colorForSortedGradientLooped(
+                currentConfig, sortedGradientLocationsFor(currentConfig),
+                (static_cast<float>(i) + 0.5f) / barOverlaySegments.size() + m_previewTime * 0.05f));
 }
 
 void SetupColorConfigUI::show()
@@ -1220,7 +1220,7 @@ void PresetPopup::update(const float dt)
     const float savedVa = colorutil::va;
     colorutil::va = m_previewTime;
 
-    for (auto& [bar, segments, config] : m_cellRefs)
+    for (auto& [bar, segments, config, sortedStops] : m_cellRefs)
     {
         if (config.type == Gradient && config.smoothGradient && config.gradientScrolling)
         {
@@ -1228,7 +1228,7 @@ void PresetPopup::update(const float dt)
             for (int i = 0; i < static_cast<int>(segments.size()); i++)
             {
                 const float t = (static_cast<float>(i) + 0.5f) / segments.size();
-                segments[i]->setColor(config.colorForGradientLooped(t + offset));
+                segments[i]->setColor(colorForSortedGradientLooped(config, sortedStops, t + offset));
             }
         }
         else if (config.type == Chroma || config.type == Pastel)
@@ -1298,7 +1298,7 @@ CCNode* PresetPopup::createCell(const Preset& preset, const int index, const flo
     bar->setScale(barVisualWidth / bar->getContentSize().width);
     bar->setPosition(ccp(78, cellH / 2));
 
-    CellRef ref = {bar, {}, preset.config};
+    CellRef ref = {bar, {}, preset.config, sortedGradientLocationsFor(preset.config)};
     if (preset.config.type == Gradient && preset.config.smoothGradient)
     {
         bar->setFillColor(ccWHITE);
@@ -1307,17 +1307,21 @@ CCNode* PresetPopup::createCell(const Preset& preset, const int index, const flo
             if (const auto fillSpr = typeinfo_cast<CCSprite*>(barSpr->getChildByID("progress-bar-fill")))
             {
                 const float visW = barSpr->getContentSize().width - 4;
-                const int segs = static_cast<int>(Mod::get()->getSettingValue<int64_t>("gradient-segments"));
+                const int segs =
+                    std::max(1, static_cast<int>(Mod::get()->getSettingValue<int64_t>("gradient-segments")));
                 const float segW = visW / segs;
+                auto* batch = createProgressFillGradientBatch(fillSpr, segs);
+                batch->setID("preset-gradient-overlay"_spr);
+                fillSpr->addChild(batch, 1);
                 for (int i = 0; i < segs; i++)
                 {
                     auto seg = createProgressFillGradientSegment(fillSpr);
                     const float x = segW * i;
                     updateProgressFillGradientSegment(seg, fillSpr, x,
                                                       calculateProgressFillGradientSegmentWidth(x, segW, visW, visW));
-                    seg->setColor(preset.config.colorForGradient((static_cast<float>(i) + 0.5f) / segs));
+                    seg->setColor(colorForSortedGradient(ref.sortedStops, (static_cast<float>(i) + 0.5f) / segs));
                     ref.segments.push_back(seg);
-                    fillSpr->addChild(seg, 1);
+                    batch->addChild(seg);
                 }
             }
         }

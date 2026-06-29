@@ -6,26 +6,59 @@
 #include <Geode/modify/PlayLayer.hpp>
 class $modify(canvas, PlayLayer)
 {
+    enum class RenderKind
+    {
+        None,
+        Solid,
+        QuadGradient,
+        SegmentedGradient,
+    };
+
     struct Fields
     {
-        CCNode* gradientOverlay = nullptr;
+        CCSpriteBatchNode* gradientOverlay = nullptr;
+        CCTexture2D* gradientTexture = nullptr;
         int currentSegmentCount = 0;
+        RenderKind renderKind = RenderKind::None;
+        const ColorConfig* renderedGradientConfig = nullptr;
+        int renderedConfigUpdateId = -1;
+        float renderedFullWidth = -1.f;
+        float renderedVisibleWidth = -1.f;
+        float renderedFillHeight = -1.f;
+        float renderedColorProgressFrac = -1.f;
+        float renderedScrollOffset = -1.f;
     };
+
+    void invalidateGradientRenderState()
+    {
+        m_fields->renderedGradientConfig = nullptr;
+        m_fields->renderedConfigUpdateId = -1;
+        m_fields->renderedFullWidth = -1.f;
+        m_fields->renderedVisibleWidth = -1.f;
+        m_fields->renderedFillHeight = -1.f;
+        m_fields->renderedColorProgressFrac = -1.f;
+        m_fields->renderedScrollOffset = -1.f;
+    }
+
+    void setProgressFillColor(const ccColor3B& color, const bool force = false) const
+    {
+        if (force || !colorsEqual(m_progressFill->getColor(), color))
+            m_progressFill->setColor(color);
+    }
 
     void ensureGradientOverlay()
     {
-        const int count = fastGetSetting<"gradient-segments", int64_t>();
+        const int count = std::max(1, static_cast<int>(fastGetSetting<"gradient-segments", int64_t>()));
+        auto* texture = m_progressFill->getTexture();
 
-        if (m_fields->gradientOverlay && m_fields->currentSegmentCount == count)
+        if (m_fields->gradientOverlay && m_fields->currentSegmentCount == count && m_fields->gradientTexture == texture)
             return;
 
         if (m_fields->gradientOverlay)
             m_fields->gradientOverlay->removeFromParent();
 
-        m_fields->gradientOverlay = CCNode::create();
+        m_fields->gradientOverlay = createProgressFillGradientBatch(m_progressFill, count);
         m_fields->gradientOverlay->setID("gradient-overlay"_spr);
-        m_fields->gradientOverlay->setAnchorPoint(ccp(0, 0));
-        m_fields->gradientOverlay->setPosition(ccp(0, 0));
 
         for (int i = 0; i < count; i++)
         {
@@ -35,6 +68,8 @@ class $modify(canvas, PlayLayer)
 
         m_progressFill->addChild(m_fields->gradientOverlay, 1);
         m_fields->currentSegmentCount = count;
+        m_fields->gradientTexture = texture;
+        invalidateGradientRenderState();
     }
 
     void updateGradientSegments(const ColorConfig* cfg)
@@ -44,27 +79,67 @@ class $modify(canvas, PlayLayer)
         const float fullWidth = m_progressFill->getParent()->getContentSize().width - 4;
         const float visibleWidth = fillRect.size.width;
         const float progressFrac = fullWidth > 0 ? visibleWidth / fullWidth : 1.f;
+        const float colorProgressFrac = !cfg->gradientFollowsProgress && progressFrac > 0.01f ? progressFrac : -1.f;
+        const float scrollOffset = cfg->gradientScrolling ? colorutil::getRGBStripOffset() : 0.f;
+        const auto* delegate = Catgirl::getInstance();
 
-        m_fields->gradientOverlay->setContentSize(ccp(fullWidth, fillHeight));
+        const bool stateChanged = m_fields->renderKind != RenderKind::SegmentedGradient;
+        const bool layoutDirty = stateChanged || m_fields->renderedFullWidth != fullWidth ||
+            m_fields->renderedVisibleWidth != visibleWidth || m_fields->renderedFillHeight != fillHeight;
+        const bool colorDirty = stateChanged || m_fields->renderedGradientConfig != cfg ||
+            m_fields->renderedConfigUpdateId != delegate->updateId ||
+            m_fields->renderedColorProgressFrac != colorProgressFrac || m_fields->renderedScrollOffset != scrollOffset;
+
+        if (!layoutDirty && !colorDirty)
+            return;
+
+        if (layoutDirty)
+            m_fields->gradientOverlay->setContentSize(ccp(fullWidth, fillHeight));
+
+        const auto sortedStops =
+            colorDirty ? sortedGradientLocationsFor(*cfg) : std::vector<ColorConfig::GradientLocation>{};
 
         const int count = m_fields->currentSegmentCount;
         const float segWidth = fullWidth / count;
         int i = 0;
         for (const auto seg : CCArrayExt<CCSprite*>(m_fields->gradientOverlay->getChildren()))
         {
-            const float x = segWidth * i;
-            const float width = calculateProgressFillGradientSegmentWidth(x, segWidth, visibleWidth, fullWidth);
-            updateProgressFillGradientSegment(seg, m_progressFill, x, width);
+            if (layoutDirty)
+            {
+                const float x = segWidth * i;
+                const float width = calculateProgressFillGradientSegmentWidth(x, segWidth, visibleWidth, fullWidth);
+                updateProgressFillGradientSegment(seg, m_progressFill, x, width);
+            }
 
-            float t = (static_cast<float>(i) + 0.5f) / count;
-            if (!cfg->gradientFollowsProgress && progressFrac > 0.01f)
-                t = t / progressFrac;
-            if (cfg->gradientScrolling)
-                seg->setColor(cfg->colorForGradientLooped(t + colorutil::getRGBStripOffset()));
-            else
-                seg->setColor(cfg->colorForGradient(fminf(t, 1.0f)));
+            if (colorDirty)
+            {
+                float t = (static_cast<float>(i) + 0.5f) / count;
+                if (!cfg->gradientFollowsProgress && progressFrac > 0.01f)
+                    t = t / progressFrac;
+
+                if (cfg->gradientScrolling)
+                {
+                    if (!colorsEqual(seg->getColor(),
+                                     colorForSortedGradientLooped(*cfg, sortedStops, t + scrollOffset)))
+                        seg->setColor(colorForSortedGradientLooped(*cfg, sortedStops, t + scrollOffset));
+                }
+                else
+                {
+                    if (!colorsEqual(seg->getColor(), colorForSortedGradient(sortedStops, fminf(t, 1.0f))))
+                        seg->setColor(colorForSortedGradient(sortedStops, fminf(t, 1.0f)));
+                }
+            }
             i++;
         }
+
+        m_fields->renderKind = RenderKind::SegmentedGradient;
+        m_fields->renderedGradientConfig = cfg;
+        m_fields->renderedConfigUpdateId = delegate->updateId;
+        m_fields->renderedFullWidth = fullWidth;
+        m_fields->renderedVisibleWidth = visibleWidth;
+        m_fields->renderedFillHeight = fillHeight;
+        m_fields->renderedColorProgressFrac = colorProgressFrac;
+        m_fields->renderedScrollOffset = scrollOffset;
     }
 
     void repaint(const float levelProgress)
@@ -91,23 +166,28 @@ class $modify(canvas, PlayLayer)
                 if (m_fields->gradientOverlay)
                     m_fields->gradientOverlay->setVisible(false);
 
-                m_progressFill->setColor(ccWHITE);
+                setProgressFillColor(ccWHITE);
 
-                const auto [lr, lg, lb] = cfg->colorForGradient(0.f);
-                const auto [rr, rg, rb] = cfg->colorForGradient(1.f);
+                const auto sortedStops = sortedGradientLocationsFor(*cfg);
+                const auto [lr, lg, lb] = colorForSortedGradient(sortedStops, 0.f);
+                const auto [rr, rg, rb] = colorForSortedGradient(sortedStops, 1.f);
 
                 auto& [tl, bl, tr, br] = m_progressFill->m_sQuad;
                 bl.colors = {lr, lg, lb, 0xFF};
                 tl.colors = {lr, lg, lb, 0xFF};
                 br.colors = {rr, rg, rb, 0xFF};
                 tr.colors = {rr, rg, rb, 0xFF};
+
+                m_fields->renderKind = RenderKind::QuadGradient;
+                m_fields->renderedGradientConfig = cfg;
+                m_fields->renderedConfigUpdateId = delegate->updateId;
             }
             else
             {
                 if (m_fields->gradientOverlay)
                     m_fields->gradientOverlay->setVisible(true);
 
-                m_progressFill->setColor(ccWHITE);
+                setProgressFillColor(ccWHITE, m_fields->renderKind == RenderKind::QuadGradient);
                 ensureGradientOverlay();
                 updateGradientSegments(cfg);
             }
@@ -116,7 +196,8 @@ class $modify(canvas, PlayLayer)
         {
             if (m_fields->gradientOverlay)
                 m_fields->gradientOverlay->setVisible(false);
-            m_progressFill->setColor(paint(levelProgress));
+            setProgressFillColor(paint(levelProgress), m_fields->renderKind == RenderKind::QuadGradient);
+            m_fields->renderKind = RenderKind::Solid;
         }
 
         // Globed compatibility

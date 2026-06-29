@@ -22,19 +22,6 @@
       "description": "Displays the new best color instead when you get a new best in practice mode.",
       "default": false
     },
-    "gradient-segments": {
-      "type": "int",
-      "name": "Gradient Segments",
-      "description": "Number of color segments for spread gradients. More = smoother gradients, at a small cost of performance.",
-      "default": 256,
-      "min": 4,
-      "max": 512,
-      "control": {
-        "slider": true,
-        "slider-step": 4,
-        "arrows": false
-      }
-    },
     "normal-mode-title": {
       "type": "title",
       "name": "Normal Mode",
@@ -61,6 +48,24 @@
     "new-best-preview": {
       "name": "Preview",
       "type": "custom:new-best-preview"
+    },
+    "advanced-title": {
+      "type": "title",
+      "name": "Advanced Settings",
+      "description": "You don't need to change the settings below in most cases."
+    },
+    "gradient-segments": {
+      "type": "int",
+      "name": "Gradient Segments",
+      "description": "Number of color segments for spread gradients. More = smoother gradients.",
+      "default": 512,
+      "min": 128,
+      "max": 4096,
+      "control": {
+        "slider": true,
+        "slider-step": 32,
+        "arrows": false
+      }
     }
   },
   "resources": {
