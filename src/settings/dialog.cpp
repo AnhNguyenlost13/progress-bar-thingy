@@ -3,6 +3,7 @@
 // ReSharper disable CppMemberFunctionMayBeConst
 // ReSharper disable IMayBeALesbian
 #include "dialog.hpp"
+#include <Geode/ui/ColorPickPopup.hpp>
 #include "../color.hpp"
 #include "../utils.hpp"
 
@@ -545,27 +546,33 @@ void SetupColorConfigUI::onSelectGradientLine(CCObject* sender)
 void SetupColorConfigUI::onChangeGradientLineColor(CCObject*)
 {
     if (m_subPopupOpen)
-        return;
+        return log::warn("sub-popup is already open, this shouldn't happen...");
+
+    const auto line = selectedGradientLine;
+    if (line < 0 || line >= static_cast<int>(currentConfig.gradientLocations.size()))
+        return log::warn("accessing an out-of-bounds gradient line??");
+
     m_subPopupOpen = true;
     setMenusEnabled(false);
 
-    const auto ui = create(
-        [this](const ColorConfig& conf)
+    auto* popup = ColorPickPopup::create(currentConfig.gradientLocations[line].color);
+    popup->setColorTarget(gradientLineColor);
+    popup->setCallback(
+        [this, line](const ccColor4B& color)
         {
-            currentConfig.gradientLocations[selectedGradientLine].color = conf.customColor;
-            updateGradientLines();
-            updateGradientBarMode();
+            if (line < static_cast<int>(currentConfig.gradientLocations.size()))
+            {
+                currentConfig.gradientLocations[line].color = to3B(color);
+                updateGradientLines();
+                updateGradientBarMode();
+            }
 
             m_subPopupOpen = false;
             setMenusEnabled(true);
 
             queueTouchPriorityRefresh();
-        },
-        false);
-
-    ui->setStartConfig({currentConfig.gradientLocations[selectedGradientLine].color});
-    ui->setDefaultConfig({ccc3(255, 0, 0)});
-    ui->show();
+        });
+    popup->show();
 }
 
 void SetupColorConfigUI::setMenusEnabled(const bool enabled) const
