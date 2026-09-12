@@ -1,4 +1,7 @@
 
+## <cy>v2.0.4</c> (2026-09-12)
+Updated Geode SDK to v5.10.1
+
 ## <cy>v2.0.3</c> (2026-09-12)
 - improved mod performance
 - improved the color picker (it now uses the native Geode one instead)
