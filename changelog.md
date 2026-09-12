@@ -1,4 +1,8 @@
 
+## <cy>v2.0.3</c> (2026-09-12)
+- improved mod performance
+- improved the color picker (it now uses the native Geode one instead)
+
 ## <cy>v2.0.2</c> (2026-04-11)
 fixed preview images
 
